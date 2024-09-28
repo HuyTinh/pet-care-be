@@ -1,0 +1,23 @@
+spring:
+    application:
+        name: appointment_service
+
+    datasource:
+        url: "jdbc:mysql://localhost:3308/appointment_service"
+        password: root
+        username: root
+
+    jpa:
+        show-sql: false
+        hibernate:
+            ddl-auto: update
+
+    activemq:
+        broker-url: tcp://localhost:61616
+        user: admin
+        password: admin
+
+server:
+    servlet:
+        context-path: /api/v1
+    port: 8082

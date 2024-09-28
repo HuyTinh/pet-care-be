@@ -1,0 +1,30 @@
+spring:
+  application:
+    name: api_gateway
+
+  cloud:
+    gateway:
+      mvc:
+        routes:
+          - id: identity_service
+            uri: http://localhost:8081
+            predicates:
+              - Path=/api/v1/identity/**
+
+          - id: appointment_service
+            uri: http://localhost:8082
+            predicates:
+              - Path=/api/v1/appointment/**
+
+          - id: appointment_websocket_service
+            uri: http://localhost:8082/
+            predicates:
+              - Path=/api/v1/ws/**
+
+          - id: customer_service
+            uri: http://localhost:8084
+            predicates:
+              - Path=/api/v1/customer/**
+
+server:
+  port: 8888
