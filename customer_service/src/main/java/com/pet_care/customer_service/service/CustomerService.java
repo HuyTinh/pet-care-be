@@ -69,6 +69,9 @@ public class CustomerService {
         if(notification){
             notify = "-with-notification";
         }
+
+        System.out.println(objectMapper.writeValueAsString(appointmentRequest));
+
         messageService.sendMessageQueue("customer-create-appointment"+notify+"-queue", objectMapper.writeValueAsString(appointmentRequest));
 
 

@@ -1,5 +1,6 @@
 package com.pet_care.appointment_service.dto.request;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.pet_care.appointment_service.enums.AppointmentStatus;
 import jakarta.persistence.EnumType;
@@ -23,7 +24,12 @@ public class AppointmentRequest {
     Set<String> services;
 
     @JsonProperty("appointment_date")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     Date appointmentDate;
+
+    @JsonProperty("appointment_time")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "hh:mm:ss")
+    Date appointmentTime;
 
     @Enumerated(EnumType.STRING)
     AppointmentStatus status;
