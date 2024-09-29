@@ -7,6 +7,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.http.ResponseEntity;
+import org.springframework.jms.annotation.JmsListener;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 
@@ -17,10 +18,9 @@ public class BrevoService {
 
     RestClient restClient;
 
-    ObjectMapper objectMapper;
-
-    public void sendEmail() throws JsonProcessingException {
-        restClient.post().body("{ \"to\": [ { \"email\": \"tinhnth15112003@gmail.com\", \"name\": \"Hồng\" } ], \"subject\": \"Appointment Confirmation!\", \"params\": { \"username\": \"Hồng Ánh\", \"appointment_date\": \"2024-09-29\", \"appointment_time\": \"10:00\" }, \"templateId\": 1 }").retrieve();
+    @JmsListener(destination = "appointment-success-notification-queue")
+    public void sendAppointmentSuccessfulEmail(String message) throws JsonProcessingException {
+        restClient.post().body(message).retrieve();
     }
 
 }

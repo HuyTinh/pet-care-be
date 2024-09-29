@@ -30,9 +30,9 @@ public class CustomerController {
 
 
     @PostMapping("/create-appointment")
-    public ApiResponse<CustomerResponse> createAppointment(@RequestBody AppointmentCreateRequest request) throws JsonProcessingException {
+    public ApiResponse<CustomerResponse> createAppointment(@RequestBody AppointmentCreateRequest request, @RequestParam("emailNotification") boolean notification) throws JsonProcessingException {
         return ApiResponse.<CustomerResponse>builder()
-                .result(customerService.createAppointment(request))
+                .result(customerService.createAppointment(request,notification))
                 .build();
     }
 

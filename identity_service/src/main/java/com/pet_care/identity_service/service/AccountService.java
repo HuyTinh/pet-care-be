@@ -80,9 +80,6 @@ public class AccountService {
 
     @PostAuthorize("returnObject.email == authentication.name || hasRole('HOSPITAL_ADMINISTRATOR')")
     public AccountResponse getUserById(Long id) {
-//        var authentication = SecurityContextHolder.getContext().getAuthentication();
-//
-//        authentication.getAuthorities().forEach(grantedAuthority -> System.out.println(grantedAuthority.getAuthority()));
         return accountMapper
                 .toDto(accountRepository
                         .findById(id)

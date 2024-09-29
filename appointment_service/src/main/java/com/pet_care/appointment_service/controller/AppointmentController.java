@@ -47,7 +47,7 @@ public class AppointmentController {
     @PostMapping
     public ApiResponse<AppointmentResponse> create(@RequestBody AppointmentRequest appointmentRequest) throws JsonProcessingException {
         return ApiResponse.<AppointmentResponse>builder()
-                .result(appointmentService.create(appointmentRequest))
+                .result(appointmentService.createNoneEmailNotification(appointmentRequest))
                 .build();
     }
 

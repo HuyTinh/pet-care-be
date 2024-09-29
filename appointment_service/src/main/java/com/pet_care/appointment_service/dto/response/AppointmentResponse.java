@@ -30,5 +30,5 @@ public class AppointmentResponse {
 
     Set<PetResponse> pets;
 
-    Date created_at;
+    Date createdAt;
 }

@@ -17,16 +17,12 @@ import org.springframework.web.bind.annotation.RestController;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class NotificationController {
 
-    BrevoService brevoService;
-
-    ObjectMapper objectMapper;
-
-    @GetMapping
-    public void notification() throws JsonProcessingException {
-        Object object = "{'name':'ba' ," +
-                "" +
-                "'nha': 'bon' }";
-        System.out.println(objectMapper.writeValueAsString(object));
-        brevoService.sendEmail();
-    }
+//    BrevoService brevoService;
+//
+//    ObjectMapper objectMapper;
+//
+//    @GetMapping
+//    public void notification() throws JsonProcessingException {
+//       brevoService.sendEmail();
+//    }
 }

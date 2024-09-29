@@ -3,6 +3,7 @@ package com.pet_care.appointment_service.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pet_care.appointment_service.dto.request.AppointmentRequest;
+import com.pet_care.appointment_service.dto.response.ApiResponse;
 import com.pet_care.appointment_service.dto.response.AppointmentResponse;
 import com.pet_care.appointment_service.enums.AppointmentStatus;
 import com.pet_care.appointment_service.exception.AppointmentException;
@@ -10,11 +11,14 @@ import com.pet_care.appointment_service.exception.ErrorCode;
 import com.pet_care.appointment_service.mapper.AppointmentMapper;
 import com.pet_care.appointment_service.mapper.PetMapper;
 import com.pet_care.appointment_service.model.Appointment;
+import com.pet_care.appointment_service.model.AppointmentBookingSuccessful;
 import com.pet_care.appointment_service.model.Pet;
+import com.pet_care.appointment_service.model.SendTo;
 import com.pet_care.appointment_service.repository.AppointmentRepository;
 import com.pet_care.appointment_service.repository.HospitalServiceRepository;
 import com.pet_care.appointment_service.repository.PetRepository;
 import com.pet_care.appointment_service.repository.httpClient.CustomerClient;
+import com.pet_care.appointment_service.utils.DateUtil;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -49,43 +53,12 @@ public class AppointmentService {
 
     PetMapper petMapper;
 
-    public AppointmentResponse create(AppointmentRequest appointmentRequest) throws JsonProcessingException {
-        Appointment appointment = appointmentMapper.toEntity(appointmentRequest);
+    public AppointmentResponse createNoneEmailNotification(AppointmentRequest appointmentRequest) throws JsonProcessingException {
+        return createRequest(appointmentRequest, false);
+    }
 
-        appointment.setServices(new HashSet<>(hospitalServiceRepository
-                .findAllById(appointmentRequest.getServices())));
-
-        if(appointmentRequest.getStatus() == null){
-            appointment.setStatus(AppointmentStatus.PENDING);
-        }
-
-        Appointment createSuccess = appointmentRepository.save(appointment);
-
-        Set<Pet> pets = appointmentRequest.getPets().stream()
-                .map(petMapper::toEntity)
-                .collect(Collectors.toSet()).stream()
-                .peek(pet -> pet.setAppointment(createSuccess))
-                .collect(Collectors.toSet());
-
-        petRepository.saveAll(pets);
-
-        String createAppointmentStatus = createSuccess.getStatus().name();
-        AppointmentResponse appointmentResponse = appointmentMapper.toDto(appointment);
-        appointmentResponse.setCustomer(customerClient
-                .getCustomer(String.valueOf(appointment.getCustomerId()))
-                .getResult());
-
-        if(createAppointmentStatus.equals("CHECKED_IN")){
-            messageService.sendMessage("doctor-appointment-queue", objectMapper.writeValueAsString(appointmentResponse));
-        } else {
-           try {
-               queue.add(objectMapper.writeValueAsString(appointmentResponse));
-           } catch (Exception e) {
-               throw new RuntimeException(e);
-           }
-        }
-
-        return appointmentMapper.toDto(createSuccess);
+    public AppointmentResponse createWithEmailNotification(AppointmentRequest appointmentRequest) throws JsonProcessingException {
+        return createRequest(appointmentRequest, true);
     }
 
     @Transactional(readOnly = true)
@@ -188,13 +161,77 @@ public class AppointmentService {
     }
 
 
-    @JmsListener(destination = "customer-create-appointment", containerFactory = "queueFactory")
+    @JmsListener(destination = "customer-create-appointment-queue", containerFactory = "queueFactory")
     public void receiveCustomerCreateAppointment(String message) {
         try {
-            this.create(objectMapper.readValue(message, AppointmentRequest.class));
+            AppointmentRequest appointmentRequest = objectMapper.readValue(message, AppointmentRequest.class);
+            this.createNoneEmailNotification(appointmentRequest);
             Thread.sleep(1000);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @JmsListener(destination = "customer-create-appointment-with-notification-queue", containerFactory = "queueFactory")
+    public void receiveCustomerCreateAppointmentWithEmailNotification(String message) {
+        try {
+            AppointmentRequest appointmentRequest = objectMapper.readValue(message, AppointmentRequest.class);
+            this.createWithEmailNotification(appointmentRequest);
+            Thread.sleep(1000);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+
+    private AppointmentResponse createRequest(AppointmentRequest appointmentRequest, Boolean notification) throws JsonProcessingException {
+        Appointment appointment = appointmentMapper.toEntity(appointmentRequest);
+
+        appointment.setServices(new HashSet<>(hospitalServiceRepository
+                .findAllById(appointmentRequest.getServices())));
+
+        if(appointmentRequest.getStatus() == null){
+            appointment.setStatus(AppointmentStatus.PENDING);
+        }
+
+        Appointment createSuccess = appointmentRepository.save(appointment);
+
+        Set<Pet> pets = appointmentRequest.getPets().stream()
+                .map(petMapper::toEntity)
+                .collect(Collectors.toSet()).stream()
+                .peek(pet -> pet.setAppointment(createSuccess))
+                .collect(Collectors.toSet());
+
+        petRepository.saveAll(pets);
+
+        String createAppointmentStatus = createSuccess.getStatus().name();
+        AppointmentResponse appointmentResponse = appointmentMapper.toDto(appointment);
+        appointmentResponse.setCustomer(customerClient
+                .getCustomer(String.valueOf(appointment.getCustomerId()))
+                .getResult());
+
+        if(createAppointmentStatus.equals("CHECKED_IN")){
+            messageService.sendMessage("doctor-appointment-queue", objectMapper.writeValueAsString(appointmentResponse));
+        } else {
+            try {
+                queue.add(objectMapper.writeValueAsString(appointmentResponse));
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
+        if(notification){
+            AppointmentBookingSuccessful appointmentBookingSuccessful = AppointmentBookingSuccessful.builder()
+                    .appointmentDate(DateUtil.getDateOnly(appointmentResponse.getAppointmentDate()))
+                    .appointmentTime(DateUtil.getTimeOnly(appointmentResponse.getAppointmentDate()))
+                    .toEmail(appointmentResponse.getCustomer().getEmail())
+                    .firstName(appointmentResponse.getCustomer().getFirstName())
+                    .lastName(appointmentResponse.getCustomer().getLastName())
+                    .build();
+
+            messageService.sendMessage("appointment-success-notification-queue",appointmentBookingSuccessful.getContent());
+        }
+
+
+        return appointmentMapper.toDto(createSuccess);
     }
 }

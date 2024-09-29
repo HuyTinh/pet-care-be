@@ -54,7 +54,7 @@ public class CustomerService {
         customerRepository.save(customerMapper.toEntity(objectMapper.readValue(customerRequest, CustomerCreateRequest.class)));
     }
 
-    public CustomerResponse createAppointment(AppointmentCreateRequest request) throws JsonProcessingException {
+    public CustomerResponse createAppointment(AppointmentCreateRequest request, Boolean notification) throws JsonProcessingException {
         Customer customerSave = customerRepository.findByAccountId(request.getAccountId()).orElse(null);
 
         if(customerSave == null) {
@@ -65,7 +65,12 @@ public class CustomerService {
 
         appointmentRequest.setCustomerId(customerSave.getId());
 
-        messageService.sendMessageQueue("customer-create-appointment", objectMapper.writeValueAsString(appointmentRequest));
+        String notify = "";
+        if(notification){
+            notify = "-with-notification";
+        }
+        messageService.sendMessageQueue("customer-create-appointment"+notify+"-queue", objectMapper.writeValueAsString(appointmentRequest));
+
 
         return customerMapper.toDto(customerRepository.save(customerSave));
     }
