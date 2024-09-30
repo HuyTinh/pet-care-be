@@ -45,6 +45,7 @@
         </processorPath>
         <module name="customer_service" />
         <module name="employee_service" />
+
         <module name="appointment_service" />
       </profile>
     </annotationProcessing>
