@@ -38,7 +38,7 @@ public class Appointment {
     Date appointmentDate;
 
     @JsonProperty("appointment_time")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "hh:mm:ss")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm")
     Date appointmentTime;
 
     @ManyToMany
