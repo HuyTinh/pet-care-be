@@ -1,0 +1,20 @@
+spring:
+  application:
+    name: employee_service
+
+  flyway:
+    enabled: true
+    url: "jdbc:mysql://localhost:3310/employee_service"
+    user: root
+    password: root
+
+  r2dbc:
+    url: "r2dbc:mysql://localhost:3310/employee_service"
+    username: root
+    password: root
+
+server:
+  port: 8085
+  servlet:
+    context-path: /api/v1
+

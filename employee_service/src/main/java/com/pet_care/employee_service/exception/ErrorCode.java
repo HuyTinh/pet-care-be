@@ -1,0 +1,18 @@
+package com.pet_care.employee_service.exception;
+
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.experimental.FieldDefaults;
+import org.springframework.http.HttpStatus;
+
+@Getter
+@AllArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+public enum ErrorCode {
+    EMPLOYEE_NOT_FOUND(1018, "Employee Not Found", HttpStatus.NOT_FOUND),;
+
+    int code;
+    String message;
+    HttpStatus httpStatus;
+}

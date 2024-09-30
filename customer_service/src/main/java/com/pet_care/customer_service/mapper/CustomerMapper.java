@@ -8,7 +8,6 @@ import org.mapstruct.*;
 
 @Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE, componentModel = MappingConstants.ComponentModel.SPRING)
 public interface CustomerMapper {
-//    @Mapping(source = "appointment", ignore = true)
     Customer toEntity(CustomerCreateRequest customerRequest);
 
     Customer toEntity(AppointmentCreateRequest request);
