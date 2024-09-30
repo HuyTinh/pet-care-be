@@ -3,7 +3,6 @@ package com.pet_care.appointment_service.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pet_care.appointment_service.dto.request.AppointmentRequest;
-import com.pet_care.appointment_service.dto.response.ApiResponse;
 import com.pet_care.appointment_service.dto.response.AppointmentResponse;
 import com.pet_care.appointment_service.enums.AppointmentStatus;
 import com.pet_care.appointment_service.exception.AppointmentException;
@@ -13,7 +12,6 @@ import com.pet_care.appointment_service.mapper.PetMapper;
 import com.pet_care.appointment_service.model.Appointment;
 import com.pet_care.appointment_service.model.AppointmentBookingSuccessful;
 import com.pet_care.appointment_service.model.Pet;
-import com.pet_care.appointment_service.model.SendTo;
 import com.pet_care.appointment_service.repository.AppointmentRepository;
 import com.pet_care.appointment_service.repository.HospitalServiceRepository;
 import com.pet_care.appointment_service.repository.PetRepository;
@@ -57,8 +55,8 @@ public class AppointmentService {
         return createRequest(appointmentRequest, false);
     }
 
-    public AppointmentResponse createWithEmailNotification(AppointmentRequest appointmentRequest) throws JsonProcessingException {
-        return createRequest(appointmentRequest, true);
+    public void createWithEmailNotification(AppointmentRequest appointmentRequest) throws JsonProcessingException {
+        createRequest(appointmentRequest, true);
     }
 
     @Transactional(readOnly = true)
@@ -222,11 +220,13 @@ public class AppointmentService {
         if(notification){
             AppointmentBookingSuccessful appointmentBookingSuccessful = AppointmentBookingSuccessful.builder()
                     .appointmentDate(DateUtil.getDateOnly(appointmentResponse.getAppointmentDate()))
-                    .appointmentTime(DateUtil.getTimeOnly(appointmentResponse.getAppointmentDate()))
+                    .appointmentTime(DateUtil.getTimeOnly(appointmentResponse.getAppointmentTime()))
                     .toEmail(appointmentResponse.getCustomer().getEmail())
                     .firstName(appointmentResponse.getCustomer().getFirstName())
                     .lastName(appointmentResponse.getCustomer().getLastName())
                     .build();
+
+
 
             messageService.sendMessage("appointment-success-notification-queue",appointmentBookingSuccessful.getContent());
         }
