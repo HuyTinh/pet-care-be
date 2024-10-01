@@ -30,6 +30,8 @@ public class CustomerResponse {
 
     String email;
 
+    String gender;
+
     @JsonProperty("account_id")
     Long accountId;
 

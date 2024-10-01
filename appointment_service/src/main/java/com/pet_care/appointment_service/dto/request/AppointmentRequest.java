@@ -5,6 +5,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.pet_care.appointment_service.enums.AppointmentStatus;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -16,6 +18,7 @@ import java.util.Set;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@ToString
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class AppointmentRequest {
     @JsonProperty("customer_id")
@@ -28,7 +31,7 @@ public class AppointmentRequest {
     Date appointmentDate;
 
     @JsonProperty("appointment_time")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "hh:mm:ss")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm")
     Date appointmentTime;
 
     @Enumerated(EnumType.STRING)

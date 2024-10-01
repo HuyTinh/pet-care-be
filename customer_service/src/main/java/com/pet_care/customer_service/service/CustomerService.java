@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pet_care.customer_service.dto.request.AppointmentCreateRequest;
 import com.pet_care.customer_service.dto.request.CustomerCreateRequest;
-import com.pet_care.customer_service.dto.request.sub.Appointment;
+import com.pet_care.customer_service.dto.request.sub.AppointmentRequest;
 import com.pet_care.customer_service.dto.response.CustomerResponse;
 import com.pet_care.customer_service.exception.CustomerException;
 import com.pet_care.customer_service.exception.ErrorCode;
@@ -61,7 +61,7 @@ public class CustomerService {
             customerSave = customerRepository.save(customerMapper.toEntity(request));
         }
 
-        Appointment appointment = request.getAppointment();
+        AppointmentRequest appointment = request.getAppointment();
 
         appointment.setCustomerId(customerSave.getId());
 

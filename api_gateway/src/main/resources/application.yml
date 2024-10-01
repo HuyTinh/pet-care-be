@@ -14,7 +14,7 @@ spring:
           - id: appointment_service
             uri: http://localhost:8082
             predicates:
-              - Path=/api/v1/appointment/**
+              - Path=/api/v1/appointment-service/**
 
 #          - id: appointment_websocket_service
 #            uri: http://localhost:8082/

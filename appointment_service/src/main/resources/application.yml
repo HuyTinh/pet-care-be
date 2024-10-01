@@ -19,7 +19,7 @@ spring:
 
 server:
     servlet:
-        context-path: /api/v1
+        context-path: /api/v1/appointment-service
     port: 8082
 
 springdoc:

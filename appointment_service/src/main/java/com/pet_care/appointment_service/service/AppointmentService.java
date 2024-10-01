@@ -163,7 +163,8 @@ public class AppointmentService {
     public void receiveCustomerCreateAppointment(String message) {
         try {
             AppointmentRequest appointmentRequest = objectMapper.readValue(message, AppointmentRequest.class);
-            this.createNoneEmailNotification(appointmentRequest);
+//            this.createNoneEmailNotification(appointmentRequest);
+            System.out.println(appointmentRequest);
             Thread.sleep(1000);
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -174,6 +175,7 @@ public class AppointmentService {
     public void receiveCustomerCreateAppointmentWithEmailNotification(String message) {
         try {
             AppointmentRequest appointmentRequest = objectMapper.readValue(message, AppointmentRequest.class);
+//            System.out.println(message);
             this.createWithEmailNotification(appointmentRequest);
             Thread.sleep(1000);
         } catch (Exception e) {

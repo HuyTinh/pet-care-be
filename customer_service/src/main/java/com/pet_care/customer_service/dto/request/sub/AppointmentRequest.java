@@ -29,6 +29,7 @@ public class AppointmentRequest {
 
     @JsonProperty("appointment_time")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm")
+    @Temporal(TemporalType.TIME)
     Date appointmentTime;
 
     String status;

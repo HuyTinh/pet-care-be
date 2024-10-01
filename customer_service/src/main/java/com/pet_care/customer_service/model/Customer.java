@@ -31,6 +31,7 @@ public class Customer {
 
     String email;
 
+    @Enumerated(EnumType.STRING)
     Gender gender;
 
     String imageUrl;
