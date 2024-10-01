@@ -7,6 +7,8 @@ import jakarta.persistence.Enumerated;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.util.Date;
+
 @Getter
 @Setter
 @Builder
@@ -28,8 +30,13 @@ public class CustomerCreateRequest {
     @Enumerated(EnumType.STRING)
     Gender gender;
 
+    String address;
+
     @JsonProperty("image_url")
     String imageUrl;
+
+    @JsonProperty("birth_date")
+    Date birthDate;
 
     @JsonProperty("account_id")
     Long accountId;

@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pet_care.customer_service.dto.request.AppointmentCreateRequest;
 import com.pet_care.customer_service.dto.request.CustomerCreateRequest;
-import com.pet_care.customer_service.dto.request.sub.AppointmentRequest;
+import com.pet_care.customer_service.dto.request.sub.Appointment;
 import com.pet_care.customer_service.dto.response.CustomerResponse;
 import com.pet_care.customer_service.exception.CustomerException;
 import com.pet_care.customer_service.exception.ErrorCode;
@@ -61,18 +61,18 @@ public class CustomerService {
             customerSave = customerRepository.save(customerMapper.toEntity(request));
         }
 
-        AppointmentRequest appointmentRequest = request.getAppointment();
+        Appointment appointment = request.getAppointment();
 
-        appointmentRequest.setCustomerId(customerSave.getId());
+        appointment.setCustomerId(customerSave.getId());
 
         String notify = "";
         if(notification){
             notify = "-with-notification";
         }
 
-        System.out.println(objectMapper.writeValueAsString(appointmentRequest));
+        System.out.println(objectMapper.writeValueAsString(appointment));
 
-        messageService.sendMessageQueue("customer-create-appointment"+notify+"-queue", objectMapper.writeValueAsString(appointmentRequest));
+        messageService.sendMessageQueue("customer-create-appointment"+notify+"-queue", objectMapper.writeValueAsString(appointment));
 
 
         return customerMapper.toDto(customerRepository.save(customerSave));

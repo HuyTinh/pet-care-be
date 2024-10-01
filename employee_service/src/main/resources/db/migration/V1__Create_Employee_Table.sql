@@ -1,4 +1,4 @@
-create table employees (
+Create table employees (
     id bigint primary key auto_increment,
     first_name nvarchar(155) not null,
     last_name nvarchar(155) not null,

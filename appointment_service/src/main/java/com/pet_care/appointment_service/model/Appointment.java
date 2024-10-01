@@ -35,10 +35,12 @@ public class Appointment {
 
     @JsonProperty("appointment_date")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    @Temporal(TemporalType.DATE)
     Date appointmentDate;
 
     @JsonProperty("appointment_time")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm")
+    @Temporal(TemporalType.TIME)
     Date appointmentTime;
 
     @ManyToMany

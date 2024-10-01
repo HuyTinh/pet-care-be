@@ -20,12 +20,12 @@ public class EmployeeService {
     private final EmployeeMapper employeeMapper;
 
 
-    Mono<EmployeeResponse> getEmployeeById(Long id) {
+    public Mono<EmployeeResponse> getEmployeeById(Long id) {
         return employeeRepository.findById(id).map(employeeMapper::toDto)
                 .switchIfEmpty(Mono.error(new EmployeeException(ErrorCode.EMPLOYEE_NOT_FOUND)));
     }
 
-    Flux<EmployeeResponse> getAllEmployees() {
+    public Flux<EmployeeResponse> getAllEmployees() {
         return employeeRepository.findAll().map(employeeMapper::toDto);
     }
 }

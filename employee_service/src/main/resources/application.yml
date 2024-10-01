@@ -12,9 +12,19 @@ spring:
     url: "r2dbc:mysql://localhost:3310/employee_service"
     username: root
     password: root
+    pool:
+      initial-size: 10
+      max-size: 20
 
 server:
   port: 8085
   servlet:
     context-path: /api/v1
+
+cloudinary:
+  cloud-name: dprkvtle0
+  api-key: 545227972661364
+  api-secret: CF9pY6z7criTROCZtPVPHh7lwbE
+
+
 
