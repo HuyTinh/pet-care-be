@@ -22,6 +22,7 @@
       <set>
         <option value="$PROJECT_DIR$/medication_management_service/pom.xml" />
         <option value="$PROJECT_DIR$/medicine_service/pom.xml" />
+        <option value="$PROJECT_DIR$/upload_service/pom.xml" />
       </set>
     </option>
   </component>
