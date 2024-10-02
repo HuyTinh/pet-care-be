@@ -32,7 +32,7 @@ public class CustomerController {
     @PostMapping("/create-appointment")
     public ApiResponse<CustomerResponse> createAppointment(@RequestBody AppointmentCreateRequest request, @RequestParam("emailNotification") boolean notification) throws JsonProcessingException {
         return ApiResponse.<CustomerResponse>builder()
-                .result(customerService.createAppointment(request,notification))
+                .result(customerService.createAppointment(request, notification))
                 .build();
     }
 
@@ -40,7 +40,7 @@ public class CustomerController {
     public ApiResponse<CustomerResponse> updateCustomer(@PathVariable("accountId") Long accountId, @RequestBody CustomerCreateRequest
             customerRequest) {
         return ApiResponse.<CustomerResponse>builder()
-                .result(customerService.updateCustomer(accountId,  customerRequest))
+                .result(customerService.updateCustomer(accountId, customerRequest))
                 .build();
     }
 

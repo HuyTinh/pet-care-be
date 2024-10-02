@@ -1,7 +1,5 @@
 package com.pet_care.customer_service.model;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.pet_care.customer_service.enums.Gender;
 import jakarta.persistence.*;
 import lombok.*;
@@ -12,7 +10,7 @@ import java.util.Date;
 @Getter
 @Setter
 @Builder
-@Entity(name ="customers" )
+@Entity(name = "customers")
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)

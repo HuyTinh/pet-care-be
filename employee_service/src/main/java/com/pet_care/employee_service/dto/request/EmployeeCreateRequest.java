@@ -10,6 +10,7 @@ public record EmployeeCreateRequest(
         Gender gender,
         @JsonProperty("image_url")
         String imageUrl,
+        String address,
         @JsonProperty("account_id")
         Long accountId) {
 }

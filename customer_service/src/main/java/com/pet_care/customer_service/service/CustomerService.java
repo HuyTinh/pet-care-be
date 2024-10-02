@@ -57,7 +57,7 @@ public class CustomerService {
     public CustomerResponse createAppointment(AppointmentCreateRequest request, Boolean notification) throws JsonProcessingException {
         Customer customerSave = customerRepository.findByAccountId(request.getAccountId()).orElse(null);
 
-        if(customerSave == null) {
+        if (customerSave == null) {
             customerSave = customerRepository.save(customerMapper.toEntity(request));
         }
 
@@ -66,13 +66,13 @@ public class CustomerService {
         appointment.setCustomerId(customerSave.getId());
 
         String notify = "";
-        if(notification){
+        if (notification) {
             notify = "-with-notification";
         }
 
         System.out.println(objectMapper.writeValueAsString(appointment));
 
-        messageService.sendMessageQueue("customer-create-appointment"+notify+"-queue", objectMapper.writeValueAsString(appointment));
+        messageService.sendMessageQueue("customer-create-appointment" + notify + "-queue", objectMapper.writeValueAsString(appointment));
 
 
         return customerMapper.toDto(customerRepository.save(customerSave));

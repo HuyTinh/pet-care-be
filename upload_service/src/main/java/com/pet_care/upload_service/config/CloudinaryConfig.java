@@ -1,4 +1,4 @@
-package com.pet_care.employee_service.config;
+package com.pet_care.upload_service.config;
 
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;

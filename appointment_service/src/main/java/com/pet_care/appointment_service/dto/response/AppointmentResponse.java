@@ -4,8 +4,6 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.pet_care.appointment_service.enums.AppointmentStatus;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 

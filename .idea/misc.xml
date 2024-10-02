@@ -14,6 +14,7 @@
         <option value="$PROJECT_DIR$/medication_management_service/pom.xml" />
         <option value="$PROJECT_DIR$/notification_service/pom.xml" />
         <option value="$PROJECT_DIR$/employee_service/pom.xml" />
+        <option value="$PROJECT_DIR$/upload_service/pom.xml" />
       </list>
     </option>
   </component>

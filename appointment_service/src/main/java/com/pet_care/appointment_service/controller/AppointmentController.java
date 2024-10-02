@@ -5,17 +5,17 @@ import com.pet_care.appointment_service.dto.request.AppointmentRequest;
 import com.pet_care.appointment_service.dto.response.ApiResponse;
 import com.pet_care.appointment_service.dto.response.AppointmentResponse;
 import com.pet_care.appointment_service.enums.AppointmentStatus;
-import com.pet_care.appointment_service.model.Specie;
 import com.pet_care.appointment_service.service.AppointmentService;
-import com.pet_care.appointment_service.service.SpecieService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.web.bind.annotation.*;
 
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 @RestController
 @RequestMapping("appointment")
