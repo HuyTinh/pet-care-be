@@ -15,7 +15,14 @@
         <option value="$PROJECT_DIR$/notification_service/pom.xml" />
         <option value="$PROJECT_DIR$/employee_service/pom.xml" />
         <option value="$PROJECT_DIR$/upload_service/pom.xml" />
+        <option value="$PROJECT_DIR$/medicine_service/pom.xml" />
       </list>
+    </option>
+    <option name="ignoredFiles">
+      <set>
+        <option value="$PROJECT_DIR$/medication_management_service/pom.xml" />
+        <option value="$PROJECT_DIR$/medicine_service/pom.xml" />
+      </set>
     </option>
   </component>
   <component name="ProjectRootManager" version="2" languageLevel="JDK_21" default="true" project-jdk-name="openjdk-21" project-jdk-type="JavaSDK">

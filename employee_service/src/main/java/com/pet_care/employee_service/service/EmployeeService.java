@@ -1,6 +1,5 @@
 package com.pet_care.employee_service.service;
 
-import com.pet_care.employee_service.dto.request.EmployeeCreateRequest;
 import com.pet_care.employee_service.dto.response.EmployeeResponse;
 import com.pet_care.employee_service.exception.APIException;
 import com.pet_care.employee_service.exception.ErrorCode;
@@ -10,29 +9,28 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class EmployeeService {
     EmployeeRepository employeeRepository;
-    private final EmployeeMapper employeeMapper;
 
+    EmployeeMapper employeeMapper;
 
-    public Mono<EmployeeResponse> getEmployeeById(Long id) {
-        return employeeRepository.findById(id).map(employeeMapper::toDto)
-                .switchIfEmpty(Mono.error(new APIException(ErrorCode.EMPLOYEE_NOT_FOUND)));
-    }
-
-    public Mono<EmployeeResponse> createEmployee(EmployeeCreateRequest employeeCreateRequest) {
-        return employeeRepository.save(employeeMapper.toEntity(employeeCreateRequest))
+    public List<EmployeeResponse> getAllEmployee() {
+        return employeeRepository
+                .findAll().stream()
                 .map(employeeMapper::toDto)
-                .switchIfEmpty(Mono.error(new APIException(ErrorCode.EMPLOYEE_NOT_FOUND)));
+                .collect(Collectors.toList());
     }
 
-    public Flux<EmployeeResponse> getAllEmployees() {
-        return employeeRepository.findAll().map(employeeMapper::toDto);
+    public EmployeeResponse getEmployeeById(long id) {
+        return employeeMapper.toDto(employeeRepository
+                .findById(id)
+                .orElseThrow(() -> new APIException(ErrorCode.EMPLOYEE_NOT_FOUND)));
     }
 }

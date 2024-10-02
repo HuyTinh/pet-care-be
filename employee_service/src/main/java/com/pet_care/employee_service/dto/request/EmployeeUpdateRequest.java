@@ -11,7 +11,7 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 @Builder
-public class EmployeeCreateRequest {
+public class EmployeeUpdateRequest {
     @JsonProperty("first_name")
     String firstName;
 
@@ -30,7 +30,6 @@ public class EmployeeCreateRequest {
 
     @JsonProperty("account_id")
     Long accountId;
-
 
     @JsonProperty("phone_number")
     String phoneNumber;

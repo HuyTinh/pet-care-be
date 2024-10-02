@@ -1,11 +1,12 @@
 services:
-  db:
+  mysql:
     image: "mysql:latest"
-    restart: always
+    container_name: "mysql_employee_service"
     environment:
-      - MYSQL_ROOT_PASSWORD=root
-      - MYSQL_USERNAME=root
-      - MYSQL_PASSWORD=root
-      - MYSQL_DATABASE=employee_service
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: employee_service
+      MYSQL_USERNAME: root
+      MYSQL_PASSWORD: root
     ports:
       - "3310:3306"
+
