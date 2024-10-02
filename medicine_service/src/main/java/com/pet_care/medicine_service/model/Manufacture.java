@@ -1,9 +1,7 @@
 package com.pet_care.medicine_service.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -22,4 +20,9 @@ public class Manufacture {
     String name;
 
     Boolean status;
+
+    @ManyToOne
+    @JsonIgnore
+    @JoinColumn(name = "medicine_id")
+    Medicine medicine;
 }

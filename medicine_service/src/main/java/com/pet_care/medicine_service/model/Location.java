@@ -1,9 +1,8 @@
 package com.pet_care.medicine_service.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -22,9 +21,16 @@ public class Location {
 
     String area;
 
+    @JsonProperty("row_location")
     Integer rowLocation;
 
+    @JsonProperty("column_location")
     Integer columnLocation;
 
     Boolean status;
+
+    @ManyToOne
+    @JsonIgnore
+    @JoinColumn(name = "medicine_id")
+    Medicine medicine;
 }
