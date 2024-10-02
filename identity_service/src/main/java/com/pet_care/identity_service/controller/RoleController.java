@@ -33,7 +33,7 @@ public class RoleController {
 
     @PutMapping("/{role}")
     @PreAuthorize("hasRole('HOSPITAL_ADMINISTRATOR')")
-    ApiResponse<RoleResponse> update(@PathVariable String role,@RequestBody RoleUpdateRequest request) {
+    ApiResponse<RoleResponse> update(@PathVariable String role, @RequestBody RoleUpdateRequest request) {
         return ApiResponse.<RoleResponse>builder()
                 .result(roleService.update(role, request))
                 .build();

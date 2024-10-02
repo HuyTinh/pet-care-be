@@ -1,6 +1,7 @@
 package com.pet_care.employee_service.controller;
 
 import com.pet_care.employee_service.dto.request.EmployeeCreateRequest;
+import com.pet_care.employee_service.dto.request.EmployeeUpdateRequest;
 import com.pet_care.employee_service.dto.response.APIResponse;
 import com.pet_care.employee_service.dto.response.EmployeeResponse;
 import com.pet_care.employee_service.service.EmployeeService;
@@ -8,7 +9,6 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.http.MediaType;
-import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -28,16 +28,23 @@ public class EmployeeController {
     }
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public APIResponse<EmployeeResponse> createEmployee(@ModelAttribute EmployeeCreateRequest employeeCreateRequest, @RequestPart("file") MultipartFile image) {
-        System.out.println(employeeCreateRequest);
-        System.out.println(image);
-        return APIResponse.<EmployeeResponse>builder().data(employeeService.createEmployee(employeeCreateRequest)).build();
+    public APIResponse<EmployeeResponse> createEmployee(@ModelAttribute EmployeeCreateRequest employeeCreateRequest, @RequestPart(name = "files", required = false) List<MultipartFile> files) {
+        return APIResponse.<EmployeeResponse>builder()
+                .data(employeeService.createEmployee(employeeCreateRequest, files)).build();
     }
 
-    @PutMapping
-    public APIResponse<EmployeeResponse> updateEmployee() {
-        return APIResponse.<EmployeeResponse>builder().data(EmployeeResponse.builder().build()).build();
+    @PutMapping(value = "/{employeeId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public APIResponse<EmployeeResponse> updateEmployee(@PathVariable("employeeId") Long employeeId,
+                                                        @ModelAttribute EmployeeUpdateRequest employeeUpdateRequest,
+                                                        @RequestPart(name = "files", required = false) List<MultipartFile> files) {
+        return APIResponse.<EmployeeResponse>builder()
+                .data(employeeService.updateEmployee(employeeId, employeeUpdateRequest, files)).build();
     }
+
+//    @PutMapping
+//    public APIResponse<EmployeeResponse> updateEmployee() {
+//        return APIResponse.<EmployeeResponse>builder().data(EmployeeResponse.builder().build()).build();
+//    }
 
     @DeleteMapping
     public APIResponse<EmployeeResponse> deleteEmployee() {

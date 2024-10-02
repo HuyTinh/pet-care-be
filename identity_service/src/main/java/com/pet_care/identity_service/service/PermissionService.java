@@ -31,7 +31,7 @@ public class PermissionService {
         return permissionMapper.toDto(permissionRepository.save(permission));
     }
 
-    public List<PermissionResponse> getAll(){
+    public List<PermissionResponse> getAll() {
         return permissionRepository.findAll().stream().map(permissionMapper::toDto).collect(Collectors.toList());
     }
 

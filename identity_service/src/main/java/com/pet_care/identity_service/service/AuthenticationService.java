@@ -73,11 +73,11 @@ public class AuthenticationService {
 
         boolean validToken = true;
 
-       try {
-           verifyToken(token);
-       } catch (IdentityException e){
-           validToken = false;
-       }
+        try {
+            verifyToken(token);
+        } catch (IdentityException e) {
+            validToken = false;
+        }
 
         return IntrospectResponse
                 .builder()
@@ -88,14 +88,14 @@ public class AuthenticationService {
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
         var account = accountRepository.findByEmail(request.getEmail()).orElseThrow(() -> new IdentityException(ErrorCode.EMAIL_NOT_EXISTED));
 
-          boolean authenticated = passwordEncoder.matches(request.getPassword(), account.getPassword());
+        boolean authenticated = passwordEncoder.matches(request.getPassword(), account.getPassword());
 
-           if(!authenticated) {
-               throw new IdentityException(ErrorCode.PASSWORD_NOT_CORRECT);
-           }
+        if (!authenticated) {
+            throw new IdentityException(ErrorCode.PASSWORD_NOT_CORRECT);
+        }
 
 
-        var token =generateToken(account);
+        var token = generateToken(account);
 
         return AuthenticationResponse.builder()
                 .token(token)
@@ -122,19 +122,19 @@ public class AuthenticationService {
 
         JWSObject jwsObject = new JWSObject(jwsHeader, payload);
 
-       try {
-           jwsObject.sign(new MACSigner(SIGNER_KEY.getBytes()));
-        return jwsObject.serialize();
-       } catch (JOSEException e) {
+        try {
+            jwsObject.sign(new MACSigner(SIGNER_KEY.getBytes()));
+            return jwsObject.serialize();
+        } catch (JOSEException e) {
             log.error("Cannot create token", e);
             throw new IdentityException(ErrorCode.UNAUTHENTICATED);
-       }
+        }
     }
 
     public AuthenticationResponse refreshToken(RefreshRequest request) throws ParseException, JOSEException {
         var signJWT = verifyToken(request.getToken());
 
-        var jit =signJWT.getJWTClaimsSet().getJWTID();
+        var jit = signJWT.getJWTClaimsSet().getJWTID();
         var expirationTime = signJWT.getJWTClaimsSet().getExpirationTime();
 
         InvalidatedToken invalidatedToken = InvalidatedToken
@@ -181,7 +181,7 @@ public class AuthenticationService {
 
         var verified = signedJWT.verify(verifier);
 
-        if(!(verified && expiryTime.after(new Date()))){
+        if (!(verified && expiryTime.after(new Date()))) {
             throw new IdentityException(ErrorCode.UNAUTHENTICATED);
         }
 
@@ -194,65 +194,65 @@ public class AuthenticationService {
 
     private String buildScope(Account account) {
         StringJoiner stringJoiner = new StringJoiner(" ");
-        if(!CollectionUtils.isEmpty((account.getRoles()))){
+        if (!CollectionUtils.isEmpty((account.getRoles()))) {
             account.getRoles().forEach(
                     role -> {
-                        stringJoiner.add("ROLE_"+role.getName());
-                        if(!CollectionUtils.isEmpty(role.getPermissions())) {
+                        stringJoiner.add("ROLE_" + role.getName());
+                        if (!CollectionUtils.isEmpty(role.getPermissions())) {
                             role.getPermissions().forEach(permission -> stringJoiner.add(permission.getName()));
                         }
                     }
             );
         }
-        return  stringJoiner.toString();
+        return stringJoiner.toString();
     }
 
     public AuthenticationResponse authenticateWithGoogle(String accessToken) {
-       try {
-           // Build credential from the access token
-           GoogleCredential credential = new GoogleCredential().setAccessToken(accessToken);
+        try {
+            // Build credential from the access token
+            GoogleCredential credential = new GoogleCredential().setAccessToken(accessToken);
 
-           // Set up Oauth2 service
-           Oauth2 oauth2 = new Oauth2.Builder(
-                   GoogleNetHttpTransport.newTrustedTransport(),
-                   JacksonFactory.getDefaultInstance(),
-                   credential
-           ).setApplicationName("Pet Care")
-                   .build();
+            // Set up Oauth2 service
+            Oauth2 oauth2 = new Oauth2.Builder(
+                    GoogleNetHttpTransport.newTrustedTransport(),
+                    JacksonFactory.getDefaultInstance(),
+                    credential
+            ).setApplicationName("Pet Care")
+                    .build();
 
-           // Get user info
-           Userinfo userInfo = oauth2.userinfo().get().execute();
-           Account account = accountRepository.findByEmail(userInfo.getEmail()).orElse(null);
+            // Get user info
+            Userinfo userInfo = oauth2.userinfo().get().execute();
+            Account account = accountRepository.findByEmail(userInfo.getEmail()).orElse(null);
 
-                if(account == null){
-                    account = Account.builder()
-                            .email(userInfo.getEmail())
-                            .roles(Set.of(Role.builder().name("CUSTOMER").build()))
-                            .authenticationMethod(AuthenticationMethod.GOOGLE)
-                            .build();
-
-                    Account saveAccount = accountRepository.save(account);
-
-                    CustomerCreationRequest customerCreationRequest = CustomerCreationRequest.builder()
-                            .accountId(saveAccount.getId())
-                            .email(userInfo.getEmail())
-                            .firstName(userInfo.getFamilyName())
-                            .lastName(userInfo.getGivenName())
-                            .build();
-
-                    messageService.sendMessageQueue("customer-create-queue", objectMapper.writeValueAsString(customerCreationRequest));
-                }
-
-                // Xử lý thông tin người dùng (lưu vào DB, tạo session, v.v.)
-                var token =generateToken(account);
-
-           return AuthenticationResponse.builder()
-                        .token(token)
-                        .isAuthenticated(true)
+            if (account == null) {
+                account = Account.builder()
+                        .email(userInfo.getEmail())
+                        .roles(Set.of(Role.builder().name("CUSTOMER").build()))
+                        .authenticationMethod(AuthenticationMethod.GOOGLE)
                         .build();
-       } catch (Exception e) {
-           throw new IdentityException(ErrorCode.UNAUTHENTICATED);
-       }
+
+                Account saveAccount = accountRepository.save(account);
+
+                CustomerCreationRequest customerCreationRequest = CustomerCreationRequest.builder()
+                        .accountId(saveAccount.getId())
+                        .email(userInfo.getEmail())
+                        .firstName(userInfo.getFamilyName())
+                        .lastName(userInfo.getGivenName())
+                        .build();
+
+                messageService.sendMessageQueue("customer-create-queue", objectMapper.writeValueAsString(customerCreationRequest));
+            }
+
+            // Xử lý thông tin người dùng (lưu vào DB, tạo session, v.v.)
+            var token = generateToken(account);
+
+            return AuthenticationResponse.builder()
+                    .token(token)
+                    .isAuthenticated(true)
+                    .build();
+        } catch (Exception e) {
+            throw new IdentityException(ErrorCode.UNAUTHENTICATED);
+        }
     }
 
     public AuthenticationResponse authenticateWithFacebook(String accessToken) {
@@ -261,7 +261,7 @@ public class AuthenticationService {
 
             Account account = accountRepository.findByEmail(facebookUserInfo.getEmail()).orElse(null);
 
-            if(account == null){
+            if (account == null) {
                 account = Account.builder()
                         .email(facebookUserInfo.getEmail())
                         .roles(Set.of(Role.builder().name("CUSTOMER").build()))
@@ -281,7 +281,7 @@ public class AuthenticationService {
             }
 
             // Xử lý thông tin người dùng (lưu vào DB, tạo session, v.v.)
-            var token =generateToken(account);
+            var token = generateToken(account);
 
             return AuthenticationResponse.builder()
                     .token(token)

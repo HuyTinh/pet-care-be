@@ -2,6 +2,7 @@ package com.pet_care.customer_service.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.pet_care.customer_service.client.UploadImageClient;
 import com.pet_care.customer_service.dto.request.AppointmentCreateRequest;
 import com.pet_care.customer_service.dto.request.CustomerCreateRequest;
 import com.pet_care.customer_service.dto.request.sub.AppointmentRequest;
@@ -16,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.jms.annotation.JmsListener;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -31,6 +33,7 @@ public class CustomerService {
     MessageService messageService;
 
     ObjectMapper objectMapper;
+    private final UploadImageClient uploadImageClient;
 
     public List<CustomerResponse> getAllCustomers() {
         return customerRepository.findAll().stream().map(customerMapper::toDto).collect(Collectors.toList());
@@ -70,18 +73,22 @@ public class CustomerService {
             notify = "-with-notification";
         }
 
-        System.out.println(objectMapper.writeValueAsString(appointment));
-
         messageService.sendMessageQueue("customer-create-appointment" + notify + "-queue", objectMapper.writeValueAsString(appointment));
-
 
         return customerMapper.toDto(customerRepository.save(customerSave));
     }
 
 
-    public CustomerResponse updateCustomer(Long accountId, CustomerCreateRequest customerRequest) {
-        Customer existingCustomer = customerRepository.findByAccountId(accountId).orElseThrow(() -> new CustomerException(ErrorCode.CUSTOMER_NOT_FOUND));
+    public CustomerResponse updateCustomer(Long accountId, CustomerCreateRequest customerRequest, List<MultipartFile> files) {
+        Customer existingCustomer = customerRepository
+                .findByAccountId(accountId)
+                .orElseThrow(() -> new CustomerException(ErrorCode.CUSTOMER_NOT_FOUND));
+
+
         customerMapper.partialUpdate(customerRequest, existingCustomer);
+
+        existingCustomer.setImageUrl(uploadImageClient.uploadImage(files).get(0));
+
         return customerMapper.toDto(customerRepository.save(existingCustomer));
     }
 

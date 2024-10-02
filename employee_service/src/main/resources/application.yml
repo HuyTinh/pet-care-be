@@ -16,3 +16,5 @@ server:
   port: 8085
   servlet:
     context-path: /api/v1
+
+random-avatar-url: https://api.multiavatar.com/

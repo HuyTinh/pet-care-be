@@ -1,6 +1,8 @@
 package com.pet_care.employee_service.service;
 
+import com.pet_care.employee_service.client.UploadImageClient;
 import com.pet_care.employee_service.dto.request.EmployeeCreateRequest;
+import com.pet_care.employee_service.dto.request.EmployeeUpdateRequest;
 import com.pet_care.employee_service.dto.response.EmployeeResponse;
 import com.pet_care.employee_service.exception.APIException;
 import com.pet_care.employee_service.exception.ErrorCode;
@@ -11,6 +13,8 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -22,6 +26,8 @@ public class EmployeeService {
     EmployeeRepository employeeRepository;
 
     EmployeeMapper employeeMapper;
+
+    UploadImageClient uploadImageClient;
 
     public List<EmployeeResponse> getAllEmployee() {
         return employeeRepository
@@ -36,15 +42,34 @@ public class EmployeeService {
                 .orElseThrow(() -> new APIException(ErrorCode.EMPLOYEE_NOT_FOUND)));
     }
 
-    public EmployeeResponse createEmployee(EmployeeCreateRequest employeeCreateRequest) {
-        if(employeeRepository
+    public EmployeeResponse createEmployee(EmployeeCreateRequest employeeCreateRequest, List<MultipartFile> files) {
+        if (employeeRepository
                 .getEmployeeByEmail(employeeCreateRequest.getEmail())
                 .isEmpty()
-        ){
+        ) {
+            if (!CollectionUtils.isEmpty(files)) {
+                employeeCreateRequest.setImageUrl(uploadImageClient.uploadImage(files).get(0));
+            }
             return employeeMapper.toDto(employeeRepository
                     .save(employeeMapper.toEntity(employeeCreateRequest)));
 
         }
         throw new APIException(ErrorCode.EMAIl_EXIST);
+    }
+
+    public EmployeeResponse updateEmployee(Long employeeId, EmployeeUpdateRequest employeeUpdateRequest, List<MultipartFile> files) {
+        Employee existingEmployee = employeeRepository
+                .findById(employeeId)
+                .orElseThrow(() -> new APIException(ErrorCode.EMPLOYEE_NOT_FOUND));
+
+        if (!CollectionUtils.isEmpty(files)) {
+            employeeUpdateRequest.setImageUrl(uploadImageClient.uploadImage(files).get(0));
+        }
+
+        employeeMapper.partialUpdate(employeeUpdateRequest, existingEmployee);
+
+        return employeeMapper.toDto(employeeRepository
+                .save(existingEmployee));
+
     }
 }

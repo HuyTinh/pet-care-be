@@ -4,12 +4,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.pet_care.employee_service.enums.Gender;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
+import lombok.*;
 
 @Getter
+@Setter
 @AllArgsConstructor
+@NoArgsConstructor
 @Builder
 public class EmployeeCreateRequest {
     @JsonProperty("first_name")
@@ -34,4 +34,11 @@ public class EmployeeCreateRequest {
 
     @JsonProperty("phone_number")
     String phoneNumber;
+
+    public String getImageUrl() {
+        if (this.imageUrl == null || this.imageUrl.isEmpty()) {
+            return "https://api.multiavatar.com/" + this.firstName + this.lastName + ".png";
+        }
+        return imageUrl;
+    }
 }

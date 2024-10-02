@@ -16,7 +16,7 @@ import java.util.Set;
 @Builder
 @Entity(name = "accounts")
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Account{
+public class Account {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;

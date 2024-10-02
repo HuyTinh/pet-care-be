@@ -38,7 +38,7 @@ public class PermissionController {
     }
 
     @PutMapping("/{permission}")
-    ApiResponse<PermissionResponse> updatePermission(@PathVariable("permission") String permission , @RequestBody PermissionRequest permissionRequest) {
+    ApiResponse<PermissionResponse> updatePermission(@PathVariable("permission") String permission, @RequestBody PermissionRequest permissionRequest) {
         return ApiResponse.<PermissionResponse>builder()
                 .result(permissionService.update(permission, permissionRequest))
                 .build();

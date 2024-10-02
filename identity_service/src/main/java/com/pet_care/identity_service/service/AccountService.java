@@ -50,7 +50,7 @@ public class AccountService {
     }
 
     public AuthenticationResponse createRequest(AccountCreationRequest request) throws JsonProcessingException {
-        if(accountRepository.existsByEmail(request.getEmail()))
+        if (accountRepository.existsByEmail(request.getEmail()))
             throw new IdentityException(ErrorCode.USER_EXISTED);
 
         Account account = accountMapper.toEntity(request);
@@ -66,7 +66,7 @@ public class AccountService {
 
         messageService.sendMessageQueue("customer-create-queue", objectMapper.writeValueAsString(customerCreationRequest));
 
-        return  authenticationService.authenticate(AuthenticationRequest.builder().email(saveAccount.getEmail()).password(request.getPassword()).build());
+        return authenticationService.authenticate(AuthenticationRequest.builder().email(saveAccount.getEmail()).password(request.getPassword()).build());
     }
 
     public AccountResponse updateRequest(Long id, AccountUpdateRequest request) {

@@ -41,4 +41,10 @@ public class CustomerCreateRequest {
     @JsonProperty("account_id")
     Long accountId;
 
+    public String getImageUrl() {
+        if(this.imageUrl == null || this.imageUrl.isEmpty()){
+            return "https://api.multiavatar.com/" + this.firstName + this.lastName + ".png";
+        }
+        return imageUrl;
+    }
 }

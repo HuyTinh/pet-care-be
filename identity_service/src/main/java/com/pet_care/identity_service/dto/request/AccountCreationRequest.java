@@ -27,7 +27,7 @@ public class AccountCreationRequest implements Serializable {
 
     @Pattern(regexp = "^(?=.{1,64}@)[A-Za-z0-9_-]+(\\.[A-Za-z0-9_-]+)*@"
             + "[^-][A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*(\\.[A-Za-z]{2,})$",
-    message = "EMAIL_INVALID")
+            message = "EMAIL_INVALID")
     String email;
 
     @JsonProperty("first_name")

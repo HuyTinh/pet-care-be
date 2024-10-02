@@ -10,6 +10,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -28,7 +29,6 @@ public class CustomerController {
                 .build();
     }
 
-
     @PostMapping("/create-appointment")
     public ApiResponse<CustomerResponse> createAppointment(@RequestBody AppointmentCreateRequest request, @RequestParam("emailNotification") boolean notification) throws JsonProcessingException {
         return ApiResponse.<CustomerResponse>builder()
@@ -37,10 +37,13 @@ public class CustomerController {
     }
 
     @PutMapping("/account/{accountId}")
-    public ApiResponse<CustomerResponse> updateCustomer(@PathVariable("accountId") Long accountId, @RequestBody CustomerCreateRequest
-            customerRequest) {
+    public ApiResponse<CustomerResponse> updateCustomer(
+            @PathVariable("accountId") Long accountId,
+            @RequestBody CustomerCreateRequest customerRequest,
+            @RequestPart("files") List<MultipartFile> files
+    ) {
         return ApiResponse.<CustomerResponse>builder()
-                .result(customerService.updateCustomer(accountId, customerRequest))
+                .result(customerService.updateCustomer(accountId, customerRequest, files))
                 .build();
     }
 

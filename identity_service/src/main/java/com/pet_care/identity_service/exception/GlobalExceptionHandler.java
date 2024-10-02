@@ -44,7 +44,8 @@ public class GlobalExceptionHandler {
 
         try {
             errorCode = ErrorCode.valueOf(enumKey);
-        } catch (IllegalArgumentException ignored) {}
+        } catch (IllegalArgumentException ignored) {
+        }
 
         return ResponseEntity.badRequest().body(ApiResponse.builder().code(errorCode.getCode()).message(errorCode.getMessage()).build());
     }
