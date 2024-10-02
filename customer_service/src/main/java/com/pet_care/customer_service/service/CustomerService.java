@@ -7,7 +7,7 @@ import com.pet_care.customer_service.dto.request.AppointmentCreateRequest;
 import com.pet_care.customer_service.dto.request.CustomerCreateRequest;
 import com.pet_care.customer_service.dto.request.sub.AppointmentRequest;
 import com.pet_care.customer_service.dto.response.CustomerResponse;
-import com.pet_care.customer_service.exception.CustomerException;
+import com.pet_care.customer_service.exception.APIException;
 import com.pet_care.customer_service.exception.ErrorCode;
 import com.pet_care.customer_service.mapper.CustomerMapper;
 import com.pet_care.customer_service.model.Customer;
@@ -48,7 +48,7 @@ public class CustomerService {
 
     @Transactional(readOnly = true)
     public CustomerResponse getCustomerByAccountId(Long accountId) {
-        return customerRepository.findByAccountId(accountId).map(customerMapper::toDto).orElseThrow(() -> new CustomerException(ErrorCode.EMAIL_NOT_FOUND));
+        return customerRepository.findByAccountId(accountId).map(customerMapper::toDto).orElseThrow(() -> new APIException(ErrorCode.EMAIL_NOT_FOUND));
     }
 
 //    public CustomerResponse addCustomer(CustomerRequest customerRequest) throws JsonProcessingException {
@@ -86,7 +86,7 @@ public class CustomerService {
     public CustomerResponse updateCustomer(Long accountId, CustomerCreateRequest customerRequest, List<MultipartFile> files) {
         Customer existingCustomer = customerRepository
                 .findByAccountId(accountId)
-                .orElseThrow(() -> new CustomerException(ErrorCode.CUSTOMER_NOT_FOUND));
+                .orElseThrow(() -> new APIException(ErrorCode.CUSTOMER_NOT_FOUND));
 
 
         customerMapper.partialUpdate(customerRequest, existingCustomer);

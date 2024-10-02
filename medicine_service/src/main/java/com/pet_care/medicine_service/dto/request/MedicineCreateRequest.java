@@ -1,11 +1,6 @@
 package com.pet_care.medicine_service.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.pet_care.medicine_service.model.CalculationUnit;
-import com.pet_care.medicine_service.model.Location;
-import com.pet_care.medicine_service.model.Manufacture;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.OneToMany;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -18,7 +13,7 @@ import java.util.Set;
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class MedicineCreateRequest {
-    
+
     String name;
 
     @JsonProperty("manufacturing_date")

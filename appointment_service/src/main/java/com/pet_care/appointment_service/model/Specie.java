@@ -11,7 +11,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity(name="species")
+@Entity(name = "species")
 public class Specie {
     @Id
     String name;

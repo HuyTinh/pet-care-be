@@ -34,10 +34,10 @@ public class WebsocketController {
         // Xử lý tin nhắn tại đây
         long appointmentId = Long.parseLong(message.get("appointmentId"));
         String sessionId = message.get("sessionId");
-        if(appointmentService.checkInAppointment((appointmentId)) > 0) {
+        if (appointmentService.checkInAppointment((appointmentId)) > 0) {
             webSocketService.sendToAllUpdateListAppointment(Long.toString(appointmentId));
             webSocketService.sendToExportPDFAppointment(sessionId, Long.toString(appointmentId));
-            messageService.sendMessage("doctor-appointment-queue",objectMapper.writeValueAsString(appointmentService.getById(Long.toString(appointmentId))));
+            messageService.sendMessage("doctor-appointment-queue", objectMapper.writeValueAsString(appointmentService.getById(Long.toString(appointmentId))));
         }
     }
 }

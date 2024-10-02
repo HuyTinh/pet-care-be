@@ -75,7 +75,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
                 assert session != null;
                 if (session.isOpen()) {
 //                        TextMessage textMessage = (TextMessage) message;
-                        session.sendMessage(new org.springframework.web.socket.TextMessage(message));
+                    session.sendMessage(new org.springframework.web.socket.TextMessage(message));
 
                 }
 

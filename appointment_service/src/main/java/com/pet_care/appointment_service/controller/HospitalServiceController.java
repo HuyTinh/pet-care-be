@@ -23,7 +23,9 @@ public class HospitalServiceController {
         return ApiResponse.<HospitalServiceResponse>builder()
                 .result(hospitalService.createHospitalService(hospitalServiceRequest))
                 .build();
-    };
+    }
+
+    ;
 
     @GetMapping
     ApiResponse<List<HospitalServiceResponse>> getAll() {

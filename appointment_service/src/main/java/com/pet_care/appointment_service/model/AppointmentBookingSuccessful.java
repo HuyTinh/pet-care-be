@@ -26,6 +26,6 @@ public class AppointmentBookingSuccessful extends SendTo {
     String appointmentTime;
 
     public String getContent() {
-        return "{ \"to\": [ { \"email\": \"" + this.toEmail +" \"} ], \"subject\": \""+ this.subject +"\", \"params\": { \"username\": \""+this.firstName +" "+ this.lastName +"\", \"appointment_date\": \""+ this.appointmentDate +"\", \"appointment_time\": \""+this.appointmentTime+"\" }, \"templateId\": 1 }";
+        return "{ \"to\": [ { \"email\": \"" + this.toEmail + " \"} ], \"subject\": \"" + this.subject + "\", \"params\": { \"username\": \"" + this.firstName + " " + this.lastName + "\", \"appointment_date\": \"" + this.appointmentDate + "\", \"appointment_time\": \"" + this.appointmentTime + "\" }, \"templateId\": 1 }";
     }
 }

@@ -5,7 +5,8 @@ import com.pet_care.appointment_service.dto.response.AppointmentResponse;
 import com.pet_care.appointment_service.model.Appointment;
 import org.mapstruct.*;
 
-@Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE, componentModel = MappingConstants.ComponentModel.SPRING)public interface AppointmentMapper {
+@Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE, componentModel = MappingConstants.ComponentModel.SPRING)
+public interface AppointmentMapper {
     @Mapping(target = "services", ignore = true)
     Appointment toEntity(AppointmentRequest appointmentRequest);
 

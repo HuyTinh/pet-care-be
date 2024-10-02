@@ -3,7 +3,7 @@ package com.pet_care.customer_service.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.pet_care.customer_service.dto.request.AppointmentCreateRequest;
 import com.pet_care.customer_service.dto.request.CustomerCreateRequest;
-import com.pet_care.customer_service.dto.response.ApiResponse;
+import com.pet_care.customer_service.dto.response.APIResponse;
 import com.pet_care.customer_service.dto.response.CustomerResponse;
 import com.pet_care.customer_service.service.CustomerService;
 import lombok.AccessLevel;
@@ -23,48 +23,48 @@ public class CustomerController {
     CustomerService customerService;
 
     @GetMapping
-    public ApiResponse<List<CustomerResponse>> getAllCustomers() {
-        return ApiResponse.<List<CustomerResponse>>builder()
+    public APIResponse<List<CustomerResponse>> getAllCustomers() {
+        return APIResponse.<List<CustomerResponse>>builder()
                 .result(customerService.getAllCustomers())
                 .build();
     }
 
     @PostMapping("/create-appointment")
-    public ApiResponse<CustomerResponse> createAppointment(@RequestBody AppointmentCreateRequest request, @RequestParam("emailNotification") boolean notification) throws JsonProcessingException {
-        return ApiResponse.<CustomerResponse>builder()
+    public APIResponse<CustomerResponse> createAppointment(@RequestBody AppointmentCreateRequest request, @RequestParam("emailNotification") boolean notification) throws JsonProcessingException {
+        return APIResponse.<CustomerResponse>builder()
                 .result(customerService.createAppointment(request, notification))
                 .build();
     }
 
     @PutMapping("/account/{accountId}")
-    public ApiResponse<CustomerResponse> updateCustomer(
+    public APIResponse<CustomerResponse> updateCustomer(
             @PathVariable("accountId") Long accountId,
             @RequestBody CustomerCreateRequest customerRequest,
             @RequestPart("files") List<MultipartFile> files
     ) {
-        return ApiResponse.<CustomerResponse>builder()
+        return APIResponse.<CustomerResponse>builder()
                 .result(customerService.updateCustomer(accountId, customerRequest, files))
                 .build();
     }
 
     @GetMapping("/{customerId}")
-    public ApiResponse<CustomerResponse> getCustomerById(@PathVariable("customerId") Long customerId) {
-        return ApiResponse.<CustomerResponse>builder()
+    public APIResponse<CustomerResponse> getCustomerById(@PathVariable("customerId") Long customerId) {
+        return APIResponse.<CustomerResponse>builder()
                 .result(customerService.getCustomerById(customerId))
                 .build();
     }
 
     @GetMapping("/account/{accountId}")
-    public ApiResponse<CustomerResponse> getCustomerByAccountId(@PathVariable("accountId") Long accountId) {
-        return ApiResponse.<CustomerResponse>builder()
+    public APIResponse<CustomerResponse> getCustomerByAccountId(@PathVariable("accountId") Long accountId) {
+        return APIResponse.<CustomerResponse>builder()
                 .result(customerService.getCustomerByAccountId(accountId))
                 .build();
     }
 
     @DeleteMapping("/{customerId}")
-    public ApiResponse<Void> deleteCustomer(@PathVariable Long customerId) {
+    public APIResponse<Void> deleteCustomer(@PathVariable Long customerId) {
         customerService.deleteCustomer(customerId);
-        return ApiResponse.<Void>builder()
+        return APIResponse.<Void>builder()
                 .message("Customer deleted successfully")
                 .build();
     }

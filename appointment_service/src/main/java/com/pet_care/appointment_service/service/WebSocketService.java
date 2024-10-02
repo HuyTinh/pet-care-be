@@ -23,6 +23,6 @@ public class WebSocketService {
     }
 
     public void sendToExportPDFAppointment(String sessionId, String message) {
-        messagingTemplate.convertAndSend("/topic/exportPDF/"+sessionId, message);
+        messagingTemplate.convertAndSend("/topic/exportPDF/" + sessionId, message);
     }
 }

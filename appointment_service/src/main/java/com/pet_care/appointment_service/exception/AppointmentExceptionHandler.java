@@ -14,8 +14,8 @@ public class AppointmentExceptionHandler {
         return ResponseEntity
                 .status(errorCode.getStatus())
                 .body(ApiResponse.builder()
-                .code(errorCode.getCode())
-                .message(errorCode.getMessage())
-                .build());
+                        .code(errorCode.getCode())
+                        .message(errorCode.getMessage())
+                        .build());
     }
 }

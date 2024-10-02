@@ -81,21 +81,21 @@ public class AppointmentService {
     public AppointmentResponse getById(String appointment) {
         return appointmentMapper
                 .toDto(appointmentRepository
-                .findById(appointment)
-                .orElseThrow(() -> new AppointmentException(ErrorCode.APPOINTMENT_NOT_FOUND)));
+                        .findById(appointment)
+                        .orElseThrow(() -> new AppointmentException(ErrorCode.APPOINTMENT_NOT_FOUND)));
     }
 
     @Transactional(readOnly = true)
     public List<AppointmentResponse> getByAccountId(Long accountId) {
         Long customerId = customerClient.getCustomerByAccountId(String.valueOf(accountId)).getResult().getId();
         return appointmentRepository
-                        .findAllByCustomerId(customerId).stream().map(appointment -> {
-                            AppointmentResponse appointmentResponse = appointmentMapper.toDto(appointment);
-                            appointmentResponse.setPets(new HashSet<>(petRepository
-                                    .findByAppointment_Id(appointment.getId())).stream()
-                                    .map(petMapper::toDto)
-                                    .collect(Collectors.toSet()));
-                            return appointmentResponse;
+                .findAllByCustomerId(customerId).stream().map(appointment -> {
+                    AppointmentResponse appointmentResponse = appointmentMapper.toDto(appointment);
+                    appointmentResponse.setPets(new HashSet<>(petRepository
+                            .findByAppointment_Id(appointment.getId())).stream()
+                            .map(petMapper::toDto)
+                            .collect(Collectors.toSet()));
+                    return appointmentResponse;
                 }).collect(Collectors.toList());
     }
 
@@ -120,26 +120,26 @@ public class AppointmentService {
 
     @Transactional(readOnly = true)
     public List<AppointmentResponse> getByStatusAndAccountId(String status, Long accountId) {
-            try {
-                Long customerId = customerClient.getCustomerByAccountId(String.valueOf(accountId)).getResult().getId();
+        try {
+            Long customerId = customerClient.getCustomerByAccountId(String.valueOf(accountId)).getResult().getId();
 
-                Sort sort = Sort.by("appointmentDate").ascending();
-                return appointmentRepository
-                        .findAppointmentByStatusAndCustomerId(AppointmentStatus
-                                .valueOf(status), customerId, sort)
-                        .stream()
-                        .map(appointment -> {
-                    AppointmentResponse appointmentResponse = appointmentMapper.toDto(appointment);
-                    appointmentResponse
-                            .setPets(new HashSet<>(petRepository
-                            .findByAppointment_Id(appointment.getId()))
-                                    .stream().map(petMapper::toDto)
-                                    .collect(Collectors.toSet()));
-                    return appointmentResponse;
-                }).collect(Collectors.toList());
-            } catch (Exception e) {
-                throw new AppointmentException(ErrorCode.CUSTOMER_NOT_FOUND);
-            }
+            Sort sort = Sort.by("appointmentDate").ascending();
+            return appointmentRepository
+                    .findAppointmentByStatusAndCustomerId(AppointmentStatus
+                            .valueOf(status), customerId, sort)
+                    .stream()
+                    .map(appointment -> {
+                        AppointmentResponse appointmentResponse = appointmentMapper.toDto(appointment);
+                        appointmentResponse
+                                .setPets(new HashSet<>(petRepository
+                                        .findByAppointment_Id(appointment.getId()))
+                                        .stream().map(petMapper::toDto)
+                                        .collect(Collectors.toSet()));
+                        return appointmentResponse;
+                    }).collect(Collectors.toList());
+        } catch (Exception e) {
+            throw new AppointmentException(ErrorCode.CUSTOMER_NOT_FOUND);
+        }
     }
 
     @Transactional(readOnly = true)
@@ -190,7 +190,7 @@ public class AppointmentService {
         appointment.setServices(new HashSet<>(hospitalServiceRepository
                 .findAllById(appointmentRequest.getServices())));
 
-        if(appointmentRequest.getStatus() == null){
+        if (appointmentRequest.getStatus() == null) {
             appointment.setStatus(AppointmentStatus.PENDING);
         }
 
@@ -210,7 +210,7 @@ public class AppointmentService {
                 .getCustomer(String.valueOf(appointment.getCustomerId()))
                 .getResult());
 
-        if(createAppointmentStatus.equals("CHECKED_IN")){
+        if (createAppointmentStatus.equals("CHECKED_IN")) {
             messageService.sendMessage("doctor-appointment-queue", objectMapper.writeValueAsString(appointmentResponse));
         } else {
             try {
@@ -219,7 +219,7 @@ public class AppointmentService {
                 throw new RuntimeException(e);
             }
         }
-        if(notification){
+        if (notification) {
             AppointmentBookingSuccessful appointmentBookingSuccessful = AppointmentBookingSuccessful.builder()
                     .appointmentDate(DateUtil.getDateOnly(appointmentResponse.getAppointmentDate()))
                     .appointmentTime(DateUtil.getTimeOnly(appointmentResponse.getAppointmentTime()))
@@ -229,8 +229,7 @@ public class AppointmentService {
                     .build();
 
 
-
-            messageService.sendMessage("appointment-success-notification-queue",appointmentBookingSuccessful.getContent());
+            messageService.sendMessage("appointment-success-notification-queue", appointmentBookingSuccessful.getContent());
         }
 
 

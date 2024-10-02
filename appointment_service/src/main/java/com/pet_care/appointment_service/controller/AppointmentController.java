@@ -70,7 +70,7 @@ public class AppointmentController {
     @GetMapping("/account/{accountId}")
     public ApiResponse<List<AppointmentResponse>> getAppointmentsByStatus(@PathVariable("accountId") Long accountId, @RequestParam("status") String status) throws JsonProcessingException {
         return ApiResponse.<List<AppointmentResponse>>builder()
-                .result(appointmentService.getByStatusAndAccountId(status ,accountId))
+                .result(appointmentService.getByStatusAndAccountId(status, accountId))
                 .build();
     }
 

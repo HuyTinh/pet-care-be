@@ -31,7 +31,7 @@ public interface AppointmentRepository extends JpaRepository<Appointment, String
     List<Appointment> findAppointmentByStatus(AppointmentStatus status);
 
     @Query("SELECT ap from appointments ap WHERE ap.status in :statuses AND DATE(ap.appointmentDate) = DATE(:appointmentDate)")
-    List<Appointment> findAppointmentByAppointmentDateAndStatusIn(@Param("appointmentDate") Date appointmentDate,@Param("statuses") Set<AppointmentStatus> statuses );
+    List<Appointment> findAppointmentByAppointmentDateAndStatusIn(@Param("appointmentDate") Date appointmentDate, @Param("statuses") Set<AppointmentStatus> statuses);
 
     @Query("SELECT ap from appointments ap WHERE ap.status = :status AND ap.customerId = :customerId")
     List<Appointment> findAppointmentByStatusAndCustomerId(@Param("status") AppointmentStatus status, @Param("customerId") Long customerId, Sort sort);
