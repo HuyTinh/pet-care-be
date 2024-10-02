@@ -21,18 +21,18 @@ public class HospitalServiceController {
     @PostMapping
     ApiResponse<HospitalServiceResponse> create(@RequestBody HospitalServiceRequest hospitalServiceRequest) {
         return ApiResponse.<HospitalServiceResponse>builder()
-                .result(hospitalService.create(hospitalServiceRequest))
+                .result(hospitalService.createHospitalService(hospitalServiceRequest))
                 .build();
     };
 
     @GetMapping
     ApiResponse<List<HospitalServiceResponse>> getAll() {
         return ApiResponse.<List<HospitalServiceResponse>>builder()
-                .result(hospitalService.getAll()).build();
+                .result(hospitalService.getAllHospitalService()).build();
     }
 
     @GetMapping("{service}")
     ApiResponse<HospitalServiceResponse> getById(@PathVariable("service") String service) {
-        return ApiResponse.<HospitalServiceResponse>builder().result(hospitalService.getById(service)).build();
+        return ApiResponse.<HospitalServiceResponse>builder().result(hospitalService.getHospitalServiceById(service)).build();
     }
 }

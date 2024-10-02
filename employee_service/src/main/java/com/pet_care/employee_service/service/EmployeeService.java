@@ -13,6 +13,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -29,6 +30,7 @@ public class EmployeeService {
 
     UploadImageClient uploadImageClient;
 
+    @Transactional(readOnly = true)
     public List<EmployeeResponse> getAllEmployee() {
         return employeeRepository
                 .findAll().stream()
@@ -36,6 +38,7 @@ public class EmployeeService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     public EmployeeResponse getEmployeeById(long id) {
         return employeeMapper.toDto(employeeRepository
                 .findById(id)

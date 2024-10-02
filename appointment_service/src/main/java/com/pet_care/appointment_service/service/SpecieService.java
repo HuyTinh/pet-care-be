@@ -6,6 +6,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -15,6 +16,7 @@ import java.util.List;
 public class SpecieService {
     SpecieRepository specieRepository;
 
+    @Transactional(readOnly = true)
     public List<Specie> getAll() {
         return specieRepository.findAll();
     }

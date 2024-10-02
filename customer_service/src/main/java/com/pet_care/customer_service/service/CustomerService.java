@@ -17,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.jms.annotation.JmsListener;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -35,14 +36,17 @@ public class CustomerService {
     ObjectMapper objectMapper;
     private final UploadImageClient uploadImageClient;
 
+    @Transactional(readOnly = true)
     public List<CustomerResponse> getAllCustomers() {
         return customerRepository.findAll().stream().map(customerMapper::toDto).collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     public CustomerResponse getCustomerById(Long id) {
         return customerRepository.findById(id).map(customerMapper::toDto).orElseThrow(() -> new RuntimeException(("")));
     }
 
+    @Transactional(readOnly = true)
     public CustomerResponse getCustomerByAccountId(Long accountId) {
         return customerRepository.findByAccountId(accountId).map(customerMapper::toDto).orElseThrow(() -> new CustomerException(ErrorCode.EMAIL_NOT_FOUND));
     }

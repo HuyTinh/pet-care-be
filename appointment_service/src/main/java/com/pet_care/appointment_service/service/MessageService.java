@@ -47,9 +47,7 @@ public class MessageService {
     @Scheduled(fixedRate = 1000)
     public void reportCurrentTime() {
         if(!petQueue.isEmpty()){
-//            System.out.println(petQueue.peek());
            try {
-//               webSocketHandler.sendMessageRoundRobin(petQueue.poll());
                webSocketService.sendToAllCreateAppointment(petQueue.poll());
            } catch (Exception ignored) {}
         }

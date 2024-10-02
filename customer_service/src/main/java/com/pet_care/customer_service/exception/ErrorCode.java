@@ -13,7 +13,8 @@ import org.springframework.http.HttpStatus;
 public enum ErrorCode {
     CUSTOMER_NOT_FOUND(1001, "Customer not found", HttpStatus.NOT_FOUND),
     PET_NOT_FOUND(1001, "Pet not found", HttpStatus.NOT_FOUND),
-    EMAIL_NOT_FOUND(1001, "Email not found", HttpStatus.NOT_FOUND),;
+    EMAIL_NOT_FOUND(1001, "Email not found", HttpStatus.NOT_FOUND),
+    ;
 
     int code;
     String message;

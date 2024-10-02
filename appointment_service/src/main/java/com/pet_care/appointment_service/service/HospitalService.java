@@ -11,6 +11,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -24,25 +25,27 @@ public class HospitalService {
 
     HospitalServiceMapper hospitalServiceMapper;
 
-    public List<HospitalServiceResponse> getAll() {
+    @Transactional(readOnly = true)
+    public List<HospitalServiceResponse> getAllHospitalService() {
         List<HospitalServiceEntity> hospitalServices = hospitalServiceRepository.findAll();
         return hospitalServices.stream().map(hospitalServiceMapper::toDto).collect(Collectors.toList());
     }
 
-    public HospitalServiceResponse getById(String name) {
+    @Transactional(readOnly = true)
+    public HospitalServiceResponse getHospitalServiceById(String name) {
         HospitalServiceEntity hospitalServiceEntity = hospitalServiceRepository
                 .findById(name)
                 .orElseThrow(() -> new AppointmentException(ErrorCode.HOSPITAL_SERVICE_NOT_FOUND));
         return hospitalServiceMapper.toDto(hospitalServiceEntity);
     }
 
-    public HospitalServiceResponse create(HospitalServiceRequest hospitalServiceRequest) {
+    public HospitalServiceResponse createHospitalService(HospitalServiceRequest hospitalServiceRequest) {
         HospitalServiceEntity hospitalService = hospitalServiceMapper.toEntity(hospitalServiceRequest);
         System.out.println(hospitalService);
         return hospitalServiceMapper.toDto(hospitalServiceRepository.save(hospitalService));
     }
 
-    public HospitalServiceResponse update(String hospitalService, HospitalServiceRequest hospitalServiceRequest) {
+    public HospitalServiceResponse updateHospitalService(String hospitalService, HospitalServiceRequest hospitalServiceRequest) {
         HospitalServiceEntity existHospitalServiceEntity = hospitalServiceRepository
                 .findById(hospitalService)
                 .orElseThrow(() -> new AppointmentException(ErrorCode.HOSPITAL_SERVICE_NOT_FOUND));
@@ -51,7 +54,7 @@ public class HospitalService {
         return hospitalServiceMapper.toDto(hospitalServiceRepository.save(updatedHospitalServiceEntity));
     }
 
-    public void delete(String hospitalService) {
+    public void deleteHospitalService(String hospitalService) {
         hospitalServiceRepository.deleteById(hospitalService);
     }
 }
