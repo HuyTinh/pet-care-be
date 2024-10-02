@@ -8,7 +8,6 @@ import org.mapstruct.*;
 
 @Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE, componentModel = MappingConstants.ComponentModel.SPRING)
 public interface EmployeeMapper {
-    @Mapping(target = "roles", ignore = true)
     Employee toEntity(EmployeeCreateRequest employeeCreateRequest);
 
     EmployeeResponse toDto(Employee account);

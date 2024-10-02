@@ -37,7 +37,6 @@ public class Employee {
     @JsonProperty("account_id")
     Long accountId;
 
-
     @JsonProperty("phone_number")
     String phoneNumber;
 }

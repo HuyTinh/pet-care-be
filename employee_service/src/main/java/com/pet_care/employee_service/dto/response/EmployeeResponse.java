@@ -1,5 +1,6 @@
 package com.pet_care.employee_service.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.pet_care.employee_service.enums.Gender;
 import jakarta.persistence.*;
@@ -12,6 +13,7 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class EmployeeResponse {
     Long id;
 

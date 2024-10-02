@@ -1,9 +1,11 @@
 package com.pet_care.employee_service.service;
 
+import com.pet_care.employee_service.dto.request.EmployeeCreateRequest;
 import com.pet_care.employee_service.dto.response.EmployeeResponse;
 import com.pet_care.employee_service.exception.APIException;
 import com.pet_care.employee_service.exception.ErrorCode;
 import com.pet_care.employee_service.mapper.EmployeeMapper;
+import com.pet_care.employee_service.model.Employee;
 import com.pet_care.employee_service.repository.EmployeeRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -32,5 +34,17 @@ public class EmployeeService {
         return employeeMapper.toDto(employeeRepository
                 .findById(id)
                 .orElseThrow(() -> new APIException(ErrorCode.EMPLOYEE_NOT_FOUND)));
+    }
+
+    public EmployeeResponse createEmployee(EmployeeCreateRequest employeeCreateRequest) {
+        if(employeeRepository
+                .getEmployeeByEmail(employeeCreateRequest.getEmail())
+                .isEmpty()
+        ){
+            return employeeMapper.toDto(employeeRepository
+                    .save(employeeMapper.toEntity(employeeCreateRequest)));
+
+        }
+        throw new APIException(ErrorCode.EMAIl_EXIST);
     }
 }

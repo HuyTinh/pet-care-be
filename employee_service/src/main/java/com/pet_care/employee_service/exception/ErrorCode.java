@@ -10,7 +10,8 @@ import org.springframework.http.HttpStatus;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public enum ErrorCode {
-    EMPLOYEE_NOT_FOUND(1001, "Employee not found", HttpStatus.NOT_FOUND),;
+    EMPLOYEE_NOT_FOUND(1001, "Employee not found", HttpStatus.NOT_FOUND),
+    EMAIl_EXIST(1002, "Email already exist", HttpStatus.CONFLICT),;
 
     int code;
     String message;
