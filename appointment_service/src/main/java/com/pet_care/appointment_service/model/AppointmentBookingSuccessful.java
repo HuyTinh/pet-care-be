@@ -14,6 +14,9 @@ import lombok.experimental.SuperBuilder;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class AppointmentBookingSuccessful extends SendTo {
 
+    @JsonProperty("appointment_id")
+    Long appointmentId;
+
     @Builder.Default
     String subject = "Appointment Confirmation!";
 
@@ -26,6 +29,6 @@ public class AppointmentBookingSuccessful extends SendTo {
     String appointmentTime;
 
     public String getContent() {
-        return "{ \"to\": [ { \"email\": \"" + this.toEmail + " \"} ], \"subject\": \"" + this.subject + "\", \"params\": { \"username\": \"" + this.firstName + " " + this.lastName + "\", \"appointment_date\": \"" + this.appointmentDate + "\", \"appointment_time\": \"" + this.appointmentTime + "\" }, \"templateId\": 1 }";
+        return "{ \"to\": [ { \"email\": \"" + this.toEmail + " \"} ], \"subject\": \"" + this.subject + "\", \"params\": { \"username\": \"" + this.firstName + " " + this.lastName + "\", \"appointment_date\": \"" + this.appointmentDate + "\", \"appointment_time\": \"" + this.appointmentTime + "\", \"appointment_qr\": \"https://api.qrserver.com/v1/create-qr-code/?size=64x64&data="+this.appointmentId+"\"  }, \"templateId\": 1 }";
     }
 }

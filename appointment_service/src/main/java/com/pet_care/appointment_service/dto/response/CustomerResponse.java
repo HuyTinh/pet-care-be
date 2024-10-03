@@ -35,5 +35,9 @@ public class CustomerResponse {
     @JsonProperty("account_id")
     Long accountId;
 
+    @JsonProperty("image_url")
+    String imageUrl;
+
+
     Set<PetResponse> pets;
 }

@@ -163,8 +163,7 @@ public class AppointmentService {
     public void receiveCustomerCreateAppointment(String message) {
         try {
             AppointmentRequest appointmentRequest = objectMapper.readValue(message, AppointmentRequest.class);
-//            this.createNoneEmailNotification(appointmentRequest);
-            System.out.println(appointmentRequest);
+            this.createNoneEmailNotification(appointmentRequest);
             Thread.sleep(1000);
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -174,8 +173,8 @@ public class AppointmentService {
     @JmsListener(destination = "customer-create-appointment-with-notification-queue", containerFactory = "queueFactory")
     public void receiveCustomerCreateAppointmentWithEmailNotification(String message) {
         try {
+
             AppointmentRequest appointmentRequest = objectMapper.readValue(message, AppointmentRequest.class);
-//            System.out.println(message);
             this.createWithEmailNotification(appointmentRequest);
             Thread.sleep(1000);
         } catch (Exception e) {
@@ -186,6 +185,10 @@ public class AppointmentService {
 
     private AppointmentResponse createRequest(AppointmentRequest appointmentRequest, Boolean notification) throws JsonProcessingException {
         Appointment appointment = appointmentMapper.toEntity(appointmentRequest);
+
+//        System.out.println("-------------------------------");
+//        System.out.println("createRequest:");
+//        System.out.println(appointment);
 
         appointment.setServices(new HashSet<>(hospitalServiceRepository
                 .findAllById(appointmentRequest.getServices())));
@@ -221,6 +224,7 @@ public class AppointmentService {
         }
         if (notification) {
             AppointmentBookingSuccessful appointmentBookingSuccessful = AppointmentBookingSuccessful.builder()
+                    .appointmentId(appointmentResponse.getId())
                     .appointmentDate(DateUtil.getDateOnly(appointmentResponse.getAppointmentDate()))
                     .appointmentTime(DateUtil.getTimeOnly(appointmentResponse.getAppointmentTime()))
                     .toEmail(appointmentResponse.getCustomer().getEmail())
