@@ -17,8 +17,8 @@ public class BrevoClient {
     @Bean
     public RestClient client() {
         return RestClient.create().mutate().baseUrl(brevoUrl)
-                .defaultHeader("api-key",brevoKey)
-                .defaultHeader("Content-Type","application/json; charset=UTF-8").build();
+                .defaultHeader("api-key", brevoKey)
+                .defaultHeader("Content-Type", "application/json; charset=UTF-8").build();
     }
 
 

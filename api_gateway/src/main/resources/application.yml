@@ -16,10 +16,10 @@ spring:
             predicates:
               - Path=/api/v1/appointment-service/**
 
-#          - id: appointment_websocket_service
-#            uri: http://localhost:8082/
-#            predicates:
-#              - Path=/api/v1/ws/**
+          #          - id: appointment_websocket_service
+          #            uri: http://localhost:8082/
+          #            predicates:
+          #              - Path=/api/v1/ws/**
 
           - id: customer_service
             uri: http://localhost:8084
