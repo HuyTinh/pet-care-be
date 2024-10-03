@@ -1,7 +1,8 @@
 package com.pet_care.appointment_service.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.pet_care.appointment_service.dto.request.AppointmentRequest;
+import com.pet_care.appointment_service.dto.request.AppointmentCreateRequest;
+import com.pet_care.appointment_service.dto.request.AppointmentUpdateRequest;
 import com.pet_care.appointment_service.dto.response.ApiResponse;
 import com.pet_care.appointment_service.dto.response.AppointmentResponse;
 import com.pet_care.appointment_service.enums.AppointmentStatus;
@@ -47,9 +48,16 @@ public class AppointmentController {
 //    }
 
     @PostMapping
-    public ApiResponse<AppointmentResponse> create(@RequestBody AppointmentRequest appointmentRequest) throws JsonProcessingException {
+    public ApiResponse<AppointmentResponse> create(@RequestBody AppointmentCreateRequest appointmentCreateRequest) throws JsonProcessingException {
         return ApiResponse.<AppointmentResponse>builder()
-                .result(appointmentService.createNoneEmailNotification(appointmentRequest))
+                .result(appointmentService.createNoneEmailNotification(appointmentCreateRequest))
+                .build();
+    }
+
+    @PutMapping("{appointmentId}")
+    public ApiResponse<AppointmentResponse> updateAppointment(@PathVariable("appointmentId") Long appointmentId,@RequestBody AppointmentUpdateRequest appointmentUpdateRequest) throws JsonProcessingException {
+        return ApiResponse.<AppointmentResponse>builder()
+                .result(appointmentService.updateAppointment(appointmentId, appointmentUpdateRequest))
                 .build();
     }
 

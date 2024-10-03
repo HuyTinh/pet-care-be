@@ -37,7 +37,7 @@ public class WebsocketController {
         if (appointmentService.checkInAppointment((appointmentId)) > 0) {
             webSocketService.sendToAllUpdateListAppointment(Long.toString(appointmentId));
             webSocketService.sendToExportPDFAppointment(sessionId, Long.toString(appointmentId));
-            messageService.sendMessage("doctor-appointment-queue", objectMapper.writeValueAsString(appointmentService.getById(Long.toString(appointmentId))));
+            messageService.sendMessage("doctor-appointment-queue", objectMapper.writeValueAsString(appointmentService.getById(appointmentId)));
         }
     }
 }

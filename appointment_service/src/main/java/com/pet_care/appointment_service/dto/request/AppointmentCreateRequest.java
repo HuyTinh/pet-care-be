@@ -18,7 +18,7 @@ import java.util.Set;
 @NoArgsConstructor
 @ToString
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class AppointmentRequest {
+public class AppointmentCreateRequest {
     @JsonProperty("customer_id")
     Long customerId;
 
