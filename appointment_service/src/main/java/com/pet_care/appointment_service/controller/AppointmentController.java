@@ -55,7 +55,7 @@ public class AppointmentController {
     }
 
     @PutMapping("{appointmentId}")
-    public ApiResponse<AppointmentResponse> updateAppointment(@PathVariable("appointmentId") Long appointmentId,@RequestBody AppointmentUpdateRequest appointmentUpdateRequest) throws JsonProcessingException {
+    public ApiResponse<AppointmentResponse> updateAppointment(@PathVariable("appointmentId") Long appointmentId, @RequestBody AppointmentUpdateRequest appointmentUpdateRequest) throws JsonProcessingException {
         return ApiResponse.<AppointmentResponse>builder()
                 .result(appointmentService.updateAppointment(appointmentId, appointmentUpdateRequest))
                 .build();
