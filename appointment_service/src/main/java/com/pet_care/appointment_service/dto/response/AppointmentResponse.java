@@ -23,7 +23,7 @@ public class AppointmentResponse {
     CustomerResponse customer;
 
     @JsonProperty("appointment_date")
-//    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     Date appointmentDate;
 
     @JsonProperty("appointment_time")
