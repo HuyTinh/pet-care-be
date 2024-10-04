@@ -69,9 +69,15 @@ public class AppointmentService {
 
         appointmentMapper.partialUpdate(appointmentUpdateRequest, existingAppointment);
 
-        petRepository.deleteAllById(appointmentUpdateRequest.getPets().stream().map(PetCreateRequest::getId).collect(Collectors.toSet()));
+        petRepository.deleteAllById(appointmentUpdateRequest.getPets().stream()
+                .map(petCreateRequest -> petCreateRequest.getId() == null ? 0 : petCreateRequest.getId()).toList());
 
-        petRepository.saveAll(appointmentUpdateRequest.getPets().stream().map(petMapper::toEntity).collect(Collectors.toSet()));
+
+        petRepository.saveAll(appointmentUpdateRequest.getPets().stream().map(petCreateRequest -> {
+            Pet pet = petMapper.toEntity(petCreateRequest);
+            pet.setAppointment(existingAppointment);
+            return pet;
+        }).collect(Collectors.toSet()));
 
         Appointment updateAppointment = appointmentRepository.save(existingAppointment);
 
