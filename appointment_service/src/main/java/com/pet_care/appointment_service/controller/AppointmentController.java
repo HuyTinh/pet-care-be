@@ -26,14 +26,22 @@ public class AppointmentController {
     AppointmentService appointmentService;
 
     @GetMapping
-    public ApiResponse<List<AppointmentResponse>> getAll() throws JsonProcessingException {
+    public ApiResponse<List<AppointmentResponse>> getAllAppointment() throws JsonProcessingException {
         return ApiResponse.<List<AppointmentResponse>>builder()
                 .result(appointmentService.getAll())
                 .build();
     }
 
+
+    @GetMapping("/{appointmentId}")
+    public ApiResponse<AppointmentResponse> getAppointmentById(@PathVariable("appointmentId") Long appointmentId) throws JsonProcessingException {
+        return ApiResponse.<AppointmentResponse>builder()
+                .result(appointmentService.getById(appointmentId))
+                .build();
+    }
+
     @GetMapping("present")
-    public ApiResponse<List<AppointmentResponse>> getAppointmentPresent(@RequestParam("statuses") Set<AppointmentStatus> statuses) throws JsonProcessingException, ParseException {
+    public ApiResponse<List<AppointmentResponse>> getAllAppointmentPresent(@RequestParam("statuses") Set<AppointmentStatus> statuses) throws JsonProcessingException, ParseException {
 
         return ApiResponse.<List<AppointmentResponse>>builder()
                 .result(appointmentService.getAppointmentByAppointmentDateAndAndStatusIn(new Date(), statuses))
