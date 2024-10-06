@@ -20,7 +20,17 @@ import java.util.Set;
 public class AppointmentResponse {
     Long id;
 
-    CustomerResponse customer;
+    @JsonProperty("first_name")
+    String firstName;
+
+    @JsonProperty("last_name")
+    String lastName;
+
+    @JsonProperty("email")
+    String email;
+
+    @JsonProperty("phone_number")
+    String phoneNumber;
 
     @JsonProperty("appointment_date")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
@@ -30,11 +40,9 @@ public class AppointmentResponse {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm")
     Date appointmentTime;
 
-    Set<HospitalServiceResponse> services;
-
     AppointmentStatus status;
 
-    Set<PetResponse> pets;
+    Set<HospitalServiceResponse> services;
 
-    Date createdAt;
+    Set<PetResponse> pets;
 }

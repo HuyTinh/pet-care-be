@@ -3,6 +3,7 @@ package com.pet_care.appointment_service.dto.request;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.pet_care.appointment_service.enums.AppointmentStatus;
+import com.pet_care.appointment_service.model.Pet;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import lombok.*;
@@ -19,10 +20,21 @@ import java.util.Set;
 @ToString
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class AppointmentCreateRequest {
-    @JsonProperty("customer_id")
-    Long customerId;
 
-    Set<String> services;
+    @JsonProperty("account_id")
+    Long accountId;
+
+    @JsonProperty("first_name")
+    String firstName;
+
+    @JsonProperty("last_name")
+    String lastName;
+
+    @JsonProperty("email")
+    String email;
+
+    @JsonProperty("phone_number")
+    String phoneNumber;
 
     @JsonProperty("appointment_date")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
@@ -35,5 +47,7 @@ public class AppointmentCreateRequest {
     @Enumerated(EnumType.STRING)
     AppointmentStatus status;
 
-    Set<PetCreateRequest> pets;
+    Set<Pet> pets;
+
+    Set<String> services;
 }

@@ -3,7 +3,7 @@ package com.pet_care.appointment_service.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.pet_care.appointment_service.dto.request.AppointmentCreateRequest;
 import com.pet_care.appointment_service.dto.request.AppointmentUpdateRequest;
-import com.pet_care.appointment_service.dto.response.ApiResponse;
+import com.pet_care.appointment_service.dto.response.APIResponse;
 import com.pet_care.appointment_service.dto.response.AppointmentResponse;
 import com.pet_care.appointment_service.enums.AppointmentStatus;
 import com.pet_care.appointment_service.service.AppointmentService;
@@ -26,81 +26,74 @@ public class AppointmentController {
     AppointmentService appointmentService;
 
     @GetMapping
-    public ApiResponse<List<AppointmentResponse>> getAllAppointment() throws JsonProcessingException {
-        return ApiResponse.<List<AppointmentResponse>>builder()
-                .result(appointmentService.getAll())
+    public APIResponse<List<AppointmentResponse>> getAllAppointment() throws JsonProcessingException {
+        return APIResponse.<List<AppointmentResponse>>builder()
+                .result(appointmentService.getAllAppointment())
                 .build();
     }
 
 
     @GetMapping("/{appointmentId}")
-    public ApiResponse<AppointmentResponse> getAppointmentById(@PathVariable("appointmentId") Long appointmentId) throws JsonProcessingException {
-        return ApiResponse.<AppointmentResponse>builder()
-                .result(appointmentService.getById(appointmentId))
+    public APIResponse<AppointmentResponse> getAppointmentById(@PathVariable("appointmentId") Long appointmentId) throws JsonProcessingException {
+        return APIResponse.<AppointmentResponse>builder()
+                .result(appointmentService.getAppointmentById(appointmentId))
                 .build();
     }
 
     @GetMapping("present")
-    public ApiResponse<List<AppointmentResponse>> getAllAppointmentPresent(@RequestParam("statuses") Set<AppointmentStatus> statuses) throws JsonProcessingException, ParseException {
+    public APIResponse<List<AppointmentResponse>> getAllAppointmentPresent(@RequestParam("statuses") Set<AppointmentStatus> statuses) throws JsonProcessingException, ParseException {
 
-        return ApiResponse.<List<AppointmentResponse>>builder()
-                .result(appointmentService.getAppointmentByAppointmentDateAndAndStatusIn(new Date(), statuses))
+        return APIResponse.<List<AppointmentResponse>>builder()
+                .result(appointmentService.getAllAppointmentByAppointmentDateAndAndStatusIn(new Date(), statuses))
                 .build();
     }
 
-//    @GetMapping("/account/{accountId}")
-//    public ApiResponse<List<AppointmentResponse>> getAllByAccountId(@PathVariable("accountId") Long accountId) throws JsonProcessingException {
-//        return ApiResponse.<List<AppointmentResponse>>builder()
-//                .result(appointmentService.getByAccountId(accountId))
-//                .build();
-//    }
-
     @PostMapping
-    public ApiResponse<AppointmentResponse> create(@RequestBody AppointmentCreateRequest appointmentCreateRequest) throws JsonProcessingException {
-        return ApiResponse.<AppointmentResponse>builder()
-                .result(appointmentService.createNoneEmailNotification(appointmentCreateRequest))
+    public APIResponse<AppointmentResponse> createAppointment(@RequestBody AppointmentCreateRequest appointmentCreateRequest, @RequestParam(value = "emailNotification") boolean emailNotification) throws JsonProcessingException {
+        return APIResponse.<AppointmentResponse>builder()
+                .result(appointmentService.createAppointment(appointmentCreateRequest, emailNotification))
                 .build();
     }
 
     @PutMapping("/{appointmentId}")
-    public ApiResponse<AppointmentResponse> updateAppointment(@PathVariable("appointmentId") Long appointmentId, @RequestBody AppointmentUpdateRequest appointmentUpdateRequest) throws JsonProcessingException {
-         return ApiResponse.<AppointmentResponse>builder()
+    public APIResponse<AppointmentResponse> updateAppointment(@PathVariable("appointmentId") Long appointmentId, @RequestBody AppointmentUpdateRequest appointmentUpdateRequest) throws JsonProcessingException {
+        return APIResponse.<AppointmentResponse>builder()
                 .result(appointmentService.updateAppointment(appointmentId, appointmentUpdateRequest))
                 .build();
     }
 
     @PostMapping("/approved/{appointmentId}")
-    public ApiResponse<Integer> checkInAppointment(@PathVariable Long appointmentId) {
-        return ApiResponse.<Integer>builder()
+    public APIResponse<Integer> checkInAppointment(@PathVariable Long appointmentId) {
+        return APIResponse.<Integer>builder()
                 .result(appointmentService.checkInAppointment(appointmentId))
                 .build();
     }
 
     @PostMapping("/cancel/{appointmentId}")
-    public ApiResponse<Integer> cancelAppointment(@PathVariable Long appointmentId) {
-        return ApiResponse.<Integer>builder()
+    public APIResponse<Integer> cancelAppointment(@PathVariable Long appointmentId) {
+        return APIResponse.<Integer>builder()
                 .result(appointmentService.cancelAppointment(appointmentId))
                 .build();
     }
 
     @GetMapping("/account/{accountId}")
-    public ApiResponse<List<AppointmentResponse>> getAppointmentsByStatus(@PathVariable("accountId") Long accountId, @RequestParam("status") String status) throws JsonProcessingException {
-        return ApiResponse.<List<AppointmentResponse>>builder()
+    public APIResponse<List<AppointmentResponse>> getAppointmentsByStatus(@PathVariable("accountId") Long accountId, @RequestParam("status") String status) throws JsonProcessingException {
+        return APIResponse.<List<AppointmentResponse>>builder()
                 .result(appointmentService.getByStatusAndAccountId(status, accountId))
                 .build();
     }
 
     @GetMapping("/status/{status}")
-    public ApiResponse<List<AppointmentResponse>> getByStatusAndCustomerId(@PathVariable("status") String status) {
+    public APIResponse<List<AppointmentResponse>> getByStatusAndCustomerId(@PathVariable("status") String status) {
 
-        return ApiResponse.<List<AppointmentResponse>>builder()
+        return APIResponse.<List<AppointmentResponse>>builder()
                 .result(appointmentService.getByStatus(status))
                 .build();
     }
 
     @GetMapping("/isCheckin/{appointmentId}")
-    public ApiResponse<?> getAppointment(@PathVariable Long appointmentId) {
-        return ApiResponse.builder()
+    public APIResponse<?> getAppointment(@PathVariable Long appointmentId) {
+        return APIResponse.builder()
                 .result(Map.of("isCheckIn:", appointmentService.checkInAppointment(appointmentId) == 1))
                 .build();
 

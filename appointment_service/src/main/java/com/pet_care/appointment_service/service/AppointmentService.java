@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pet_care.appointment_service.dto.request.AppointmentCreateRequest;
 import com.pet_care.appointment_service.dto.request.AppointmentUpdateRequest;
-import com.pet_care.appointment_service.dto.request.PetCreateRequest;
 import com.pet_care.appointment_service.dto.response.AppointmentResponse;
 import com.pet_care.appointment_service.enums.AppointmentStatus;
 import com.pet_care.appointment_service.exception.AppointmentException;
@@ -17,7 +16,6 @@ import com.pet_care.appointment_service.model.Pet;
 import com.pet_care.appointment_service.repository.AppointmentRepository;
 import com.pet_care.appointment_service.repository.HospitalServiceRepository;
 import com.pet_care.appointment_service.repository.PetRepository;
-import com.pet_care.appointment_service.repository.httpClient.CustomerClient;
 import com.pet_care.appointment_service.utils.DateUtil;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -49,19 +47,17 @@ public class AppointmentService {
 
     ObjectMapper objectMapper;
 
-    CustomerClient customerClient;
-
     PetRepository petRepository;
 
     PetMapper petMapper;
 
-    public AppointmentResponse createNoneEmailNotification(AppointmentCreateRequest appointmentCreateRequest) throws JsonProcessingException {
-        return createRequest(appointmentCreateRequest, false);
-    }
-
-    public void createWithEmailNotification(AppointmentCreateRequest appointmentCreateRequest) throws JsonProcessingException {
-        createRequest(appointmentCreateRequest, true);
-    }
+//    public AppointmentResponse createNoneEmailNotification(AppointmentCreateRequest appointmentCreateRequest) throws JsonProcessingException {
+//        return createAppointment(appointmentCreateRequest, false);
+//    }
+//
+//    public AppointmentResponse createWithEmailNotification(AppointmentCreateRequest appointmentCreateRequest) throws JsonProcessingException {
+//        return createAppointment(appointmentCreateRequest, true);
+//    }
 
     public AppointmentResponse updateAppointment(Long appointmentId, AppointmentUpdateRequest appointmentUpdateRequest) throws JsonProcessingException {
         Appointment existingAppointment = appointmentRepository.findById(appointmentId)
@@ -70,14 +66,14 @@ public class AppointmentService {
         appointmentMapper.partialUpdate(appointmentUpdateRequest, existingAppointment);
 
         petRepository.deleteAllById(appointmentUpdateRequest.getPets().stream()
-                .map(petCreateRequest -> petCreateRequest.getId() == null ? 0 : petCreateRequest.getId()).toList());
+                .map(petCreateRequest -> petCreateRequest.getId() == null ?
+                        0 : petCreateRequest.getId()).toList());
 
 
-        petRepository.saveAll(appointmentUpdateRequest.getPets().stream().map(petCreateRequest -> {
-            Pet pet = petMapper.toEntity(petCreateRequest);
-            pet.setAppointment(existingAppointment);
-            return pet;
-        }).collect(Collectors.toSet()));
+        petRepository.saveAll(appointmentUpdateRequest.getPets().stream()
+                .peek(petCreateRequest -> petCreateRequest
+                        .setAppointment(existingAppointment))
+                .collect(Collectors.toSet()));
 
         Appointment updateAppointment = appointmentRepository.save(existingAppointment);
 
@@ -87,12 +83,9 @@ public class AppointmentService {
     }
 
     @Transactional(readOnly = true)
-    public List<AppointmentResponse> getAll() {
+    public List<AppointmentResponse> getAllAppointment() {
         List<AppointmentResponse> appointmentResponses = appointmentRepository.findAll().stream().map(appointment -> {
             AppointmentResponse appointmentResponse = appointmentMapper.toDto(appointment);
-            appointmentResponse.setCustomer(customerClient
-                    .getCustomer(String.valueOf(appointment.getCustomerId()))
-                    .getResult());
             appointmentResponse.setPets(petRepository
                     .findByAppointment_Id(appointment.getId()).stream()
                     .map(petMapper::toDto)
@@ -106,7 +99,7 @@ public class AppointmentService {
     }
 
     @Transactional(readOnly = true)
-    public AppointmentResponse getById(Long appointmentId) {
+    public AppointmentResponse getAppointmentById(Long appointmentId) {
         Appointment existingAppointment = appointmentRepository
                 .findById(appointmentId)
                 .orElseThrow(() -> new AppointmentException(ErrorCode.APPOINTMENT_NOT_FOUND));
@@ -114,9 +107,6 @@ public class AppointmentService {
         AppointmentResponse appointmentResponse = appointmentMapper
                 .toDto(existingAppointment);
 
-        appointmentResponse.setCustomer(customerClient
-                .getCustomer(String.valueOf(existingAppointment.getCustomerId()))
-                .getResult());
         appointmentResponse.setPets(petRepository
                 .findByAppointment_Id(existingAppointment.getId()).stream()
                 .map(petMapper::toDto)
@@ -128,11 +118,10 @@ public class AppointmentService {
     }
 
     @Transactional(readOnly = true)
-    public List<AppointmentResponse> getByAccountId(Long accountId) {
-        Long customerId = customerClient.getCustomerByAccountId(String.valueOf(accountId)).getResult().getId();
+    public List<AppointmentResponse> getAllAppointmentByAccountId(Long accountId) {
 
         List<AppointmentResponse> appointmentResponses = appointmentRepository
-                .findAllByCustomerId(customerId).stream().map(appointment -> {
+                .findAllByAccountId(accountId).stream().map(appointment -> {
                     AppointmentResponse appointmentResponse = appointmentMapper.toDto(appointment);
                     appointmentResponse.setPets(new HashSet<>(petRepository
                             .findByAppointment_Id(appointment.getId())).stream()
@@ -180,12 +169,10 @@ public class AppointmentService {
     @Transactional(readOnly = true)
     public List<AppointmentResponse> getByStatusAndAccountId(String status, Long accountId) {
         try {
-            Long customerId = customerClient.getCustomerByAccountId(String.valueOf(accountId)).getResult().getId();
-
             Sort sort = Sort.by("appointmentDate").ascending();
             return appointmentRepository
-                    .findAppointmentByStatusAndCustomerId(AppointmentStatus
-                            .valueOf(status), customerId, sort)
+                    .findAppointmentByStatusAndAccountId(AppointmentStatus
+                            .valueOf(status), accountId, sort)
                     .stream()
                     .map(appointment -> {
                         AppointmentResponse appointmentResponse = appointmentMapper.toDto(appointment);
@@ -202,51 +189,50 @@ public class AppointmentService {
     }
 
     @Transactional(readOnly = true)
-    public List<AppointmentResponse> getAppointmentByAppointmentDateAndAndStatusIn(Date appointmentDate, Set<AppointmentStatus> statuses) {
+    public List<AppointmentResponse> getAllAppointmentByAppointmentDateAndAndStatusIn(Date appointmentDate, Set<AppointmentStatus> statuses) {
         List<AppointmentResponse> appointmentResponses = appointmentRepository
                 .findAppointmentByAppointmentDateAndStatusIn(appointmentDate, statuses).stream()
                 .map(appointment -> {
                     AppointmentResponse appointmentResponse = appointmentMapper.toDto(appointment);
-                    appointmentResponse.setCustomer(customerClient
-                            .getCustomer(String.valueOf(appointment.getCustomerId())).getResult());
                     appointmentResponse.setPets(new HashSet<>(petRepository
                             .findByAppointment_Id(appointment.getId())).stream()
                             .map(petMapper::toDto)
                             .collect(Collectors.toSet()));
                     return appointmentResponse;
                 }).collect(Collectors.toList());
+
         log.info("Appointment Service: Get appointment by appointment date and status in successful");
+
         return appointmentResponses;
     }
 
+//    @JmsListener(destination = "customer-create-appointment-queue", containerFactory = "queueFactory")
+//    public void receiveMessageBrokerCustomerCreateAppointment(String message) {
+//        try {
+//            AppointmentCreateRequest appointmentCreateRequest = objectMapper.readValue(message, AppointmentCreateRequest.class);
+//            this.createNoneEmailNotification(appointmentCreateRequest);
+//            log.info("Appointment Service: Customer createAppointment appointment with NONE notification successful");
+//            Thread.sleep(1000);
+//        } catch (Exception e) {
+//            throw new RuntimeException(e);
+//        }
+//    }
+//
+//    @JmsListener(destination = "customer-create-appointment-with-notification-queue", containerFactory = "queueFactory")
+//    public void receiveMessageBrokerCustomerCreateAppointmentWithEmailNotification(String message) {
+//        try {
+//
+//            AppointmentCreateRequest appointmentCreateRequest = objectMapper.readValue(message, AppointmentCreateRequest.class);
+//            this.createWithEmailNotification(appointmentCreateRequest);
+//            log.info("Appointment Service: Customer createAppointment appointment with notification successful");
+//            Thread.sleep(1000);
+//        } catch (Exception e) {
+//            throw new RuntimeException(e);
+//        }
+//    }
 
-    @JmsListener(destination = "customer-create-appointment-queue", containerFactory = "queueFactory")
-    public void receiveCustomerCreateAppointment(String message) {
-        try {
-            AppointmentCreateRequest appointmentCreateRequest = objectMapper.readValue(message, AppointmentCreateRequest.class);
-            this.createNoneEmailNotification(appointmentCreateRequest);
-            log.info("Appointment Service: Customer create appointment with NONE notification successful");
-            Thread.sleep(1000);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
 
-    @JmsListener(destination = "customer-create-appointment-with-notification-queue", containerFactory = "queueFactory")
-    public void receiveCustomerCreateAppointmentWithEmailNotification(String message) {
-        try {
-
-            AppointmentCreateRequest appointmentCreateRequest = objectMapper.readValue(message, AppointmentCreateRequest.class);
-            this.createWithEmailNotification(appointmentCreateRequest);
-            log.info("Appointment Service: Customer create appointment with notification successful");
-            Thread.sleep(1000);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-
-    private AppointmentResponse createRequest(AppointmentCreateRequest appointmentCreateRequest, Boolean notification) throws JsonProcessingException {
+    public AppointmentResponse createAppointment(AppointmentCreateRequest appointmentCreateRequest, Boolean notification) throws JsonProcessingException {
         Appointment appointment = appointmentMapper.toEntity(appointmentCreateRequest);
 
         appointment.setServices(new HashSet<>(hospitalServiceRepository
@@ -259,8 +245,6 @@ public class AppointmentService {
         Appointment createSuccess = appointmentRepository.save(appointment);
 
         Set<Pet> pets = appointmentCreateRequest.getPets().stream()
-                .map(petMapper::toEntity)
-                .collect(Collectors.toSet()).stream()
                 .peek(pet -> pet.setAppointment(createSuccess))
                 .collect(Collectors.toSet());
 
@@ -268,9 +252,6 @@ public class AppointmentService {
 
         String createAppointmentStatus = createSuccess.getStatus().name();
         AppointmentResponse appointmentResponse = appointmentMapper.toDto(appointment);
-        appointmentResponse.setCustomer(customerClient
-                .getCustomer(String.valueOf(appointment.getCustomerId()))
-                .getResult());
 
         if (createAppointmentStatus.equals("CHECKED_IN")) {
             messageService.sendMessage("doctor-appointment-queue", objectMapper.writeValueAsString(appointmentResponse));
@@ -286,9 +267,9 @@ public class AppointmentService {
                     .appointmentId(appointmentResponse.getId())
                     .appointmentDate(DateUtil.getDateOnly(appointmentResponse.getAppointmentDate()))
                     .appointmentTime(DateUtil.getTimeOnly(appointmentResponse.getAppointmentTime()))
-                    .toEmail(appointmentResponse.getCustomer().getEmail())
-                    .firstName(appointmentResponse.getCustomer().getFirstName())
-                    .lastName(appointmentResponse.getCustomer().getLastName())
+                    .toEmail(appointmentResponse.getEmail())
+                    .firstName(appointmentResponse.getFirstName())
+                    .lastName(appointmentResponse.getLastName())
                     .build();
 
 

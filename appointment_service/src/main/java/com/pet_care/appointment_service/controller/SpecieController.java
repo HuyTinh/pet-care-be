@@ -1,6 +1,6 @@
 package com.pet_care.appointment_service.controller;
 
-import com.pet_care.appointment_service.dto.response.ApiResponse;
+import com.pet_care.appointment_service.dto.response.APIResponse;
 import com.pet_care.appointment_service.model.Specie;
 import com.pet_care.appointment_service.service.SpecieService;
 import lombok.AccessLevel;
@@ -21,8 +21,8 @@ public class SpecieController {
     SpecieService specieService;
 
     @GetMapping
-    public ApiResponse<List<Specie>> getSpecies() {
-        return ApiResponse.<List<Specie>>builder().code(1000).result(specieService.getAll()).build();
+    public APIResponse<List<Specie>> getAllSpecie() {
+        return APIResponse.<List<Specie>>builder().code(1000).result(specieService.getAll()).build();
     }
 
 }

@@ -1,7 +1,7 @@
 package com.pet_care.appointment_service.controller;
 
 import com.pet_care.appointment_service.dto.request.HospitalServiceRequest;
-import com.pet_care.appointment_service.dto.response.ApiResponse;
+import com.pet_care.appointment_service.dto.response.APIResponse;
 import com.pet_care.appointment_service.dto.response.HospitalServiceResponse;
 import com.pet_care.appointment_service.service.HospitalService;
 import lombok.AccessLevel;
@@ -19,22 +19,20 @@ public class HospitalServiceController {
     HospitalService hospitalService;
 
     @PostMapping
-    ApiResponse<HospitalServiceResponse> create(@RequestBody HospitalServiceRequest hospitalServiceRequest) {
-        return ApiResponse.<HospitalServiceResponse>builder()
+    APIResponse<HospitalServiceResponse> createHospitalService(@RequestBody HospitalServiceRequest hospitalServiceRequest) {
+        return APIResponse.<HospitalServiceResponse>builder()
                 .result(hospitalService.createHospitalService(hospitalServiceRequest))
                 .build();
     }
 
-    ;
-
     @GetMapping
-    ApiResponse<List<HospitalServiceResponse>> getAll() {
-        return ApiResponse.<List<HospitalServiceResponse>>builder()
+    APIResponse<List<HospitalServiceResponse>> getAllHospitalService() {
+        return APIResponse.<List<HospitalServiceResponse>>builder()
                 .result(hospitalService.getAllHospitalService()).build();
     }
 
     @GetMapping("{service}")
-    ApiResponse<HospitalServiceResponse> getById(@PathVariable("service") String service) {
-        return ApiResponse.<HospitalServiceResponse>builder().result(hospitalService.getHospitalServiceById(service)).build();
+    APIResponse<HospitalServiceResponse> getHospitalServiceById(@PathVariable("service") String service) {
+        return APIResponse.<HospitalServiceResponse>builder().result(hospitalService.getHospitalServiceById(service)).build();
     }
 }
