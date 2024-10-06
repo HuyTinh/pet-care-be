@@ -10,6 +10,7 @@
         <module name="upload_service" />
         <module name="api_gateway" />
         <module name="notification_service" />
+        <module name="search_service" />
       </profile>
       <profile name="Gradle Imported" enabled="true">
         <outputRelativeToContentRoot value="true" />
@@ -72,6 +73,7 @@
       <module name="medicine_service" options="-parameters" />
       <module name="message_service" options="-parameters" />
       <module name="notification_service" options="-parameters" />
+      <module name="search_service" options="-parameters" />
       <module name="upload_service" options="-parameters" />
     </option>
   </component>

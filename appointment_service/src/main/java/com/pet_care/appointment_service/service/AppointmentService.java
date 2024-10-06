@@ -107,10 +107,21 @@ public class AppointmentService {
 
     @Transactional(readOnly = true)
     public AppointmentResponse getById(Long appointmentId) {
+        Appointment existingAppointment = appointmentRepository
+                .findById(appointmentId)
+                .orElseThrow(() -> new AppointmentException(ErrorCode.APPOINTMENT_NOT_FOUND));
+
         AppointmentResponse appointmentResponse = appointmentMapper
-                .toDto(appointmentRepository
-                        .findById(appointmentId)
-                        .orElseThrow(() -> new AppointmentException(ErrorCode.APPOINTMENT_NOT_FOUND)));
+                .toDto(existingAppointment);
+
+        appointmentResponse.setCustomer(customerClient
+                .getCustomer(String.valueOf(existingAppointment.getCustomerId()))
+                .getResult());
+        appointmentResponse.setPets(petRepository
+                .findByAppointment_Id(existingAppointment.getId()).stream()
+                .map(petMapper::toDto)
+                .collect(Collectors.toSet()));
+
         log.info("Appointment Service: Get appointment by id successful");
 
         return appointmentResponse;
