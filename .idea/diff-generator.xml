@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="DiffGenerationConfig">
-    <option name="snapshotDbValue" value="2833db16-e19e-4623-81d9-cc11bd1fd661" />
+    <option name="snapshotDb" value="false" />
+    <option name="snapshotDbValue" value="f864238e-b0f9-4426-b8f2-53caf2c3dcb5" />
     <option name="snapshotDirValue" value="$PROJECT_DIR$/appointment_service/src/main/resources/db/migrations" />
-    <option name="snapshotModelValue" value="appointment_service:appointment_service" />
+    <option name="snapshotModelValue" value="identity_service:identity_service" />
     <option name="sourceModelValue" value="appointment_service:appointment_service" />
     <option name="targetDbValue" value="2833db16-e19e-4623-81d9-cc11bd1fd661" />
     <option name="targetDiffType" value="SNAPSHOT" />

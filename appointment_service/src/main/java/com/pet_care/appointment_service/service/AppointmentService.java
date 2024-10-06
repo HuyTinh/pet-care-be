@@ -285,10 +285,10 @@ public class AppointmentService {
         appointmentResponse.setPets(pets.stream().map(petMapper::toDto).collect(Collectors.toSet()));
         appointmentResponse.setServices(bookingService.stream().map(hospitalServiceMapper::toDto).collect(Collectors.toSet()));
 
-        if(appointmentCreateRequest.getAccountId() == null) {
+        if (appointmentCreateRequest.getAccountId() == null) {
             appointmentResponse.setAccount("GUEST");
         }
 
-        return  appointmentResponse;
+        return appointmentResponse;
     }
 }

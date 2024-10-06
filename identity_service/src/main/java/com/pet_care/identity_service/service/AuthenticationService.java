@@ -11,16 +11,12 @@ import com.nimbusds.jose.crypto.MACSigner;
 import com.nimbusds.jose.crypto.MACVerifier;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
-import com.pet_care.identity_service.dto.request.AuthenticationRequest;
-import com.pet_care.identity_service.dto.request.IntrospectRequest;
-import com.pet_care.identity_service.dto.request.LogoutRequest;
-import com.pet_care.identity_service.dto.request.RefreshRequest;
-import com.pet_care.identity_service.dto.request.sub.CustomerCreationRequest;
+import com.pet_care.identity_service.dto.request.*;
 import com.pet_care.identity_service.dto.response.AuthenticationResponse;
 import com.pet_care.identity_service.dto.response.IntrospectResponse;
-import com.pet_care.identity_service.enums.AuthenticationMethod;
+import com.pet_care.identity_service.enums.Provide;
+import com.pet_care.identity_service.exception.APIException;
 import com.pet_care.identity_service.exception.ErrorCode;
-import com.pet_care.identity_service.exception.IdentityException;
 import com.pet_care.identity_service.model.Account;
 import com.pet_care.identity_service.model.FacebookUserInfo;
 import com.pet_care.identity_service.model.InvalidatedToken;
@@ -75,7 +71,7 @@ public class AuthenticationService {
 
         try {
             verifyToken(token);
-        } catch (IdentityException e) {
+        } catch (APIException e) {
             validToken = false;
         }
 
@@ -86,14 +82,13 @@ public class AuthenticationService {
     }
 
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
-        var account = accountRepository.findByEmail(request.getEmail()).orElseThrow(() -> new IdentityException(ErrorCode.EMAIL_NOT_EXISTED));
+        var account = accountRepository.findByEmail(request.getEmail()).orElseThrow(() -> new APIException(ErrorCode.EMAIL_NOT_EXISTED));
 
         boolean authenticated = passwordEncoder.matches(request.getPassword(), account.getPassword());
 
         if (!authenticated) {
-            throw new IdentityException(ErrorCode.PASSWORD_NOT_CORRECT);
+            throw new APIException(ErrorCode.PASSWORD_NOT_CORRECT);
         }
-
 
         var token = generateToken(account);
 
@@ -127,8 +122,17 @@ public class AuthenticationService {
             return jwsObject.serialize();
         } catch (JOSEException e) {
             log.error("Cannot create token", e);
-            throw new IdentityException(ErrorCode.UNAUTHENTICATED);
+            throw new APIException(ErrorCode.UNAUTHENTICATED);
         }
+    }
+
+    private AuthenticationResponse authenticationResponse(Account account) {
+        var token = generateToken(account);
+
+        return AuthenticationResponse.builder()
+                .token(token)
+                .isAuthenticated(true)
+                .build();
     }
 
     public AuthenticationResponse refreshToken(RefreshRequest request) throws ParseException, JOSEException {
@@ -147,7 +151,7 @@ public class AuthenticationService {
 
         var email = signJWT.getJWTClaimsSet().getSubject();
 
-        var account = accountRepository.findByEmail(email).orElseThrow(() -> new IdentityException(ErrorCode.EMAIL_NOT_EXISTED));
+        var account = accountRepository.findByEmail(email).orElseThrow(() -> new APIException(ErrorCode.EMAIL_NOT_EXISTED));
 
         var token = generateToken(account);
 
@@ -182,11 +186,11 @@ public class AuthenticationService {
         var verified = signedJWT.verify(verifier);
 
         if (!(verified && expiryTime.after(new Date()))) {
-            throw new IdentityException(ErrorCode.UNAUTHENTICATED);
+            throw new APIException(ErrorCode.UNAUTHENTICATED);
         }
 
         invalidatedTokenRepository.findById(signedJWT.getJWTClaimsSet().getJWTID()).ifPresent(invalidatedToken -> {
-            throw new IdentityException(ErrorCode.UNAUTHENTICATED);
+            throw new APIException(ErrorCode.UNAUTHENTICATED);
         });
 
         return signedJWT;
@@ -228,30 +232,24 @@ public class AuthenticationService {
                 account = Account.builder()
                         .email(userInfo.getEmail())
                         .roles(Set.of(Role.builder().name("CUSTOMER").build()))
-                        .authenticationMethod(AuthenticationMethod.GOOGLE)
+                        .provide(Provide.GOOGLE)
                         .build();
 
                 Account saveAccount = accountRepository.save(account);
 
-                CustomerCreationRequest customerCreationRequest = CustomerCreationRequest.builder()
+                CustomerCreateRequest customerCreateRequest = CustomerCreateRequest.builder()
                         .accountId(saveAccount.getId())
                         .email(userInfo.getEmail())
                         .firstName(userInfo.getFamilyName())
                         .lastName(userInfo.getGivenName())
                         .build();
 
-                messageService.sendMessageQueue("customer-create-queue", objectMapper.writeValueAsString(customerCreationRequest));
+                messageService.sendMessageQueue("customer-create-queue", objectMapper.writeValueAsString(customerCreateRequest));
             }
 
-            // Xử lý thông tin người dùng (lưu vào DB, tạo session, v.v.)
-            var token = generateToken(account);
-
-            return AuthenticationResponse.builder()
-                    .token(token)
-                    .isAuthenticated(true)
-                    .build();
+            return authenticationResponse(account);
         } catch (Exception e) {
-            throw new IdentityException(ErrorCode.UNAUTHENTICATED);
+            throw new APIException(ErrorCode.UNAUTHENTICATED);
         }
     }
 
@@ -265,28 +263,22 @@ public class AuthenticationService {
                 account = Account.builder()
                         .email(facebookUserInfo.getEmail())
                         .roles(Set.of(Role.builder().name("CUSTOMER").build()))
-                        .authenticationMethod(AuthenticationMethod.FACEBOOK)
+                        .provide(Provide.FACEBOOK)
                         .build();
 
                 Account saveAccount = accountRepository.save(account);
 
-                CustomerCreationRequest customerCreationRequest = CustomerCreationRequest.builder()
+                CustomerCreateRequest customerCreateRequest = CustomerCreateRequest.builder()
                         .accountId(saveAccount.getId())
                         .email(facebookUserInfo.getEmail())
                         .firstName(facebookUserInfo.getFirstName())
                         .lastName(facebookUserInfo.getLastName())
                         .build();
 
-                messageService.sendMessageQueue("customer-create-queue", objectMapper.writeValueAsString(customerCreationRequest));
+                messageService.sendMessageQueue("customer-create-queue", objectMapper.writeValueAsString(customerCreateRequest));
             }
 
-            // Xử lý thông tin người dùng (lưu vào DB, tạo session, v.v.)
-            var token = generateToken(account);
-
-            return AuthenticationResponse.builder()
-                    .token(token)
-                    .isAuthenticated(true)
-                    .build();
+            return authenticationResponse(account);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

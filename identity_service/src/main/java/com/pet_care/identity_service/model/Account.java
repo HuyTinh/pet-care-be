@@ -1,7 +1,7 @@
 package com.pet_care.identity_service.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.pet_care.identity_service.enums.AuthenticationMethod;
+import com.pet_care.identity_service.enums.Provide;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -26,7 +26,7 @@ public class Account {
     Set<Role> roles;
 
     @Enumerated(EnumType.STRING)
-    AuthenticationMethod authenticationMethod;
+    Provide provide;
 
     @JsonIgnore
     LocalDate createdAt;

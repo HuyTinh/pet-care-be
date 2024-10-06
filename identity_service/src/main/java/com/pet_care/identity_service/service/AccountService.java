@@ -2,14 +2,14 @@ package com.pet_care.identity_service.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.pet_care.identity_service.dto.request.AccountCreationRequest;
+import com.pet_care.identity_service.dto.request.AccountCreateRequest;
 import com.pet_care.identity_service.dto.request.AccountUpdateRequest;
 import com.pet_care.identity_service.dto.request.AuthenticationRequest;
-import com.pet_care.identity_service.dto.request.sub.CustomerCreationRequest;
+import com.pet_care.identity_service.dto.request.CustomerCreateRequest;
 import com.pet_care.identity_service.dto.response.AccountResponse;
 import com.pet_care.identity_service.dto.response.AuthenticationResponse;
+import com.pet_care.identity_service.exception.APIException;
 import com.pet_care.identity_service.exception.ErrorCode;
-import com.pet_care.identity_service.exception.IdentityException;
 import com.pet_care.identity_service.mapper.AccountMapper;
 import com.pet_care.identity_service.model.Account;
 import com.pet_care.identity_service.repository.AccountRepository;
@@ -49,9 +49,9 @@ public class AccountService {
         return accountRepository.findAll().stream().map(accountMapper::toDto).collect(Collectors.toList());
     }
 
-    public AuthenticationResponse createRequest(AccountCreationRequest request) throws JsonProcessingException {
+    public AuthenticationResponse createRequest(AccountCreateRequest request) throws JsonProcessingException {
         if (accountRepository.existsByEmail(request.getEmail()))
-            throw new IdentityException(ErrorCode.USER_EXISTED);
+            throw new APIException(ErrorCode.USER_EXISTED);
 
         Account account = accountMapper.toEntity(request);
 
@@ -61,10 +61,10 @@ public class AccountService {
 
         Account saveAccount = accountRepository.save(account);
 
-        CustomerCreationRequest customerCreationRequest = accountMapper.toCustomerRequest(request);
-        customerCreationRequest.setAccountId(saveAccount.getId());
+        CustomerCreateRequest customerCreateRequest = accountMapper.toCustomerRequest(request);
+        customerCreateRequest.setAccountId(saveAccount.getId());
 
-        messageService.sendMessageQueue("customer-create-queue", objectMapper.writeValueAsString(customerCreationRequest));
+        messageService.sendMessageQueue("customer-create-queue", objectMapper.writeValueAsString(customerCreateRequest));
 
         return authenticationService.authenticate(AuthenticationRequest.builder().email(saveAccount.getEmail()).password(request.getPassword()).build());
     }
@@ -83,14 +83,14 @@ public class AccountService {
         return accountMapper
                 .toDto(accountRepository
                         .findById(id)
-                        .orElseThrow(() -> new IdentityException(ErrorCode.EMAIL_NOT_EXISTED)));
+                        .orElseThrow(() -> new APIException(ErrorCode.EMAIL_NOT_EXISTED)));
     }
 
     public AccountResponse getUserByEmail(String email) {
         return accountMapper
                 .toDto(accountRepository
                         .findByEmail(email)
-                        .orElseThrow(() -> new IdentityException(ErrorCode.EMAIL_NOT_EXISTED)));
+                        .orElseThrow(() -> new APIException(ErrorCode.EMAIL_NOT_EXISTED)));
     }
 
 }

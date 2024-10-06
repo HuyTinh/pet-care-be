@@ -1,7 +1,5 @@
 package com.pet_care.customer_service.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.pet_care.customer_service.dto.request.AppointmentCreateRequest;
 import com.pet_care.customer_service.dto.request.CustomerCreateRequest;
 import com.pet_care.customer_service.dto.response.APIResponse;
 import com.pet_care.customer_service.dto.response.CustomerResponse;
@@ -23,16 +21,33 @@ public class CustomerController {
     CustomerService customerService;
 
     @GetMapping
-    public APIResponse<List<CustomerResponse>> getAllCustomers() {
+    public APIResponse<List<CustomerResponse>> getAllCustomer() {
         return APIResponse.<List<CustomerResponse>>builder()
-                .result(customerService.getAllCustomers())
+                .result(customerService.getAllCustomer())
                 .build();
     }
 
-    @PostMapping("/create-appointment")
-    public APIResponse<CustomerResponse> createAppointment(@RequestBody AppointmentCreateRequest request, @RequestParam("emailNotification") boolean notification) throws JsonProcessingException {
+
+    @GetMapping("/{customerId}")
+    public APIResponse<CustomerResponse> getCustomerById(@PathVariable("customerId") Long customerId) {
         return APIResponse.<CustomerResponse>builder()
-                .result(customerService.createAppointment(request, notification))
+                .result(customerService.getCustomerById(customerId))
+                .build();
+    }
+
+
+    @DeleteMapping("/{customerId}")
+    public APIResponse<Void> deleteCustomer(@PathVariable Long customerId) {
+        customerService.deleteCustomer(customerId);
+        return APIResponse.<Void>builder()
+                .message("Customer deleted successfully")
+                .build();
+    }
+
+    @GetMapping("/account/{accountId}")
+    public APIResponse<CustomerResponse> getCustomerByAccountId(@PathVariable("accountId") Long accountId) {
+        return APIResponse.<CustomerResponse>builder()
+                .result(customerService.getCustomerByAccountId(accountId))
                 .build();
     }
 
@@ -46,27 +61,4 @@ public class CustomerController {
                 .result(customerService.updateCustomer(accountId, customerRequest, files))
                 .build();
     }
-
-    @GetMapping("/{customerId}")
-    public APIResponse<CustomerResponse> getCustomerById(@PathVariable("customerId") Long customerId) {
-        return APIResponse.<CustomerResponse>builder()
-                .result(customerService.getCustomerById(customerId))
-                .build();
-    }
-
-    @GetMapping("/account/{accountId}")
-    public APIResponse<CustomerResponse> getCustomerByAccountId(@PathVariable("accountId") Long accountId) {
-        return APIResponse.<CustomerResponse>builder()
-                .result(customerService.getCustomerByAccountId(accountId))
-                .build();
-    }
-
-    @DeleteMapping("/{customerId}")
-    public APIResponse<Void> deleteCustomer(@PathVariable Long customerId) {
-        customerService.deleteCustomer(customerId);
-        return APIResponse.<Void>builder()
-                .message("Customer deleted successfully")
-                .build();
-    }
-
 }

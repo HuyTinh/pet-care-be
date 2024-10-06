@@ -34,10 +34,11 @@ public class CustomerService {
     MessageService messageService;
 
     ObjectMapper objectMapper;
-    private final UploadImageClient uploadImageClient;
+
+    UploadImageClient uploadImageClient;
 
     @Transactional(readOnly = true)
-    public List<CustomerResponse> getAllCustomers() {
+    public List<CustomerResponse> getAllCustomer() {
         return customerRepository.findAll().stream().map(customerMapper::toDto).collect(Collectors.toList());
     }
 
@@ -50,11 +51,6 @@ public class CustomerService {
     public CustomerResponse getCustomerByAccountId(Long accountId) {
         return customerRepository.findByAccountId(accountId).map(customerMapper::toDto).orElseThrow(() -> new APIException(ErrorCode.EMAIL_NOT_FOUND));
     }
-
-//    public CustomerResponse addCustomer(CustomerRequest customerRequest) throws JsonProcessingException {
-//        Customer customerSave = customerRepository.save(customerMapper.toEntity(customerRequest));
-//        return customerMapper.toDto(customerRepository.save(customerSave));
-//    }
 
     @JmsListener(destination = "customer-create-queue")
     public void addCustomerFromMessageQueue(String customerRequest) throws JsonProcessingException {
@@ -87,7 +83,6 @@ public class CustomerService {
         Customer existingCustomer = customerRepository
                 .findByAccountId(accountId)
                 .orElseThrow(() -> new APIException(ErrorCode.CUSTOMER_NOT_FOUND));
-
 
         customerMapper.partialUpdate(customerRequest, existingCustomer);
 

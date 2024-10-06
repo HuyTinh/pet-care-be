@@ -2,8 +2,8 @@ package com.pet_care.identity_service.service;
 
 import com.pet_care.identity_service.dto.request.PermissionRequest;
 import com.pet_care.identity_service.dto.response.PermissionResponse;
+import com.pet_care.identity_service.exception.APIException;
 import com.pet_care.identity_service.exception.ErrorCode;
-import com.pet_care.identity_service.exception.IdentityException;
 import com.pet_care.identity_service.mapper.PermissionMapper;
 import com.pet_care.identity_service.model.Permission;
 import com.pet_care.identity_service.repository.PermissionRepository;
@@ -36,7 +36,7 @@ public class PermissionService {
     }
 
     public PermissionResponse update(String permission, PermissionRequest request) {
-        Permission existPermission = permissionRepository.findById(permission).orElseThrow(() -> new IdentityException(ErrorCode.PERMISSION_NOT_FOUND));
+        Permission existPermission = permissionRepository.findById(permission).orElseThrow(() -> new APIException(ErrorCode.PERMISSION_NOT_FOUND));
 
         existPermission.setDescription(request.getDescription());
 
