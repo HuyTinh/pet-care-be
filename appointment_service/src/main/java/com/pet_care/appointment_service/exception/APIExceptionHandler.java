@@ -6,9 +6,9 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 @ControllerAdvice
-public class AppointmentExceptionHandler {
+public class APIExceptionHandler {
     @ExceptionHandler(RuntimeException.class)
-    ResponseEntity<APIResponse> HandlingRuntimeException(AppointmentException e) {
+    ResponseEntity<APIResponse<?>> HandlingRuntimeException(APIException e) {
         ErrorCode errorCode = e.getErrorCode();
 
         return ResponseEntity

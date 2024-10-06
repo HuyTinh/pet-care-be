@@ -17,5 +17,5 @@ public class APIResponse<T> {
     @Builder.Default
     int code = 1000;
     String message;
-    T result;
+    T data;
 }

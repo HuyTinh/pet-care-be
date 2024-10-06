@@ -20,6 +20,11 @@ import java.util.Set;
 public class AppointmentResponse {
     Long id;
 
+    @JsonProperty("account_id")
+    Long accountId;
+
+    String account;
+
     @JsonProperty("first_name")
     String firstName;
 

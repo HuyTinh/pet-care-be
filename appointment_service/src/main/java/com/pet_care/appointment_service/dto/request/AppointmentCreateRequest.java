@@ -47,7 +47,7 @@ public class AppointmentCreateRequest {
     @Enumerated(EnumType.STRING)
     AppointmentStatus status;
 
-    Set<Pet> pets;
+    Set<PetCreateRequest> pets;
 
     Set<String> services;
 }

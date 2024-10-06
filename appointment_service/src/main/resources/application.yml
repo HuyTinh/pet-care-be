@@ -17,10 +17,18 @@ spring:
     user: admin
     password: admin
 
+  flyway:
+    enabled: true
+    url: jdbc:mysql://localhost:3308/appointment_service
+    user: root
+    password: root
+    locations: classpath:db/migrations
+
 server:
   servlet:
     context-path: /api/v1/appointment-service
   port: 8082
+
 
 springdoc:
   api-docs:

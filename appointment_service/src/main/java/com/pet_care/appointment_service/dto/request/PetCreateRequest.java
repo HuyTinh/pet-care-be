@@ -14,8 +14,6 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class PetCreateRequest {
-    Long id;
-
     String name;
 
     String age;

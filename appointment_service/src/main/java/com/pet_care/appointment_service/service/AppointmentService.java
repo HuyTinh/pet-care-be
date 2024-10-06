@@ -6,12 +6,14 @@ import com.pet_care.appointment_service.dto.request.AppointmentCreateRequest;
 import com.pet_care.appointment_service.dto.request.AppointmentUpdateRequest;
 import com.pet_care.appointment_service.dto.response.AppointmentResponse;
 import com.pet_care.appointment_service.enums.AppointmentStatus;
-import com.pet_care.appointment_service.exception.AppointmentException;
+import com.pet_care.appointment_service.exception.APIException;
 import com.pet_care.appointment_service.exception.ErrorCode;
 import com.pet_care.appointment_service.mapper.AppointmentMapper;
+import com.pet_care.appointment_service.mapper.HospitalServiceMapper;
 import com.pet_care.appointment_service.mapper.PetMapper;
 import com.pet_care.appointment_service.model.Appointment;
-import com.pet_care.appointment_service.model.AppointmentBookingSuccessful;
+import com.pet_care.appointment_service.model.EmailBookingSuccessful;
+import com.pet_care.appointment_service.model.HospitalServiceEntity;
 import com.pet_care.appointment_service.model.Pet;
 import com.pet_care.appointment_service.repository.AppointmentRepository;
 import com.pet_care.appointment_service.repository.HospitalServiceRepository;
@@ -22,7 +24,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Sort;
-import org.springframework.jms.annotation.JmsListener;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,6 +35,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class AppointmentService {
+    private final HospitalServiceMapper hospitalServiceMapper;
 
     AppointmentRepository appointmentRepository;
 
@@ -61,7 +63,7 @@ public class AppointmentService {
 
     public AppointmentResponse updateAppointment(Long appointmentId, AppointmentUpdateRequest appointmentUpdateRequest) throws JsonProcessingException {
         Appointment existingAppointment = appointmentRepository.findById(appointmentId)
-                .orElseThrow(() -> new AppointmentException(ErrorCode.APPOINTMENT_NOT_FOUND));
+                .orElseThrow(() -> new APIException(ErrorCode.APPOINTMENT_NOT_FOUND));
 
         appointmentMapper.partialUpdate(appointmentUpdateRequest, existingAppointment);
 
@@ -102,7 +104,7 @@ public class AppointmentService {
     public AppointmentResponse getAppointmentById(Long appointmentId) {
         Appointment existingAppointment = appointmentRepository
                 .findById(appointmentId)
-                .orElseThrow(() -> new AppointmentException(ErrorCode.APPOINTMENT_NOT_FOUND));
+                .orElseThrow(() -> new APIException(ErrorCode.APPOINTMENT_NOT_FOUND));
 
         AppointmentResponse appointmentResponse = appointmentMapper
                 .toDto(existingAppointment);
@@ -184,7 +186,7 @@ public class AppointmentService {
                         return appointmentResponse;
                     }).collect(Collectors.toList());
         } catch (Exception e) {
-            throw new AppointmentException(ErrorCode.CUSTOMER_NOT_FOUND);
+            throw new APIException(ErrorCode.CUSTOMER_NOT_FOUND);
         }
     }
 
@@ -232,11 +234,14 @@ public class AppointmentService {
 //    }
 
 
+    @Transactional
     public AppointmentResponse createAppointment(AppointmentCreateRequest appointmentCreateRequest, Boolean notification) throws JsonProcessingException {
         Appointment appointment = appointmentMapper.toEntity(appointmentCreateRequest);
 
-        appointment.setServices(new HashSet<>(hospitalServiceRepository
-                .findAllById(appointmentCreateRequest.getServices())));
+        Set<HospitalServiceEntity> bookingService = new HashSet<>(hospitalServiceRepository
+                .findAllById(appointmentCreateRequest.getServices()));
+
+        appointment.setServices(bookingService);
 
         if (appointmentCreateRequest.getStatus() == null) {
             appointment.setStatus(AppointmentStatus.PENDING);
@@ -245,6 +250,7 @@ public class AppointmentService {
         Appointment createSuccess = appointmentRepository.save(appointment);
 
         Set<Pet> pets = appointmentCreateRequest.getPets().stream()
+                .map(petMapper::toEntity)
                 .peek(pet -> pet.setAppointment(createSuccess))
                 .collect(Collectors.toSet());
 
@@ -263,7 +269,7 @@ public class AppointmentService {
             }
         }
         if (notification) {
-            AppointmentBookingSuccessful appointmentBookingSuccessful = AppointmentBookingSuccessful.builder()
+            EmailBookingSuccessful emailBookingSuccessful = EmailBookingSuccessful.builder()
                     .appointmentId(appointmentResponse.getId())
                     .appointmentDate(DateUtil.getDateOnly(appointmentResponse.getAppointmentDate()))
                     .appointmentTime(DateUtil.getTimeOnly(appointmentResponse.getAppointmentTime()))
@@ -273,9 +279,16 @@ public class AppointmentService {
                     .build();
 
 
-            messageService.sendMessage("appointment-success-notification-queue", appointmentBookingSuccessful.getContent());
+            messageService.sendMessage("appointment-success-notification-queue", emailBookingSuccessful.getContent());
         }
 
-        return appointmentMapper.toDto(createSuccess);
+        appointmentResponse.setPets(pets.stream().map(petMapper::toDto).collect(Collectors.toSet()));
+        appointmentResponse.setServices(bookingService.stream().map(hospitalServiceMapper::toDto).collect(Collectors.toSet()));
+
+        if(appointmentCreateRequest.getAccountId() == null) {
+            appointmentResponse.setAccount("GUEST");
+        }
+
+        return  appointmentResponse;
     }
 }

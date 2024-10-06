@@ -22,7 +22,7 @@ public class SpecieController {
 
     @GetMapping
     public APIResponse<List<Specie>> getAllSpecie() {
-        return APIResponse.<List<Specie>>builder().code(1000).result(specieService.getAll()).build();
+        return APIResponse.<List<Specie>>builder().data(specieService.getAll()).build();
     }
 
 }
