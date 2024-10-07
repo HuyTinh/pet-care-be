@@ -2,7 +2,11 @@ package com.pet_care.appointment_service.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.pet_care.appointment_service.enums.AppointmentStatus;
+import com.pet_care.appointment_service.model.HospitalServiceEntity;
 import com.pet_care.appointment_service.model.Pet;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -29,6 +33,9 @@ public class AppointmentUpdateRequest {
     @JsonProperty("phone_number")
     String phoneNumber;
 
+    @JsonProperty("account_id")
+    Long accountId;
+
     @JsonProperty("appointment_date")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     Date appointmentDate;
@@ -39,5 +46,8 @@ public class AppointmentUpdateRequest {
 
     Set<Pet> pets;
 
-    Set<String> services;
+    Set<HospitalServiceEntity> services;
+
+    @Enumerated(EnumType.STRING)
+    AppointmentStatus status;
 }

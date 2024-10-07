@@ -16,13 +16,13 @@ public class APIExceptionHandler {
     @ExceptionHandler(Exception.class)
     ResponseEntity<APIResponse<?>> handlingRuntimeException(RuntimeException ex) {
         ErrorCode errorCode = ErrorCode.valueOf(ex.getMessage());
-        return ResponseEntity.status(errorCode.getStatusCode()).body(APIResponse.builder().code(ErrorCode.UNCATEGORIZED_EXCEPTION.getCode()).message(ErrorCode.UNCATEGORIZED_EXCEPTION.getMessage()).build());
+        return ResponseEntity.status(errorCode.getStatus()).body(APIResponse.builder().code(ErrorCode.UNCATEGORIZED_EXCEPTION.getCode()).message(ErrorCode.UNCATEGORIZED_EXCEPTION.getMessage()).build());
     }
 
     @ExceptionHandler(APIException.class)
     ResponseEntity<APIResponse<?>> handlingIdentityException(APIException ex) {
         ErrorCode errorCode = ex.getErrorCode();
-        return ResponseEntity.status(errorCode.getStatusCode()).body(APIResponse.builder().code(errorCode.getCode()).message(errorCode.getMessage()).build());
+        return ResponseEntity.status(errorCode.getStatus()).body(APIResponse.builder().code(errorCode.getCode()).message(errorCode.getMessage()).build());
     }
 
     @ExceptionHandler(AccessDeniedException.class)
@@ -34,7 +34,7 @@ public class APIExceptionHandler {
     @ExceptionHandler(AuthorizationDeniedException.class)
     ResponseEntity<APIResponse<?>> handlingAuthorizationDeniedException(AuthorizationDeniedException ex) {
         ErrorCode errorCode = ErrorCode.UNAUTHORIZED;
-        return ResponseEntity.status(errorCode.getStatusCode()).body(APIResponse.builder().code(errorCode.getCode()).message(errorCode.getMessage()).build());
+        return ResponseEntity.status(errorCode.getStatus()).body(APIResponse.builder().code(errorCode.getCode()).message(errorCode.getMessage()).build());
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

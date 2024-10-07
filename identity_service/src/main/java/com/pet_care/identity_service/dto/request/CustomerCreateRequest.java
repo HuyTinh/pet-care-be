@@ -25,4 +25,7 @@ public class CustomerCreateRequest {
 
     @JsonProperty("account_id")
     Long accountId;
+
+    @JsonProperty("image_url")
+    String imageUrl;
 }

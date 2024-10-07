@@ -212,6 +212,7 @@ public class AuthenticationService {
     }
 
     public AuthenticationResponse authenticateWithGoogle(String accessToken) {
+
         try {
             // Build credential from the access token
             GoogleCredential credential = new GoogleCredential().setAccessToken(accessToken);
@@ -242,6 +243,7 @@ public class AuthenticationService {
                         .email(userInfo.getEmail())
                         .firstName(userInfo.getFamilyName())
                         .lastName(userInfo.getGivenName())
+                        .imageUrl(userInfo.getPicture())
                         .build();
 
                 messageService.sendMessageQueue("customer-create-queue", objectMapper.writeValueAsString(customerCreateRequest));
@@ -249,6 +251,7 @@ public class AuthenticationService {
 
             return authenticationResponse(account);
         } catch (Exception e) {
+            System.out.println(e);
             throw new APIException(ErrorCode.UNAUTHENTICATED);
         }
     }

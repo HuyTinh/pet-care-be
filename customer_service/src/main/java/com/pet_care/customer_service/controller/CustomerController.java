@@ -23,7 +23,7 @@ public class CustomerController {
     @GetMapping
     public APIResponse<List<CustomerResponse>> getAllCustomer() {
         return APIResponse.<List<CustomerResponse>>builder()
-                .result(customerService.getAllCustomer())
+                .data(customerService.getAllCustomer())
                 .build();
     }
 
@@ -31,7 +31,7 @@ public class CustomerController {
     @GetMapping("/{customerId}")
     public APIResponse<CustomerResponse> getCustomerById(@PathVariable("customerId") Long customerId) {
         return APIResponse.<CustomerResponse>builder()
-                .result(customerService.getCustomerById(customerId))
+                .data(customerService.getCustomerById(customerId))
                 .build();
     }
 
@@ -47,7 +47,7 @@ public class CustomerController {
     @GetMapping("/account/{accountId}")
     public APIResponse<CustomerResponse> getCustomerByAccountId(@PathVariable("accountId") Long accountId) {
         return APIResponse.<CustomerResponse>builder()
-                .result(customerService.getCustomerByAccountId(accountId))
+                .data(customerService.getCustomerByAccountId(accountId))
                 .build();
     }
 
@@ -58,7 +58,7 @@ public class CustomerController {
             @RequestPart("files") List<MultipartFile> files
     ) {
         return APIResponse.<CustomerResponse>builder()
-                .result(customerService.updateCustomer(accountId, customerRequest, files))
+                .data(customerService.updateCustomer(accountId, customerRequest, files))
                 .build();
     }
 }

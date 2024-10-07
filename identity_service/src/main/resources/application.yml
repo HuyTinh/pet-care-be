@@ -19,6 +19,7 @@ spring:
     password: root
     locations: classpath:db/migrations
 
+
 server:
   port: 8081
   servlet:

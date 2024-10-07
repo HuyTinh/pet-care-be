@@ -178,6 +178,7 @@ public class AppointmentService {
                     .stream()
                     .map(appointment -> {
                         AppointmentResponse appointmentResponse = appointmentMapper.toDto(appointment);
+                        System.out.println(appointmentResponse);
                         appointmentResponse
                                 .setPets(new HashSet<>(petRepository
                                         .findByAppointment_Id(appointment.getId()))

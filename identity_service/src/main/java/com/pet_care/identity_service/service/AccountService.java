@@ -21,6 +21,7 @@ import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashSet;
 import java.util.List;
@@ -45,10 +46,12 @@ public class AccountService {
 
     ObjectMapper objectMapper;
 
+    @Transactional(readOnly = true)
     public List<AccountResponse> getAllUser() {
         return accountRepository.findAll().stream().map(accountMapper::toDto).collect(Collectors.toList());
     }
 
+    @Transactional
     public AuthenticationResponse createRequest(AccountCreateRequest request) throws JsonProcessingException {
         if (accountRepository.existsByEmail(request.getEmail()))
             throw new APIException(ErrorCode.USER_EXISTED);
@@ -69,16 +72,19 @@ public class AccountService {
         return authenticationService.authenticate(AuthenticationRequest.builder().email(saveAccount.getEmail()).password(request.getPassword()).build());
     }
 
+    @Transactional
     public AccountResponse updateRequest(Long id, AccountUpdateRequest request) {
         Account existAccount = accountRepository.findById(id).orElseThrow(() -> new RuntimeException(""));
         return accountMapper.toDto(accountRepository.save(accountMapper.partialUpdate(request, existAccount)));
     }
 
+    @Transactional
     public void deleteRequest(Long id) {
         accountRepository.deleteById(id);
     }
 
     @PostAuthorize("returnObject.email == authentication.name || hasRole('HOSPITAL_ADMINISTRATOR')")
+    @Transactional(readOnly = true)
     public AccountResponse getUserById(Long id) {
         return accountMapper
                 .toDto(accountRepository
@@ -86,6 +92,7 @@ public class AccountService {
                         .orElseThrow(() -> new APIException(ErrorCode.EMAIL_NOT_EXISTED)));
     }
 
+    @Transactional(readOnly = true)
     public AccountResponse getUserByEmail(String email) {
         return accountMapper
                 .toDto(accountRepository

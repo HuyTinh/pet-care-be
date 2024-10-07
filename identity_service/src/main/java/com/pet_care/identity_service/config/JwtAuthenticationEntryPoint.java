@@ -41,7 +41,7 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
             throw new RuntimeException(e);
         }
 
-        response.setStatus(errorCode.getStatusCode().value());
+        response.setStatus(errorCode.getStatus().value());
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
 
         APIResponse<?> apiResponse = APIResponse.builder()

@@ -22,6 +22,7 @@ public class Account {
     Long id;
     String password;
     String email;
+
     @ManyToMany
     Set<Role> roles;
 
