@@ -5,7 +5,6 @@ import com.pet_care.appointment_service.dto.request.AppointmentCreateRequest;
 import com.pet_care.appointment_service.dto.request.AppointmentUpdateRequest;
 import com.pet_care.appointment_service.dto.response.APIResponse;
 import com.pet_care.appointment_service.dto.response.AppointmentResponse;
-import com.pet_care.appointment_service.enums.AppointmentStatus;
 import com.pet_care.appointment_service.service.AppointmentService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -36,7 +35,7 @@ public class AppointmentController {
     @GetMapping("/filter")
     public APIResponse<List<AppointmentResponse>> getAllAppointmentByStartDateAndEndDate(
             @RequestParam(value = "startDate", required = false) LocalDate startDate,
-            @RequestParam(value = "endDate", required = false) LocalDate  endDate,
+            @RequestParam(value = "endDate", required = false) LocalDate endDate,
             @RequestParam(value = "statues", required = false) Set<String> statues) throws JsonProcessingException {
 
         return APIResponse.<List<AppointmentResponse>>builder()
@@ -90,7 +89,7 @@ public class AppointmentController {
     @GetMapping("/account/{accountId}")
     public APIResponse<List<AppointmentResponse>> getAppointmentsByStatus(@PathVariable("accountId") Long accountId, @RequestParam("status") String status) throws JsonProcessingException {
         return APIResponse.<List<AppointmentResponse>>builder()
-                .data( appointmentService.getByStatusAndAccountId(status, accountId))
+                .data(appointmentService.getByStatusAndAccountId(status, accountId))
                 .build();
     }
 
