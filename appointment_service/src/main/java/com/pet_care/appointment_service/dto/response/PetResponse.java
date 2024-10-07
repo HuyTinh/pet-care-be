@@ -12,12 +12,8 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class PetResponse {
     Long id;
-
     String name;
-
     String age;
-
     Double weight;
-
     String species;
 }

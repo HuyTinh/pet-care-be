@@ -12,7 +12,6 @@ public interface CustomerMapper {
 
     Customer toEntity(AppointmentCreateRequest request);
 
-
     CustomerResponse toDto(Customer customer);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)

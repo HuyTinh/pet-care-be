@@ -12,6 +12,14 @@ spring:
     hibernate:
       ddl-auto: update
 
+  flyway:
+    enabled: true
+    url: jdbc:mysql://localhost:3307/identity_service
+    user: root
+    password: root
+    locations: classpath:db/migrations
+
+
 server:
   port: 8081
   servlet:

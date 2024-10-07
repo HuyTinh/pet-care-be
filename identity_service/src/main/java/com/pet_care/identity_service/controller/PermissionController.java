@@ -1,7 +1,7 @@
 package com.pet_care.identity_service.controller;
 
 import com.pet_care.identity_service.dto.request.PermissionRequest;
-import com.pet_care.identity_service.dto.response.ApiResponse;
+import com.pet_care.identity_service.dto.response.APIResponse;
 import com.pet_care.identity_service.dto.response.PermissionResponse;
 import com.pet_care.identity_service.service.PermissionService;
 import lombok.AccessLevel;
@@ -23,31 +23,31 @@ public class PermissionController {
 
     @GetMapping
     @PreAuthorize("hasRole('HOSPITAL_ADMINISTRATOR')")
-    ApiResponse<List<PermissionResponse>> getAllPermission() {
-        return ApiResponse.<List<PermissionResponse>>builder()
-                .result(permissionService.getAll())
+    APIResponse<List<PermissionResponse>> getAllPermission() {
+        return APIResponse.<List<PermissionResponse>>builder()
+                .data(permissionService.getAll())
                 .build();
     }
 
     @PostMapping
     @PreAuthorize("hasRole('HOSPITAL_ADMINISTRATOR')")
-    ApiResponse<PermissionResponse> createPermission(@RequestBody PermissionRequest permissionRequest) {
-        return ApiResponse.<PermissionResponse>builder()
-                .result(permissionService.create(permissionRequest))
+    APIResponse<PermissionResponse> createPermission(@RequestBody PermissionRequest permissionRequest) {
+        return APIResponse.<PermissionResponse>builder()
+                .data(permissionService.create(permissionRequest))
                 .build();
     }
 
     @PutMapping("/{permission}")
-    ApiResponse<PermissionResponse> updatePermission(@PathVariable("permission") String permission, @RequestBody PermissionRequest permissionRequest) {
-        return ApiResponse.<PermissionResponse>builder()
-                .result(permissionService.update(permission, permissionRequest))
+    APIResponse<PermissionResponse> updatePermission(@PathVariable("permission") String permission, @RequestBody PermissionRequest permissionRequest) {
+        return APIResponse.<PermissionResponse>builder()
+                .data(permissionService.update(permission, permissionRequest))
                 .build();
     }
 
     @DeleteMapping("/{permission}")
     @PreAuthorize("hasRole('HOSPITAL_ADMINISTRATOR')")
-    ApiResponse<Void> deletePermission(@PathVariable("permission") String permission) {
+    APIResponse<Void> deletePermission(@PathVariable("permission") String permission) {
         permissionService.delete(permission);
-        return ApiResponse.<Void>builder().build();
+        return APIResponse.<Void>builder().build();
     }
 }

@@ -5,7 +5,7 @@ import com.pet_care.identity_service.dto.request.AuthenticationRequest;
 import com.pet_care.identity_service.dto.request.IntrospectRequest;
 import com.pet_care.identity_service.dto.request.LogoutRequest;
 import com.pet_care.identity_service.dto.request.RefreshRequest;
-import com.pet_care.identity_service.dto.response.ApiResponse;
+import com.pet_care.identity_service.dto.response.APIResponse;
 import com.pet_care.identity_service.dto.response.AuthenticationResponse;
 import com.pet_care.identity_service.dto.response.IntrospectResponse;
 import com.pet_care.identity_service.service.AuthenticationService;
@@ -27,39 +27,39 @@ public class AuthenticationController {
     AuthenticationService authenticationService;
 
     @PostMapping("token")
-    ApiResponse<AuthenticationResponse> authenticate(@RequestBody AuthenticationRequest request) {
-        return ApiResponse.<AuthenticationResponse>builder()
-                .result(authenticationService.authenticate(request))
+    APIResponse<AuthenticationResponse> authenticate(@RequestBody AuthenticationRequest request) {
+        return APIResponse.<AuthenticationResponse>builder()
+                .data(authenticationService.authenticate(request))
                 .build();
     }
 
     @PostMapping("refresh")
-    ApiResponse<AuthenticationResponse> refresh(@RequestBody RefreshRequest request) throws ParseException, JOSEException {
-        return ApiResponse.<AuthenticationResponse>builder()
-                .result(authenticationService.refreshToken(request))
+    APIResponse<AuthenticationResponse> refresh(@RequestBody RefreshRequest request) throws ParseException, JOSEException {
+        return APIResponse.<AuthenticationResponse>builder()
+                .data(authenticationService.refreshToken(request))
                 .build();
     }
 
     @PostMapping("introspect")
-    ApiResponse<IntrospectResponse> authenticate(@RequestBody IntrospectRequest request) throws ParseException, JOSEException {
-        return ApiResponse.<IntrospectResponse>builder()
-                .result(authenticationService.introspect(request))
+    APIResponse<IntrospectResponse> authenticate(@RequestBody IntrospectRequest request) throws ParseException, JOSEException {
+        return APIResponse.<IntrospectResponse>builder()
+                .data(authenticationService.introspect(request))
                 .build();
     }
 
     @PostMapping("/logout")
-    ApiResponse<Void> logout(@RequestBody LogoutRequest request) throws ParseException, JOSEException {
+    APIResponse<Void> logout(@RequestBody LogoutRequest request) throws ParseException, JOSEException {
         authenticationService.logout(request);
-        return ApiResponse.<Void>builder().build();
+        return APIResponse.<Void>builder().build();
     }
 
     @PostMapping("/google")
-    public ApiResponse<AuthenticationResponse> authenticateWithGoogle(@RequestBody String accessToken) throws Exception {
-        return ApiResponse.<AuthenticationResponse>builder().result(authenticationService.authenticateWithGoogle(accessToken)).build();
+    public APIResponse<AuthenticationResponse> authenticateWithGoogle(@RequestBody String accessToken) throws Exception {
+        return APIResponse.<AuthenticationResponse>builder().data(authenticationService.authenticateWithGoogle(accessToken)).build();
     }
 
     @PostMapping("/facebook")
-    public ApiResponse<AuthenticationResponse> authenticateWithFacebook(@RequestBody String accessToken) throws Exception {
-        return ApiResponse.<AuthenticationResponse>builder().result(authenticationService.authenticateWithFacebook(accessToken)).build();
+    public APIResponse<AuthenticationResponse> authenticateWithFacebook(@RequestBody String accessToken) throws Exception {
+        return APIResponse.<AuthenticationResponse>builder().data(authenticationService.authenticateWithFacebook(accessToken)).build();
     }
 }

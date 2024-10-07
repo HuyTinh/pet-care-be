@@ -2,7 +2,11 @@ package com.pet_care.appointment_service.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.pet_care.appointment_service.enums.AppointmentStatus;
 import com.pet_care.appointment_service.model.HospitalServiceEntity;
+import com.pet_care.appointment_service.model.Pet;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -17,9 +21,20 @@ import java.util.Set;
 @ToString
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class AppointmentUpdateRequest {
-    Long id;
+    @JsonProperty("first_name")
+    String firstName;
 
-    Set<HospitalServiceEntity> services;
+    @JsonProperty("last_name")
+    String lastName;
+
+    @JsonProperty("email")
+    String email;
+
+    @JsonProperty("phone_number")
+    String phoneNumber;
+
+    @JsonProperty("account_id")
+    Long accountId;
 
     @JsonProperty("appointment_date")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
@@ -29,6 +44,10 @@ public class AppointmentUpdateRequest {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm")
     Date appointmentTime;
 
+    Set<Pet> pets;
 
-    Set<PetCreateRequest> pets;
+    Set<HospitalServiceEntity> services;
+
+    @Enumerated(EnumType.STRING)
+    AppointmentStatus status;
 }

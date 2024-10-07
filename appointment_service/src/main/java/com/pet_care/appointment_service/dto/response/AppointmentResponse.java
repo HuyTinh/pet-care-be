@@ -15,26 +15,40 @@ import java.util.Set;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@ToString
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class AppointmentResponse {
     Long id;
 
-    CustomerResponse customer;
+    @JsonProperty("account_id")
+    Long accountId;
+
+    String account;
+
+    @JsonProperty("first_name")
+    String firstName;
+
+    @JsonProperty("last_name")
+    String lastName;
+
+    @JsonProperty("email")
+    String email;
+
+    @JsonProperty("phone_number")
+    String phoneNumber;
 
     @JsonProperty("appointment_date")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, timezone = "GMT+07:00", pattern = "yyyy-MM-dd")
     Date appointmentDate;
 
     @JsonProperty("appointment_time")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, timezone = "GMT+07:00",pattern = "HH:mm")
     Date appointmentTime;
-
-    Set<HospitalServiceResponse> services;
 
     AppointmentStatus status;
 
-    Set<PetResponse> pets;
+    Set<HospitalServiceResponse> services;
 
-    Date createdAt;
+    Set<PetResponse> pets;
 }

@@ -3,8 +3,8 @@ package com.pet_care.identity_service.service;
 import com.pet_care.identity_service.dto.request.RoleCreationRequest;
 import com.pet_care.identity_service.dto.request.RoleUpdateRequest;
 import com.pet_care.identity_service.dto.response.RoleResponse;
+import com.pet_care.identity_service.exception.APIException;
 import com.pet_care.identity_service.exception.ErrorCode;
-import com.pet_care.identity_service.exception.IdentityException;
 import com.pet_care.identity_service.mapper.PermissionMapper;
 import com.pet_care.identity_service.mapper.RoleMapper;
 import com.pet_care.identity_service.repository.PermissionRepository;
@@ -46,11 +46,11 @@ public class RoleService {
     }
 
     public RoleResponse getById(String role) {
-        return roleRepository.findById(role).map(roleMapper::toDto).orElseThrow(() -> new IdentityException(ErrorCode.ROLE_NOT_EXISTED));
+        return roleRepository.findById(role).map(roleMapper::toDto).orElseThrow(() -> new APIException(ErrorCode.ROLE_NOT_EXISTED));
     }
 
     public RoleResponse update(String role, RoleUpdateRequest request) {
-        var updatedRole = roleRepository.findById(role).orElseThrow(() -> new IdentityException(ErrorCode.ROLE_NOT_EXISTED));
+        var updatedRole = roleRepository.findById(role).orElseThrow(() -> new APIException(ErrorCode.ROLE_NOT_EXISTED));
 
         var listPermission = permissionRepository.findAllById(request.getPermissions());
         updatedRole.setPermissions(new HashSet<>(listPermission));

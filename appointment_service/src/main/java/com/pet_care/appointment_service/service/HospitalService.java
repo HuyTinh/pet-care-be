@@ -2,7 +2,7 @@ package com.pet_care.appointment_service.service;
 
 import com.pet_care.appointment_service.dto.request.HospitalServiceRequest;
 import com.pet_care.appointment_service.dto.response.HospitalServiceResponse;
-import com.pet_care.appointment_service.exception.AppointmentException;
+import com.pet_care.appointment_service.exception.APIException;
 import com.pet_care.appointment_service.exception.ErrorCode;
 import com.pet_care.appointment_service.mapper.HospitalServiceMapper;
 import com.pet_care.appointment_service.model.HospitalServiceEntity;
@@ -35,7 +35,7 @@ public class HospitalService {
     public HospitalServiceResponse getHospitalServiceById(String name) {
         HospitalServiceEntity hospitalServiceEntity = hospitalServiceRepository
                 .findById(name)
-                .orElseThrow(() -> new AppointmentException(ErrorCode.HOSPITAL_SERVICE_NOT_FOUND));
+                .orElseThrow(() -> new APIException(ErrorCode.HOSPITAL_SERVICE_NOT_FOUND));
         return hospitalServiceMapper.toDto(hospitalServiceEntity);
     }
 
@@ -48,7 +48,7 @@ public class HospitalService {
     public HospitalServiceResponse updateHospitalService(String hospitalService, HospitalServiceRequest hospitalServiceRequest) {
         HospitalServiceEntity existHospitalServiceEntity = hospitalServiceRepository
                 .findById(hospitalService)
-                .orElseThrow(() -> new AppointmentException(ErrorCode.HOSPITAL_SERVICE_NOT_FOUND));
+                .orElseThrow(() -> new APIException(ErrorCode.HOSPITAL_SERVICE_NOT_FOUND));
 
         HospitalServiceEntity updatedHospitalServiceEntity = hospitalServiceMapper.partialUpdate(hospitalServiceRequest, existHospitalServiceEntity);
         return hospitalServiceMapper.toDto(hospitalServiceRepository.save(updatedHospitalServiceEntity));
