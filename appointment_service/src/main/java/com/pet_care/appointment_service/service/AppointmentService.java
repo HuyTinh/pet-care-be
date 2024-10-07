@@ -27,6 +27,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -52,14 +54,6 @@ public class AppointmentService {
     PetRepository petRepository;
 
     PetMapper petMapper;
-
-//    public AppointmentResponse createNoneEmailNotification(AppointmentCreateRequest appointmentCreateRequest) throws JsonProcessingException {
-//        return createAppointment(appointmentCreateRequest, false);
-//    }
-//
-//    public AppointmentResponse createWithEmailNotification(AppointmentCreateRequest appointmentCreateRequest) throws JsonProcessingException {
-//        return createAppointment(appointmentCreateRequest, true);
-//    }
 
     public AppointmentResponse updateAppointment(Long appointmentId, AppointmentUpdateRequest appointmentUpdateRequest) throws JsonProcessingException {
         Appointment existingAppointment = appointmentRepository.findById(appointmentId)
@@ -192,9 +186,9 @@ public class AppointmentService {
     }
 
     @Transactional(readOnly = true)
-    public List<AppointmentResponse> getAllAppointmentByAppointmentDateAndAndStatusIn(Date appointmentDate, Set<AppointmentStatus> statuses) {
+    public List<AppointmentResponse> getAllAppointmentByAppointmentDate(Date appointmentDate) {
         List<AppointmentResponse> appointmentResponses = appointmentRepository
-                .findAppointmentByAppointmentDateAndStatusIn(appointmentDate, statuses).stream()
+                .findAppointmentByAppointmentDate(appointmentDate).stream()
                 .map(appointment -> {
                     AppointmentResponse appointmentResponse = appointmentMapper.toDto(appointment);
                     appointmentResponse.setPets(new HashSet<>(petRepository
@@ -205,6 +199,25 @@ public class AppointmentService {
                 }).collect(Collectors.toList());
 
         log.info("Appointment Service: Get appointment by appointment date and status in successful");
+
+        return appointmentResponses;
+    }
+
+    public List<AppointmentResponse> filterAppointments(LocalDate startDate, LocalDate endDate, Set<String> statues) {
+
+        Date sDate = Date.from(startDate.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant());
+        Date eDate = Date.from(endDate.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant());
+
+        List<Appointment> appointmentsBetweenDate = appointmentRepository.findByAppointmentDateBetween(sDate, eDate);
+
+        List<AppointmentResponse> appointmentResponses = appointmentsBetweenDate.stream().map(appointmentMapper::toDto).toList();
+
+        if(!(statues == null) && !statues.isEmpty()){
+            appointmentResponses = appointmentsBetweenDate.stream()
+                    .map(appointmentMapper::toDto)
+                    .filter(appointment -> statues.stream()
+                            .anyMatch(s -> s.equals(appointment.getStatus().name()))).toList();
+        }
 
         return appointmentResponses;
     }

@@ -13,6 +13,7 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.web.bind.annotation.*;
 
 import java.text.ParseException;
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -26,12 +27,22 @@ public class AppointmentController {
     AppointmentService appointmentService;
 
     @GetMapping
-    public APIResponse<List<AppointmentResponse>> getAllAppointment() throws JsonProcessingException {
+    public APIResponse<List<AppointmentResponse>> getAllAppointment(@RequestParam(value = "startDate", required = false) String startDate, @RequestParam(value = "endDate", required = false) String endDate) throws JsonProcessingException {
         return APIResponse.<List<AppointmentResponse>>builder()
                 .data(appointmentService.getAllAppointment())
                 .build();
     }
 
+    @GetMapping("/filter")
+    public APIResponse<List<AppointmentResponse>> getAllAppointmentByStartDateAndEndDate(
+            @RequestParam(value = "startDate", required = false) LocalDate startDate,
+            @RequestParam(value = "endDate", required = false) LocalDate  endDate,
+            @RequestParam(value = "statues", required = false) Set<String> statues) throws JsonProcessingException {
+
+        return APIResponse.<List<AppointmentResponse>>builder()
+                .data(appointmentService.filterAppointments(startDate, endDate, statues))
+                .build();
+    }
 
     @GetMapping("/{appointmentId}")
     public APIResponse<AppointmentResponse> getAppointmentById(@PathVariable("appointmentId") Long appointmentId) throws JsonProcessingException {
@@ -41,10 +52,9 @@ public class AppointmentController {
     }
 
     @GetMapping("present")
-    public APIResponse<List<AppointmentResponse>> getAllAppointmentPresent(@RequestParam("statuses") Set<AppointmentStatus> statuses) throws JsonProcessingException, ParseException {
-
+    public APIResponse<List<AppointmentResponse>> getAllAppointmentPresent() throws JsonProcessingException, ParseException {
         return APIResponse.<List<AppointmentResponse>>builder()
-                .data(appointmentService.getAllAppointmentByAppointmentDateAndAndStatusIn(new Date(), statuses))
+                .data(appointmentService.getAllAppointmentByAppointmentDate(new Date()))
                 .build();
     }
 

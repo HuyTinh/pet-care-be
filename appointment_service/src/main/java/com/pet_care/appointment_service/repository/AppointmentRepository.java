@@ -10,6 +10,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -30,8 +31,10 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
 
     List<Appointment> findAppointmentByStatus(AppointmentStatus status);
 
-    @Query("SELECT ap from appointments ap WHERE ap.status in :statuses AND DATE(ap.appointmentDate) = DATE(:appointmentDate)")
-    List<Appointment> findAppointmentByAppointmentDateAndStatusIn(@Param("appointmentDate") Date appointmentDate, @Param("statuses") Set<AppointmentStatus> statuses);
+    @Query("SELECT ap from appointments ap WHERE DATE(ap.appointmentDate) = DATE(:appointmentDate)")
+    List<Appointment> findAppointmentByAppointmentDate(@Param("appointmentDate") Date appointmentDate);
+
+    List<Appointment> findByAppointmentDateBetween(Date appointmentDate, Date appointmentDate2);
 
     @Query("SELECT ap from appointments ap WHERE ap.status = :status AND ap.accountId = :accountId")
     List<Appointment> findAppointmentByStatusAndAccountId(@Param("status") AppointmentStatus status, @Param("accountId") Long accountId, Sort sort);
