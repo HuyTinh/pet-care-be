@@ -12,7 +12,7 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 @ToString
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class AppointmentBookingSuccessful extends SendTo {
+public class EmailBookingSuccessful extends SendTo {
 
     @JsonProperty("appointment_id")
     Long appointmentId;

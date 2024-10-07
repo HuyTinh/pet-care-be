@@ -12,7 +12,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
 
 @Repository
 public interface AppointmentRepository extends JpaRepository<Appointment, Long> {
@@ -30,14 +29,16 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
 
     List<Appointment> findAppointmentByStatus(AppointmentStatus status);
 
-    @Query("SELECT ap from appointments ap WHERE ap.status in :statuses AND DATE(ap.appointmentDate) = DATE(:appointmentDate)")
-    List<Appointment> findAppointmentByAppointmentDateAndStatusIn(@Param("appointmentDate") Date appointmentDate, @Param("statuses") Set<AppointmentStatus> statuses);
+    @Query("SELECT ap from appointments ap WHERE DATE(ap.appointmentDate) = DATE(:appointmentDate)")
+    List<Appointment> findAppointmentByAppointmentDate(@Param("appointmentDate") Date appointmentDate);
 
-    @Query("SELECT ap from appointments ap WHERE ap.status = :status AND ap.customerId = :customerId")
-    List<Appointment> findAppointmentByStatusAndCustomerId(@Param("status") AppointmentStatus status, @Param("customerId") Long customerId, Sort sort);
+    List<Appointment> findByAppointmentDateBetween(Date appointmentDate, Date appointmentDate2);
+
+    @Query("SELECT ap from appointments ap WHERE ap.status = :status AND ap.accountId = :accountId")
+    List<Appointment> findAppointmentByStatusAndAccountId(@Param("status") AppointmentStatus status, @Param("accountId") Long accountId, Sort sort);
 
     @Query(value = "SELECT EXISTS (SELECT TRUE FROM appointments WHERE status = 'CHECKED_IN' And id = ?1)")
     int checkInAppointmentIsExist(Long id);
 
-    List<Appointment> findAllByCustomerId(Long customerId);
+    List<Appointment> findAllByAccountId(Long accountId);
 }

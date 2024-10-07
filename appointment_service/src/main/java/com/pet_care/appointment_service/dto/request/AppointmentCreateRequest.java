@@ -19,10 +19,21 @@ import java.util.Set;
 @ToString
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class AppointmentCreateRequest {
-    @JsonProperty("customer_id")
-    Long customerId;
 
-    Set<String> services;
+    @JsonProperty("account_id")
+    Long accountId;
+
+    @JsonProperty("first_name")
+    String firstName;
+
+    @JsonProperty("last_name")
+    String lastName;
+
+    @JsonProperty("email")
+    String email;
+
+    @JsonProperty("phone_number")
+    String phoneNumber;
 
     @JsonProperty("appointment_date")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
@@ -36,4 +47,6 @@ public class AppointmentCreateRequest {
     AppointmentStatus status;
 
     Set<PetCreateRequest> pets;
+
+    Set<String> services;
 }

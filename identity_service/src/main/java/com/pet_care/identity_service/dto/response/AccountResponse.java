@@ -14,6 +14,5 @@ import java.util.Set;
 public class AccountResponse {
     String id;
     String email;
-
     Set<RoleResponse> roles;
 }

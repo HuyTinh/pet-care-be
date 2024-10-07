@@ -1,7 +1,7 @@
 package com.pet_care.identity_service.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.pet_care.identity_service.enums.AuthenticationMethod;
+import com.pet_care.identity_service.enums.Provide;
 import com.pet_care.identity_service.model.Account;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -18,11 +18,12 @@ import java.util.Set;
  */
 @Getter
 @Setter
+@Builder
+@ToString
 @AllArgsConstructor
 @NoArgsConstructor
-@ToString
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class AccountCreationRequest implements Serializable {
+public class AccountCreateRequest implements Serializable {
     String password;
 
     @Pattern(regexp = "^(?=.{1,64}@)[A-Za-z0-9_-]+(\\.[A-Za-z0-9_-]+)*@"
@@ -33,8 +34,9 @@ public class AccountCreationRequest implements Serializable {
     @JsonProperty("first_name")
     String firstName;
 
+    @Builder.Default
     @Enumerated(EnumType.STRING)
-    AuthenticationMethod authenticationMethod;
+    Provide provide = Provide.LOCAL;
 
     @JsonProperty("last_name")
     String lastName;

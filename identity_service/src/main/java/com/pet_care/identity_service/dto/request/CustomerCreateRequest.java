@@ -1,4 +1,4 @@
-package com.pet_care.identity_service.dto.request.sub;
+package com.pet_care.identity_service.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
@@ -11,7 +11,7 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class CustomerCreationRequest {
+public class CustomerCreateRequest {
     String email;
 
     @JsonProperty("first_name")
@@ -25,4 +25,7 @@ public class CustomerCreationRequest {
 
     @JsonProperty("account_id")
     Long accountId;
+
+    @JsonProperty("image_url")
+    String imageUrl;
 }

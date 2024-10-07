@@ -18,26 +18,18 @@ import java.util.Set;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class CustomerResponse {
     Long id;
-
+    @JsonProperty("account_id")
+    Long accountId;
     @JsonProperty("first_name")
     String firstName;
     @JsonProperty("last_name")
     String lastName;
     @JsonProperty("phone_number")
     String phoneNumber;
-
     String address;
-
     String email;
-
     String gender;
-
-    @JsonProperty("account_id")
-    Long accountId;
-
     @JsonProperty("image_url")
     String imageUrl;
-
-
     Set<PetResponse> pets;
 }
