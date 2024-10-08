@@ -2,6 +2,7 @@ package com.pet_care.customer_service.mapper;
 
 import com.pet_care.customer_service.dto.request.AppointmentCreateRequest;
 import com.pet_care.customer_service.dto.request.CustomerCreateRequest;
+import com.pet_care.customer_service.dto.request.CustomerUpdateRequest;
 import com.pet_care.customer_service.dto.response.CustomerResponse;
 import com.pet_care.customer_service.model.Customer;
 import org.mapstruct.*;
@@ -15,5 +16,5 @@ public interface CustomerMapper {
     CustomerResponse toDto(Customer customer);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    Customer partialUpdate(CustomerCreateRequest customerRequest, @MappingTarget Customer customer);
+    Customer partialUpdate(CustomerUpdateRequest customerRequest, @MappingTarget Customer customer);
 }

@@ -1,5 +1,6 @@
 package com.pet_care.customer_service.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.pet_care.customer_service.enums.Gender;
 import jakarta.persistence.*;
 import lombok.*;
@@ -23,6 +24,7 @@ public class Customer {
 
     String lastName;
 
+    @JsonProperty("phone_number")
     String phoneNumber;
 
     String address;

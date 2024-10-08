@@ -1,12 +1,14 @@
 package com.pet_care.customer_service.controller;
 
 import com.pet_care.customer_service.dto.request.CustomerCreateRequest;
+import com.pet_care.customer_service.dto.request.CustomerUpdateRequest;
 import com.pet_care.customer_service.dto.response.APIResponse;
 import com.pet_care.customer_service.dto.response.CustomerResponse;
 import com.pet_care.customer_service.service.CustomerService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -51,11 +53,11 @@ public class CustomerController {
                 .build();
     }
 
-    @PutMapping("/account/{accountId}")
+    @PutMapping(value = "/account/{accountId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public APIResponse<CustomerResponse> updateCustomer(
             @PathVariable("accountId") Long accountId,
-            @RequestBody CustomerCreateRequest customerRequest,
-            @RequestPart("files") List<MultipartFile> files
+            @ModelAttribute CustomerUpdateRequest customerRequest,
+            @RequestPart(value = "files", required = false) List<MultipartFile> files
     ) {
         return APIResponse.<CustomerResponse>builder()
                 .data(customerService.updateCustomer(accountId, customerRequest, files))

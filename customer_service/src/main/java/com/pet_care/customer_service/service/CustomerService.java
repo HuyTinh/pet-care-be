@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pet_care.customer_service.client.UploadImageClient;
 import com.pet_care.customer_service.dto.request.AppointmentCreateRequest;
 import com.pet_care.customer_service.dto.request.CustomerCreateRequest;
+import com.pet_care.customer_service.dto.request.CustomerUpdateRequest;
 import com.pet_care.customer_service.dto.request.sub.AppointmentRequest;
 import com.pet_care.customer_service.dto.response.CustomerResponse;
 import com.pet_care.customer_service.exception.APIException;
@@ -79,14 +80,16 @@ public class CustomerService {
     }
 
 
-    public CustomerResponse updateCustomer(Long accountId, CustomerCreateRequest customerRequest, List<MultipartFile> files) {
+    public CustomerResponse updateCustomer(Long accountId, CustomerUpdateRequest customerRequest, List<MultipartFile> files) {
         Customer existingCustomer = customerRepository
                 .findByAccountId(accountId)
                 .orElseThrow(() -> new APIException(ErrorCode.CUSTOMER_NOT_FOUND));
 
         customerMapper.partialUpdate(customerRequest, existingCustomer);
 
-        existingCustomer.setImageUrl(uploadImageClient.uploadImage(files).get(0));
+        if(files != null && !files.isEmpty()) {
+            existingCustomer.setImageUrl(uploadImageClient.uploadImage(files).get(0));
+        }
 
         return customerMapper.toDto(customerRepository.save(existingCustomer));
     }
