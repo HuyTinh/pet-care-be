@@ -3,7 +3,6 @@ package com.pet_care.search_service.controller;
 import co.elastic.clients.elasticsearch.core.SearchResponse;
 import co.elastic.clients.elasticsearch.core.search.Hit;
 import com.pet_care.search_service.model.Pet;
-import com.pet_care.search_service.repository.PetRepository;
 import com.pet_care.search_service.service.ESService;
 import com.pet_care.search_service.service.PetService;
 import lombok.AccessLevel;

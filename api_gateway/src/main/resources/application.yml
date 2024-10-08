@@ -9,22 +9,32 @@ spring:
           - id: identity_service
             uri: http://localhost:8081
             predicates:
-              - Path=/api/v1/identity/**
+              - Path=/api/v1/identity-service/**
 
           - id: appointment_service
             uri: http://localhost:8082
             predicates:
               - Path=/api/v1/appointment-service/**
 
-          #          - id: appointment_websocket_service
-          #            uri: http://localhost:8082/
-          #            predicates:
-          #              - Path=/api/v1/ws/**
-
           - id: customer_service
+            uri: http://localhost:8083
+            predicates:
+              - Path=/api/v1/customer-service/**
+
+          - id: employee_service
             uri: http://localhost:8084
             predicates:
-              - Path=/api/v1/customer/**
+              - Path=/api/v1/employee-service/**
+
+          - id: medicine_service
+            uri: http://localhost:8085
+            predicates:
+              - Path=/api/v1/medicine-service/**
+
+          - id: medical_prescription_service
+            uri: http://localhost:8086
+            predicates:
+              - Path=/api/v1/medical-prescription-service/**
 
 server:
   port: 8888

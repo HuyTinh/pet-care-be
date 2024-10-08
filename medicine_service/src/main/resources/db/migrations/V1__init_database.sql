@@ -1,4 +1,3 @@
-
 CREATE TABLE calculation_units
 (
     id     BIGINT AUTO_INCREMENT NOT NULL,
@@ -19,9 +18,9 @@ CREATE TABLE locations
 
 CREATE TABLE manufactures
 (
-    id          BIGINT AUTO_INCREMENT NOT NULL,
-    name        VARCHAR(255)          NULL,
-    status      BIT(1)                NULL,
+    id     BIGINT AUTO_INCREMENT NOT NULL,
+    name   VARCHAR(255)          NULL,
+    status BIT(1)                NULL,
     CONSTRAINT pk_manufactures PRIMARY KEY (id)
 );
 

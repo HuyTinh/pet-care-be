@@ -42,14 +42,14 @@ public class MedicineController {
     }
 
     @PutMapping("/{medicineId}")
-    public APIResponse<Medicine> updateMedicine(@PathVariable("medicineId") Long medicineId ,@RequestBody MedicineUpdateRequest medicineUpdateRequest) {
+    public APIResponse<Medicine> updateMedicine(@PathVariable("medicineId") Long medicineId, @RequestBody MedicineUpdateRequest medicineUpdateRequest) {
         return APIResponse.<Medicine>builder()
                 .data(medicineService.updateMedicine(medicineId, medicineUpdateRequest))
                 .build();
     }
 
     @DeleteMapping("/{medicineId}")
-    public APIResponse<Medicine> deleteMedicine(@PathVariable("medicineId") Long medicineId ,@RequestBody MedicineUpdateRequest medicineUpdateRequest) {
+    public APIResponse<Medicine> deleteMedicine(@PathVariable("medicineId") Long medicineId, @RequestBody MedicineUpdateRequest medicineUpdateRequest) {
         medicineService.deleteMedicine(medicineId);
         return APIResponse.<Medicine>builder()
                 .message("Delete medicine successful")

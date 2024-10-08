@@ -87,7 +87,7 @@ public class CustomerService {
 
         customerMapper.partialUpdate(customerRequest, existingCustomer);
 
-        if(files != null && !files.isEmpty()) {
+        if (files != null && !files.isEmpty()) {
             existingCustomer.setImageUrl(uploadImageClient.uploadImage(files).get(0));
         }
 

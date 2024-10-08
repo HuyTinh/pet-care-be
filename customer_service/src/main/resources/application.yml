@@ -18,8 +18,8 @@ spring:
 
 server:
   servlet:
-    context-path: /api/v1
-  port: 8084
+    context-path: /api/v1/customer-service
+  port: 8083
 
 springdoc:
   api-docs:

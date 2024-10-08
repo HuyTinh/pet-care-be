@@ -3,6 +3,6 @@ spring:
     name: search_service
 
 server:
-  port: 8100
+  port: 8088
   servlet:
     context-path: /api/v1/search-service

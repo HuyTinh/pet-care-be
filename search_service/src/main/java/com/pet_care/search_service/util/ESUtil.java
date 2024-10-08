@@ -1,7 +1,6 @@
 package com.pet_care.search_service.util;
 
 import co.elastic.clients.elasticsearch._types.query_dsl.MatchPhrasePrefixQuery;
-import co.elastic.clients.elasticsearch._types.query_dsl.MatchQuery;
 import co.elastic.clients.elasticsearch._types.query_dsl.Query;
 import lombok.val;
 

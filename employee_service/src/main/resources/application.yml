@@ -13,8 +13,7 @@ spring:
       ddl-auto: update
 
 server:
-  port: 8085
+  port: 8084
   servlet:
-    context-path: /api/v1
+    context-path: /api/v1/employee-service
 
-random-avatar-url: https://api.multiavatar.com/

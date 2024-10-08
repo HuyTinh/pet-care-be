@@ -13,7 +13,7 @@ spring:
       ddl-auto: update
 
 server:
-  port: 8088
+  port: 8086
   servlet:
-    context-path: /api/v1
+    context-path: /api/v1/medical-prescription-service
 

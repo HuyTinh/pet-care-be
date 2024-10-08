@@ -1,4 +1,4 @@
-package com.pet_care.identity_service.repository.httpClient;
+package com.pet_care.identity_service.client;
 
 import com.pet_care.identity_service.model.FacebookUserInfo;
 import org.springframework.cloud.openfeign.FeignClient;

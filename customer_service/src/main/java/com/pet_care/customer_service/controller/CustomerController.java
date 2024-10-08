@@ -1,6 +1,5 @@
 package com.pet_care.customer_service.controller;
 
-import com.pet_care.customer_service.dto.request.CustomerCreateRequest;
 import com.pet_care.customer_service.dto.request.CustomerUpdateRequest;
 import com.pet_care.customer_service.dto.response.APIResponse;
 import com.pet_care.customer_service.dto.response.CustomerResponse;
