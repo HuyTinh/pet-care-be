@@ -32,13 +32,13 @@ public class Medicine {
 
     Double price;
 
-    @OneToMany(mappedBy = "medicine", cascade = {CascadeType.PERSIST, CascadeType.PERSIST}, orphanRemoval = true)
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.PERSIST})
     Set<CalculationUnit> calculationUnits;
 
-    @OneToMany(mappedBy = "medicine", cascade = {CascadeType.PERSIST, CascadeType.PERSIST}, orphanRemoval = true)
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.PERSIST})
     Set<Manufacture> manufactures;
 
-    @OneToMany(mappedBy = "medicine", cascade = {CascadeType.PERSIST, CascadeType.PERSIST}, orphanRemoval = true)
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.PERSIST})
     Set<Location> locations;
 
     String note;

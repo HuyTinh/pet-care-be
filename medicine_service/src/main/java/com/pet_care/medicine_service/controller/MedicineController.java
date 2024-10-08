@@ -1,6 +1,7 @@
 package com.pet_care.medicine_service.controller;
 
 import com.pet_care.medicine_service.dto.request.MedicineCreateRequest;
+import com.pet_care.medicine_service.dto.request.MedicineUpdateRequest;
 import com.pet_care.medicine_service.dto.response.APIResponse;
 import com.pet_care.medicine_service.model.Medicine;
 import com.pet_care.medicine_service.service.MedicineService;
@@ -37,6 +38,21 @@ public class MedicineController {
     public APIResponse<Medicine> createMedicine(@RequestBody MedicineCreateRequest medicineCreateRequest) {
         return APIResponse.<Medicine>builder()
                 .data(medicineService.createMedicine(medicineCreateRequest))
+                .build();
+    }
+
+    @PutMapping("/{medicineId}")
+    public APIResponse<Medicine> updateMedicine(@PathVariable("medicineId") Long medicineId ,@RequestBody MedicineUpdateRequest medicineUpdateRequest) {
+        return APIResponse.<Medicine>builder()
+                .data(medicineService.updateMedicine(medicineId, medicineUpdateRequest))
+                .build();
+    }
+
+    @DeleteMapping("/{medicineId}")
+    public APIResponse<Medicine> deleteMedicine(@PathVariable("medicineId") Long medicineId ,@RequestBody MedicineUpdateRequest medicineUpdateRequest) {
+        medicineService.deleteMedicine(medicineId);
+        return APIResponse.<Medicine>builder()
+                .message("Delete medicine successful")
                 .build();
     }
 

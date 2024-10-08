@@ -29,8 +29,4 @@ public class Location {
 
     Boolean status;
 
-    @ManyToOne
-    @JsonIgnore
-    @JoinColumn(name = "medicine_id")
-    Medicine medicine;
 }

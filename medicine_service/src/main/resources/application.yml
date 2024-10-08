@@ -7,6 +7,13 @@ spring:
     username: root
     password: root
 
+  flyway:
+    enabled: true
+    url: jdbc:mysql://localhost:3311/medicine_service
+    user: root
+    password: root
+    locations: classpath:db/migrations
+
   jpa:
     show-sql: false
     hibernate:
