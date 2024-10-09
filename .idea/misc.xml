@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ExternalStorageConfigurationManager" enabled="true" />
   <component name="FrameworkDetectionExcludesConfiguration">
+    <file type="web" url="file://$PROJECT_DIR$/bill_service" />
     <file type="web" url="file://$PROJECT_DIR$/notification_service" />
   </component>
   <component name="MavenProjectsManager">
@@ -19,10 +20,12 @@
         <option value="$PROJECT_DIR$/medical_prescription_service/pom.xml" />
         <option value="$PROJECT_DIR$/search_service/pom.xml" />
         <option value="$PROJECT_DIR$/prescription_service/pom.xml" />
+        <option value="$PROJECT_DIR$/bill_service/pom.xml" />
       </list>
     </option>
     <option name="ignoredFiles">
       <set>
+        <option value="$PROJECT_DIR$/bill_service/pom.xml" />
         <option value="$PROJECT_DIR$/medication_management_service/pom.xml" />
         <option value="$PROJECT_DIR$/prescription_service/pom.xml" />
       </set>
