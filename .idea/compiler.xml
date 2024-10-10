@@ -7,6 +7,7 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
+        <module name="bill_service" />
         <module name="upload_service" />
         <module name="api_gateway" />
         <module name="notification_service" />
@@ -45,35 +46,18 @@
         <module name="employee_service" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel>
-      <module name="bill_service" target="17" />
-      <module name="bill_service.integrationTest" target="17" />
-      <module name="bill_service.main" target="17" />
-      <module name="bill_service.native-test" target="17" />
-      <module name="bill_service.quarkus-generated-sources" target="17" />
-      <module name="bill_service.quarkus-test-generated-sources" target="17" />
-      <module name="bill_service.test" target="17" />
-      <module name="medication_management_service" target="17" />
-      <module name="message_service" target="17" />
-      <module name="notification_service.main" target="17" />
-      <module name="notification_service.test" target="17" />
-      <module name="prescription_service" target="17" />
-    </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
       <module name="api_gateway" options="-parameters" />
       <module name="appointment_service" options="-parameters" />
-      <module name="bill_service" options="-parameters -Amicronaut.processing.group=com.pet_care -Amicronaut.processing.module=bill_service" />
+      <module name="bill_service" options="-parameters" />
       <module name="customer_service" options="-parameters" />
       <module name="employee_service" options="-parameters" />
       <module name="identity_service" options="-parameters" />
       <module name="medical_prescription_service" options="-parameters" />
-      <module name="medication_management_service" options="-parameters" />
       <module name="medicine_service" options="-parameters" />
-      <module name="message_service" options="-parameters" />
       <module name="notification_service" options="-parameters" />
-      <module name="prescription_service" options="-parameters" />
       <module name="search_service" options="-parameters" />
       <module name="upload_service" options="-parameters" />
     </option>

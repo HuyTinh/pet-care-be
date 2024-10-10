@@ -25,7 +25,6 @@
     </option>
     <option name="ignoredFiles">
       <set>
-        <option value="$PROJECT_DIR$/bill_service/pom.xml" />
         <option value="$PROJECT_DIR$/medication_management_service/pom.xml" />
         <option value="$PROJECT_DIR$/prescription_service/pom.xml" />
       </set>
