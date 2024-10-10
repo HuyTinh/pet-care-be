@@ -1,4 +1,13 @@
 package com.pet_care.bill_service.exception;
 
-public class APIException {
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
+
+@Getter
+@RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+public class APIException extends RuntimeException {
+    ErrorCode errorCode;
 }

@@ -36,7 +36,7 @@ public class WebsocketController {
         long appointmentId = Long.parseLong(message.get("appointmentId"));
         String sessionId = message.get("sessionId");
         AppointmentStatus status = AppointmentStatus.valueOf(message.get("status"));
-        switch (status){
+        switch (status) {
             case CHECKED_IN -> {
                 if (appointmentService.checkInAppointment((appointmentId)) > 0) {
                     webSocketService.sendToAllUpdateListAppointment(Long.toString(appointmentId), status);
