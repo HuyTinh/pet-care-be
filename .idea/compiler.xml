@@ -46,6 +46,13 @@
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
+      <module name="bill_service" target="17" />
+      <module name="bill_service.integrationTest" target="17" />
+      <module name="bill_service.main" target="17" />
+      <module name="bill_service.native-test" target="17" />
+      <module name="bill_service.quarkus-generated-sources" target="17" />
+      <module name="bill_service.quarkus-test-generated-sources" target="17" />
+      <module name="bill_service.test" target="17" />
       <module name="medication_management_service" target="17" />
       <module name="message_service" target="17" />
       <module name="notification_service.main" target="17" />
