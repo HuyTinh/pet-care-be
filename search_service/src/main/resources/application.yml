@@ -1,0 +1,8 @@
+spring:
+  application:
+    name: search_service
+
+server:
+  port: 8088
+  servlet:
+    context-path: /api/v1/search-service

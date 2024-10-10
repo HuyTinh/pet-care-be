@@ -2,11 +2,13 @@ package com.pet_care.customer_service.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.pet_care.customer_service.client.UploadImageClient;
 import com.pet_care.customer_service.dto.request.AppointmentCreateRequest;
 import com.pet_care.customer_service.dto.request.CustomerCreateRequest;
+import com.pet_care.customer_service.dto.request.CustomerUpdateRequest;
 import com.pet_care.customer_service.dto.request.sub.AppointmentRequest;
 import com.pet_care.customer_service.dto.response.CustomerResponse;
-import com.pet_care.customer_service.exception.CustomerException;
+import com.pet_care.customer_service.exception.APIException;
 import com.pet_care.customer_service.exception.ErrorCode;
 import com.pet_care.customer_service.mapper.CustomerMapper;
 import com.pet_care.customer_service.model.Customer;
@@ -16,6 +18,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.jms.annotation.JmsListener;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -32,22 +36,22 @@ public class CustomerService {
 
     ObjectMapper objectMapper;
 
-    public List<CustomerResponse> getAllCustomers() {
+    UploadImageClient uploadImageClient;
+
+    @Transactional(readOnly = true)
+    public List<CustomerResponse> getAllCustomer() {
         return customerRepository.findAll().stream().map(customerMapper::toDto).collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     public CustomerResponse getCustomerById(Long id) {
         return customerRepository.findById(id).map(customerMapper::toDto).orElseThrow(() -> new RuntimeException(("")));
     }
 
+    @Transactional(readOnly = true)
     public CustomerResponse getCustomerByAccountId(Long accountId) {
-        return customerRepository.findByAccountId(accountId).map(customerMapper::toDto).orElseThrow(() -> new CustomerException(ErrorCode.EMAIL_NOT_FOUND));
+        return customerRepository.findByAccountId(accountId).map(customerMapper::toDto).orElseThrow(() -> new APIException(ErrorCode.EMAIL_NOT_FOUND));
     }
-
-//    public CustomerResponse addCustomer(CustomerRequest customerRequest) throws JsonProcessingException {
-//        Customer customerSave = customerRepository.save(customerMapper.toEntity(customerRequest));
-//        return customerMapper.toDto(customerRepository.save(customerSave));
-//    }
 
     @JmsListener(destination = "customer-create-queue")
     public void addCustomerFromMessageQueue(String customerRequest) throws JsonProcessingException {
@@ -57,31 +61,36 @@ public class CustomerService {
     public CustomerResponse createAppointment(AppointmentCreateRequest request, Boolean notification) throws JsonProcessingException {
         Customer customerSave = customerRepository.findByAccountId(request.getAccountId()).orElse(null);
 
-        if(customerSave == null) {
+        if (customerSave == null) {
             customerSave = customerRepository.save(customerMapper.toEntity(request));
         }
 
-        AppointmentRequest appointmentRequest = request.getAppointment();
+        AppointmentRequest appointment = request.getAppointment();
 
-        appointmentRequest.setCustomerId(customerSave.getId());
+        appointment.setCustomerId(customerSave.getId());
 
         String notify = "";
-        if(notification){
+        if (notification) {
             notify = "-with-notification";
         }
 
-        System.out.println(objectMapper.writeValueAsString(appointmentRequest));
-
-        messageService.sendMessageQueue("customer-create-appointment"+notify+"-queue", objectMapper.writeValueAsString(appointmentRequest));
-
+        messageService.sendMessageQueue("customer-create-appointment" + notify + "-queue", objectMapper.writeValueAsString(appointment));
 
         return customerMapper.toDto(customerRepository.save(customerSave));
     }
 
 
-    public CustomerResponse updateCustomer(Long accountId, CustomerCreateRequest customerRequest) {
-        Customer existingCustomer = customerRepository.findByAccountId(accountId).orElseThrow(() -> new CustomerException(ErrorCode.CUSTOMER_NOT_FOUND));
+    public CustomerResponse updateCustomer(Long accountId, CustomerUpdateRequest customerRequest, List<MultipartFile> files) {
+        Customer existingCustomer = customerRepository
+                .findByAccountId(accountId)
+                .orElseThrow(() -> new APIException(ErrorCode.CUSTOMER_NOT_FOUND));
+
         customerMapper.partialUpdate(customerRequest, existingCustomer);
+
+        if (files != null && !files.isEmpty()) {
+            existingCustomer.setImageUrl(uploadImageClient.uploadImage(files).get(0));
+        }
+
         return customerMapper.toDto(customerRepository.save(existingCustomer));
     }
 

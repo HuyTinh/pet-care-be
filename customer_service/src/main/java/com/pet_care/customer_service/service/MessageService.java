@@ -15,7 +15,7 @@ public class MessageService {
 
     ObjectMapper objectMapper;
 
-    public void sendMessageQueue(String destination ,String appointment) {
-        jmsTemplate.convertAndSend(destination,appointment);
+    public void sendMessageQueue(String destination, String appointment) {
+        jmsTemplate.convertAndSend(destination, appointment);
     }
 }

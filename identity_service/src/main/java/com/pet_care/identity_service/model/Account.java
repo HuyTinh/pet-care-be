@@ -1,7 +1,7 @@
 package com.pet_care.identity_service.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.pet_care.identity_service.enums.AuthenticationMethod;
+import com.pet_care.identity_service.enums.Provide;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -16,17 +16,18 @@ import java.util.Set;
 @Builder
 @Entity(name = "accounts")
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Account{
+public class Account {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
     String password;
     String email;
+
     @ManyToMany
     Set<Role> roles;
 
     @Enumerated(EnumType.STRING)
-    AuthenticationMethod authenticationMethod;
+    Provide provide;
 
     @JsonIgnore
     LocalDate createdAt;

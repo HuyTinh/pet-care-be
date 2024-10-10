@@ -1,0 +1,25 @@
+spring:
+  application:
+    name: medicine_service
+
+  datasource:
+    url: "jdbc:mysql://localhost:3311/medicine_service"
+    username: root
+    password: root
+
+  flyway:
+    enabled: true
+    url: jdbc:mysql://localhost:3311/medicine_service
+    user: root
+    password: root
+    locations: classpath:db/migrations
+
+  jpa:
+    show-sql: false
+    hibernate:
+      ddl-auto: update
+
+server:
+  port: 8085
+  servlet:
+    context-path: /api/v1/medicine-service

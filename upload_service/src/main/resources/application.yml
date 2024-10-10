@@ -1,0 +1,13 @@
+spring:
+  application:
+    name: upload_service
+
+cloudinary:
+  cloud-name: dprkvtle0
+  api-key: 545227972661364
+  api-secret: CF9pY6z7criTROCZtPVPHh7lwbE
+
+server:
+  port: 8089
+  servlet:
+    context-path: /api/v1/upload-service

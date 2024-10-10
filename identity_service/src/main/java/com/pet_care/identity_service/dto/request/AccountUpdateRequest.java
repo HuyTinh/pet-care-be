@@ -9,6 +9,6 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class AccountUpdateRequest extends AccountCreationRequest {
+public class AccountUpdateRequest extends AccountCreateRequest {
     Long id;
 }

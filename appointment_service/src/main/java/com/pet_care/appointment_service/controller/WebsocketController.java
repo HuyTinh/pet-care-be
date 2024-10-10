@@ -1,6 +1,7 @@
 package com.pet_care.appointment_service.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.pet_care.appointment_service.enums.AppointmentStatus;
 import com.pet_care.appointment_service.service.AppointmentService;
 import com.pet_care.appointment_service.service.MessageService;
 import com.pet_care.appointment_service.service.WebSocketService;
@@ -34,10 +35,22 @@ public class WebsocketController {
         // Xử lý tin nhắn tại đây
         long appointmentId = Long.parseLong(message.get("appointmentId"));
         String sessionId = message.get("sessionId");
-        if(appointmentService.checkInAppointment((appointmentId)) > 0) {
-            webSocketService.sendToAllUpdateListAppointment(Long.toString(appointmentId));
-            webSocketService.sendToExportPDFAppointment(sessionId, Long.toString(appointmentId));
-            messageService.sendMessage("doctor-appointment-queue",objectMapper.writeValueAsString(appointmentService.getById(Long.toString(appointmentId))));
+        AppointmentStatus status = AppointmentStatus.valueOf(message.get("status"));
+        switch (status){
+            case CHECKED_IN -> {
+                if (appointmentService.checkInAppointment((appointmentId)) > 0) {
+                    webSocketService.sendToAllUpdateListAppointment(Long.toString(appointmentId), status);
+                    webSocketService.sendToExportPDFAppointment(sessionId, Long.toString(appointmentId));
+                    messageService.sendMessage("doctor-appointment-queue", objectMapper.writeValueAsString(appointmentService.getAppointmentById(appointmentId)));
+                }
+                return;
+            }
+            case CANCELLED -> {
+                if (appointmentService.cancelAppointment((appointmentId)) > 0) {
+                    webSocketService.sendToAllUpdateListAppointment(Long.toString(appointmentId), status);
+                }
+                return;
+            }
         }
     }
 }

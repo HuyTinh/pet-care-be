@@ -10,4 +10,4 @@ services:
     ports:
       - "3307:3306"
     volumes:
-      -  ./database/mysql:/var/lib/mysql
+      - ./database/mysql:/var/lib/mysql

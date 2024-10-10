@@ -1,0 +1,11 @@
+services:
+  mysql:
+    image: "mysql:latest"
+    container_name: "mysql_medicine_service"
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: medicine_service
+      MYSQL_USERNAME: root
+      MYSQL_PASSWORD: root
+    ports:
+      - "3311:3306"

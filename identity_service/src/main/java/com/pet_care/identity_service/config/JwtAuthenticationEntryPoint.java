@@ -3,7 +3,7 @@ package com.pet_care.identity_service.config;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
-import com.pet_care.identity_service.dto.response.ApiResponse;
+import com.pet_care.identity_service.dto.response.APIResponse;
 import com.pet_care.identity_service.exception.ErrorCode;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -41,10 +41,10 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
             throw new RuntimeException(e);
         }
 
-        response.setStatus(errorCode.getStatusCode().value());
+        response.setStatus(errorCode.getStatus().value());
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
 
-        ApiResponse<?> apiResponse = ApiResponse.builder()
+        APIResponse<?> apiResponse = APIResponse.builder()
                 .code(errorCode.getCode())
                 .message(errorCode.getMessage())
                 .build();

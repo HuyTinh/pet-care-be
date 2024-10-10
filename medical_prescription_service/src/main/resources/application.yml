@@ -1,0 +1,19 @@
+spring:
+  application:
+    name: medical_prescription_service
+
+  datasource:
+    url: "jdbc:mysql://localhost:3312/medical_prescription_service"
+    username: root
+    password: root
+
+  jpa:
+    show-sql: false
+    hibernate:
+      ddl-auto: update
+
+server:
+  port: 8086
+  servlet:
+    context-path: /api/v1/medical-prescription-service
+
