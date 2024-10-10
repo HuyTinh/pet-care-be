@@ -219,34 +219,15 @@ public class AppointmentService {
                             .anyMatch(s -> s.equals(appointment.getStatus().name()))).toList();
         }
 
+        appointmentResponses = appointmentResponses.stream().peek(appointmentResponse -> appointmentResponse.setPets(new HashSet<>(petRepository
+                .findByAppointment_Id(appointmentResponse.getId())).stream()
+                .map(petMapper::toDto)
+                .collect(Collectors.toSet()))).toList();
+
+        log.info("Appointment Service: Filter appointments successful");
+
         return appointmentResponses;
     }
-
-//    @JmsListener(destination = "customer-create-appointment-queue", containerFactory = "queueFactory")
-//    public void receiveMessageBrokerCustomerCreateAppointment(String message) {
-//        try {
-//            AppointmentCreateRequest appointmentCreateRequest = objectMapper.readValue(message, AppointmentCreateRequest.class);
-//            this.createNoneEmailNotification(appointmentCreateRequest);
-//            log.info("Appointment Service: Customer createAppointment appointment with NONE notification successful");
-//            Thread.sleep(1000);
-//        } catch (Exception e) {
-//            throw new RuntimeException(e);
-//        }
-//    }
-//
-//    @JmsListener(destination = "customer-create-appointment-with-notification-queue", containerFactory = "queueFactory")
-//    public void receiveMessageBrokerCustomerCreateAppointmentWithEmailNotification(String message) {
-//        try {
-//
-//            AppointmentCreateRequest appointmentCreateRequest = objectMapper.readValue(message, AppointmentCreateRequest.class);
-//            this.createWithEmailNotification(appointmentCreateRequest);
-//            log.info("Appointment Service: Customer createAppointment appointment with notification successful");
-//            Thread.sleep(1000);
-//        } catch (Exception e) {
-//            throw new RuntimeException(e);
-//        }
-//    }
-
 
     @Transactional
     public AppointmentResponse createAppointment(AppointmentCreateRequest appointmentCreateRequest, Boolean notification) throws JsonProcessingException {
