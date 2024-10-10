@@ -26,4 +26,6 @@ public class Prescription {
 
     @OneToMany(mappedBy = "prescription", cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = true)
     Set<PrescriptionDetail> prescriptionDetails;
+
+    Double prescriptionAmount;
 }

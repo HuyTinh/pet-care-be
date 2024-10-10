@@ -1,8 +1,8 @@
 package com.pet_care.medical_prescription_service.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.pet_care.medical_prescription_service.enums.PrescriptionStatus;
-import com.pet_care.medical_prescription_service.model.Appointment;
-import com.pet_care.medical_prescription_service.model.PrescriptionDetail;
+import com.pet_care.medical_prescription_service.model.PetPrescription;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import lombok.*;
@@ -19,10 +19,27 @@ import java.util.Set;
 public class PrescriptionResponse {
     Long id;
 
-    Appointment appointment;
+    @JsonProperty("appointment_id")
+    Long appointmentId;
+
+    @JsonProperty("first_name")
+    String firstName;
+
+    @JsonProperty("last_name")
+    String lastName;
+
+    @JsonProperty("email")
+    String email;
+
+    @JsonProperty("phone_number")
+    String phoneNumber;
 
     @Enumerated(EnumType.STRING)
     PrescriptionStatus status;
 
-    Set<PrescriptionDetail> prescriptionDetails;
+    @JsonProperty("details")
+    Set<PetPrescription> prescriptionDetails;
+
+    @JsonProperty("amount")
+    Double prescriptionAmount;
 }

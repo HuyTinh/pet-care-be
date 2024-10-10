@@ -5,7 +5,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
 import java.util.Map;
 
 @Service
@@ -20,7 +19,7 @@ public class WebSocketService {
 
     public void sendToAllUpdateListAppointment(String message, AppointmentStatus status) {
         Map<String, String> body = Map.of("appointmentId", message, "status", status.toString());
-        messagingTemplate.convertAndSend("/topic/updateAppointment",  body);
+        messagingTemplate.convertAndSend("/topic/updateAppointment", body);
     }
 
     public void sendToAllCreateAppointment(String message) {

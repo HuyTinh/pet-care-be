@@ -1,7 +1,5 @@
 package com.pet_care.bill_service.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.pet_care.bill_service.enums.InvoiceStatus;
 import com.pet_care.bill_service.enums.PaymentMethod;
 import jakarta.persistence.*;
@@ -33,7 +31,6 @@ public class Invoice {
 
     @Enumerated(EnumType.STRING)
     PaymentMethod paymentMethod;
-
 
     InvoiceStatus status;
 
