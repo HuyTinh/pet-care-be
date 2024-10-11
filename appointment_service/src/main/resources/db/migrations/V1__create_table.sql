@@ -1,16 +1,16 @@
 CREATE TABLE appointments
 (
     id               BIGINT AUTO_INCREMENT NOT NULL,
-    account_id       BIGINT                NULL,
-    first_name       VARCHAR(255)          NULL,
-    last_name        VARCHAR(255)          NULL,
-    email            VARCHAR(255)          NULL,
-    phone_number     VARCHAR(255)          NULL,
-    appointment_date date                  NULL,
-    appointment_time time                  NULL,
-    status           VARCHAR(255)          NULL,
-    created_at       datetime              NULL,
-    updated_at       datetime              NULL,
+    account_id       BIGINT       NULL,
+    first_name       VARCHAR(255) NULL,
+    last_name        VARCHAR(255) NULL,
+    email            VARCHAR(255) NULL,
+    phone_number     VARCHAR(255) NULL,
+    appointment_date date         NULL,
+    appointment_time time         NULL,
+    status           VARCHAR(255) NULL,
+    created_at       datetime     NULL,
+    updated_at       datetime     NULL,
     CONSTRAINT pk_appointments PRIMARY KEY (id)
 );
 
@@ -23,8 +23,8 @@ CREATE TABLE appointments_services
 
 CREATE TABLE hospital_services
 (
-    name          VARCHAR(255) NOT NULL,
-    `description` VARCHAR(255) NULL,
+    name          VARCHAR(255) NOT NULL, `
+    description ` VARCHAR(255) NULL,
     status        VARCHAR(255) NULL,
     CONSTRAINT pk_hospital_services PRIMARY KEY (name)
 );
@@ -32,11 +32,11 @@ CREATE TABLE hospital_services
 CREATE TABLE pets
 (
     id             BIGINT AUTO_INCREMENT NOT NULL,
-    name           VARCHAR(255)          NULL,
-    age            VARCHAR(255)          NULL,
-    weight         DOUBLE                NULL,
-    species        VARCHAR(255)          NULL,
-    appointment_id BIGINT                NULL,
+    name           VARCHAR(255) NULL,
+    age            VARCHAR(255) NULL,
+    weight DOUBLE NULL,
+    species        VARCHAR(255) NULL,
+    appointment_id BIGINT       NULL,
     CONSTRAINT pk_pets PRIMARY KEY (id)
 );
 

@@ -12,6 +12,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+/**
+ *
+ */
 @RestController
 @RequestMapping("hospital-service")
 @RequiredArgsConstructor
@@ -19,6 +22,10 @@ import java.util.List;
 public class HospitalServiceController {
     @NotNull HospitalService hospitalService;
 
+    /**
+     * @param hospitalServiceRequest
+     * @return
+     */
     @PostMapping
     APIResponse<HospitalServiceResponse> createHospitalService(@RequestBody HospitalServiceRequest hospitalServiceRequest) {
         return APIResponse.<HospitalServiceResponse>builder()
@@ -26,12 +33,19 @@ public class HospitalServiceController {
                 .build();
     }
 
+    /**
+     * @return
+     */
     @GetMapping
     APIResponse<List<HospitalServiceResponse>> getAllHospitalService() {
         return APIResponse.<List<HospitalServiceResponse>>builder()
                 .data(hospitalService.getAllHospitalService()).build();
     }
 
+    /**
+     * @param service
+     * @return
+     */
     @GetMapping("{service}")
     APIResponse<HospitalServiceResponse> getHospitalServiceById(@NotNull @PathVariable("service") String service) {
         return APIResponse.<HospitalServiceResponse>builder().data(hospitalService.getHospitalServiceById(service)).build();

@@ -24,8 +24,15 @@ import java.util.Set;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class AppointmentController {
+
     @NotNull AppointmentService appointmentService;
 
+    /**
+     * @param startDate
+     * @param endDate
+     * @return
+     * @throws JsonProcessingException
+     */
     @GetMapping
     public APIResponse<List<AppointmentResponse>> getAllAppointment(@RequestParam(value = "startDate", required = false) String startDate, @RequestParam(value = "endDate", required = false) String endDate) throws JsonProcessingException {
         return APIResponse.<List<AppointmentResponse>>builder()
@@ -33,6 +40,13 @@ public class AppointmentController {
                 .build();
     }
 
+    /**
+     * @param startDate
+     * @param endDate
+     * @param statues
+     * @return
+     * @throws JsonProcessingException
+     */
     @GetMapping("/filter")
     public APIResponse<List<AppointmentResponse>> getAllAppointmentByStartDateAndEndDate(
             @NotNull @RequestParam(value = "startDate", required = false) LocalDate startDate,
@@ -44,6 +58,11 @@ public class AppointmentController {
                 .build();
     }
 
+    /**
+     * @param appointmentId
+     * @return
+     * @throws JsonProcessingException
+     */
     @GetMapping("/{appointmentId}")
     public APIResponse<AppointmentResponse> getAppointmentById(@NotNull @PathVariable("appointmentId") Long appointmentId) throws JsonProcessingException {
         return APIResponse.<AppointmentResponse>builder()
@@ -51,6 +70,11 @@ public class AppointmentController {
                 .build();
     }
 
+    /**
+     * @return
+     * @throws JsonProcessingException
+     * @throws ParseException
+     */
     @GetMapping("present")
     public APIResponse<List<AppointmentResponse>> getAllAppointmentPresent() throws JsonProcessingException, ParseException {
         return APIResponse.<List<AppointmentResponse>>builder()
@@ -58,6 +82,12 @@ public class AppointmentController {
                 .build();
     }
 
+    /**
+     * @param appointmentCreateRequest
+     * @param emailNotification
+     * @return
+     * @throws JsonProcessingException
+     */
     @PostMapping
     public APIResponse<AppointmentResponse> createAppointment(@NotNull @RequestBody AppointmentCreateRequest appointmentCreateRequest, @RequestParam(value = "emailNotification") boolean emailNotification) throws JsonProcessingException {
         return APIResponse.<AppointmentResponse>builder()
@@ -65,6 +95,12 @@ public class AppointmentController {
                 .build();
     }
 
+    /**
+     * @param appointmentId
+     * @param appointmentUpdateRequest
+     * @return
+     * @throws JsonProcessingException
+     */
     @PutMapping("/{appointmentId}")
     public APIResponse<AppointmentResponse> updateAppointment(@NotNull @PathVariable("appointmentId") Long appointmentId, @NotNull @RequestBody AppointmentUpdateRequest appointmentUpdateRequest) throws JsonProcessingException {
         System.out.println(appointmentUpdateRequest);
@@ -73,6 +109,10 @@ public class AppointmentController {
                 .build();
     }
 
+    /**
+     * @param appointmentId
+     * @return
+     */
     @PostMapping("/approved/{appointmentId}")
     public APIResponse<Integer> checkInAppointment(@PathVariable Long appointmentId) {
         return APIResponse.<Integer>builder()
@@ -80,6 +120,10 @@ public class AppointmentController {
                 .build();
     }
 
+    /**
+     * @param appointmentId
+     * @return
+     */
     @PostMapping("/cancel/{appointmentId}")
     public APIResponse<Integer> cancelAppointment(@PathVariable Long appointmentId) {
         return APIResponse.<Integer>builder()
@@ -87,6 +131,12 @@ public class AppointmentController {
                 .build();
     }
 
+    /**
+     * @param accountId
+     * @param status
+     * @return
+     * @throws JsonProcessingException
+     */
     @GetMapping("/account/{accountId}")
     public APIResponse<List<AppointmentResponse>> getAppointmentsByStatus(@PathVariable("accountId") Long accountId, @RequestParam("status") String status) throws JsonProcessingException {
         return APIResponse.<List<AppointmentResponse>>builder()
@@ -94,6 +144,10 @@ public class AppointmentController {
                 .build();
     }
 
+    /**
+     * @param status
+     * @return
+     */
     @GetMapping("/status/{status}")
     public APIResponse<List<AppointmentResponse>> getByStatusAndCustomerId(@PathVariable("status") String status) {
 
@@ -102,8 +156,12 @@ public class AppointmentController {
                 .build();
     }
 
+    /**
+     * @param appointmentId
+     * @return
+     */
     @GetMapping("/isCheckin/{appointmentId}")
-    public APIResponse<?> getAppointment(@PathVariable Long appointmentId) {
+    public APIResponse<?> getAppointment(@PathVariable("appointmentId") Long appointmentId) {
         return APIResponse.builder()
                 .data(Map.of("isCheckIn:", appointmentService.checkInAppointment(appointmentId) == 1))
                 .build();
