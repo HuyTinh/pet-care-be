@@ -57,7 +57,7 @@ public class AccountController {
     @PostMapping()
     @ResponseStatus(HttpStatus.CREATED)
     APIResponse<AccountResponse> createAccount(@RequestBody AccountCreateRequest request) throws JsonProcessingException {
-        log.info("{}",request);
+        log.info("{}", request);
         return APIResponse.<AccountResponse>builder().code(1000).data(accountService.createAccountRequest(request)).build();
     }
 

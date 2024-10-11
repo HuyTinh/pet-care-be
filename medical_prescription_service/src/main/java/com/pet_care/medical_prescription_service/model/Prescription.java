@@ -21,11 +21,12 @@ public class Prescription {
 
     Long appointmentId;
 
+    @Builder.Default
     @Enumerated(EnumType.STRING)
-    PrescriptionStatus status;
+    PrescriptionStatus status = PrescriptionStatus.APPROVED;
 
     @OneToMany(mappedBy = "prescription", cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = true)
-    Set<PrescriptionDetail> prescriptionDetails;
+    Set<PrescriptionDetail> details;
 
-    Double prescriptionAmount;
+    Double totalMoney;
 }

@@ -19,7 +19,7 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableMethodSecurity
 public class SecurityConfig {
 
-    private final String[] PUBLIC_ENDPOINTS = {"/account/generate-token","/account",
+    private final String[] PUBLIC_ENDPOINTS = {"/account/generate-token", "/account",
             "/auth/token", "/auth/introspect", "/auth/logout", "/auth/google", "/auth/facebook"
     };
 
