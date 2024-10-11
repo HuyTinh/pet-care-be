@@ -8,6 +8,10 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 
 @ControllerAdvice
 public class APIExceptionHandler {
+    /**
+     * @param e
+     * @return
+     */
     @NotNull
     @ExceptionHandler(RuntimeException.class)
     ResponseEntity<APIResponse<?>> HandlingRuntimeException(@NotNull APIException e) {

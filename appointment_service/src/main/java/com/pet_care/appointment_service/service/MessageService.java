@@ -29,10 +29,12 @@ public class MessageService {
     @NotNull WebSocketService webSocketService;
 
 
+    /**
+     * @param message
+     */
     @JmsListener(destination = "receptionist-appointment-queue", containerFactory = "queueFactory")
     public void receiveMessage(String message) {
         petQueue.add(message);
-        System.out.println("Add: " + message + " to queue");
         try {
             Thread.sleep(1000);
         } catch (Exception e) {
@@ -41,10 +43,17 @@ public class MessageService {
     }
 
 
+    /**
+     * @param destination
+     * @param appointment
+     */
     public void sendMessage(@NotNull String destination, @NotNull String appointment) {
         jmsTemplate.convertAndSend(destination, appointment);
     }
 
+    /**
+     *
+     */
     @Scheduled(fixedRate = 1000)
     public void reportCurrentTime() {
         if (!petQueue.isEmpty()) {

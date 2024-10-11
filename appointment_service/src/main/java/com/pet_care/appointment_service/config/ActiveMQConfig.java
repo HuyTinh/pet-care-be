@@ -10,6 +10,9 @@ import org.springframework.jms.config.DefaultJmsListenerContainerFactory;
 import java.util.ArrayDeque;
 import java.util.Queue;
 
+/**
+ *
+ */
 @Configuration
 public class ActiveMQConfig {
     @NotNull
@@ -18,6 +21,9 @@ public class ActiveMQConfig {
         return new ArrayDeque<>();
     }
 
+    /**
+     * @return
+     */
     @NotNull
     @Bean
     public ConnectionFactory connectionFactory() {
@@ -27,6 +33,10 @@ public class ActiveMQConfig {
         return factory;
     }
 
+    /**
+     * @param connectionFactory
+     * @return
+     */
     @NotNull
     @Bean
     public DefaultJmsListenerContainerFactory topicFactory(@NotNull ConnectionFactory connectionFactory) {
@@ -38,6 +48,10 @@ public class ActiveMQConfig {
         return factory;
     }
 
+    /**
+     * @param connectionFactory
+     * @return
+     */
     @NotNull
     @Bean
     public DefaultJmsListenerContainerFactory queueFactory(@NotNull ConnectionFactory connectionFactory) {

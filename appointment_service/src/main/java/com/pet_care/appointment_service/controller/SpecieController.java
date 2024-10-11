@@ -13,6 +13,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+/**
+ *
+ */
 @RestController
 @RequestMapping("specie")
 @RequiredArgsConstructor
@@ -21,6 +24,9 @@ public class SpecieController {
 
     @NotNull SpecieService specieService;
 
+    /**
+     * @return
+     */
     @GetMapping
     public APIResponse<List<Specie>> getAllSpecie() {
         return APIResponse.<List<Specie>>builder().data(specieService.getAll()).build();

@@ -26,6 +26,9 @@ public class HospitalService {
 
     @NotNull HospitalServiceMapper hospitalServiceMapper;
 
+    /**
+     * @return
+     */
     @NotNull
     @Transactional(readOnly = true)
     public List<HospitalServiceResponse> getAllHospitalService() {
@@ -33,6 +36,10 @@ public class HospitalService {
         return hospitalServices.stream().map(hospitalServiceMapper::toDto).collect(Collectors.toList());
     }
 
+    /**
+     * @param name
+     * @return
+     */
     @Transactional(readOnly = true)
     public HospitalServiceResponse getHospitalServiceById(@NotNull String name) {
         HospitalServiceEntity hospitalServiceEntity = hospitalServiceRepository
@@ -41,12 +48,21 @@ public class HospitalService {
         return hospitalServiceMapper.toDto(hospitalServiceEntity);
     }
 
+    /**
+     * @param hospitalServiceRequest
+     * @return
+     */
     public HospitalServiceResponse createHospitalService(HospitalServiceRequest hospitalServiceRequest) {
         HospitalServiceEntity hospitalService = hospitalServiceMapper.toEntity(hospitalServiceRequest);
         System.out.println(hospitalService);
         return hospitalServiceMapper.toDto(hospitalServiceRepository.save(hospitalService));
     }
 
+    /**
+     * @param hospitalService
+     * @param hospitalServiceRequest
+     * @return
+     */
     public HospitalServiceResponse updateHospitalService(@NotNull String hospitalService, HospitalServiceRequest hospitalServiceRequest) {
         HospitalServiceEntity existHospitalServiceEntity = hospitalServiceRepository
                 .findById(hospitalService)
@@ -56,6 +72,9 @@ public class HospitalService {
         return hospitalServiceMapper.toDto(hospitalServiceRepository.save(updatedHospitalServiceEntity));
     }
 
+    /**
+     * @param hospitalService
+     */
     public void deleteHospitalService(@NotNull String hospitalService) {
         hospitalServiceRepository.deleteById(hospitalService);
     }

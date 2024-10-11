@@ -32,7 +32,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.*;
-import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toSet;
 
 @Slf4j
 @Service
@@ -40,7 +42,7 @@ import java.util.stream.Collectors;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class AppointmentService {
     @NotNull
-    private final HospitalServiceMapper hospitalServiceMapper;
+    HospitalServiceMapper hospitalServiceMapper;
 
     @NotNull AppointmentRepository appointmentRepository;
 
@@ -58,6 +60,13 @@ public class AppointmentService {
 
     @NotNull PetMapper petMapper;
 
+    /**
+     * @param appointmentId
+     * @param appointmentUpdateRequest
+     * @return
+     * @throws JsonProcessingException
+     */
+    @Transactional
     public AppointmentResponse updateAppointment(@NotNull Long appointmentId, @NotNull AppointmentUpdateRequest appointmentUpdateRequest) throws JsonProcessingException {
         Appointment existingAppointment = appointmentRepository.findById(appointmentId)
                 .orElseThrow(() -> new APIException(ErrorCode.APPOINTMENT_NOT_FOUND));
@@ -72,7 +81,7 @@ public class AppointmentService {
         petRepository.saveAll(appointmentUpdateRequest.getPets().stream()
                 .peek(petCreateRequest -> petCreateRequest
                         .setAppointment(existingAppointment))
-                .collect(Collectors.toSet()));
+                .collect(toSet()));
 
         Appointment updateAppointment = appointmentRepository.save(existingAppointment);
 
@@ -81,6 +90,9 @@ public class AppointmentService {
         return appointmentMapper.toDto(updateAppointment);
     }
 
+    /**
+     * @return
+     */
     @NotNull
     @Transactional(readOnly = true)
     public List<AppointmentResponse> getAllAppointment() {
@@ -89,7 +101,7 @@ public class AppointmentService {
             appointmentResponse.setPets(petRepository
                     .findByAppointment_Id(appointment.getId()).stream()
                     .map(petMapper::toDto)
-                    .collect(Collectors.toSet()));
+                    .collect(toSet()));
             return appointmentResponse;
         }).toList();
 
@@ -98,6 +110,10 @@ public class AppointmentService {
         return appointmentResponses;
     }
 
+    /**
+     * @param appointmentId
+     * @return
+     */
     @NotNull
     @Transactional(readOnly = true)
     public AppointmentResponse getAppointmentById(@NotNull Long appointmentId) {
@@ -111,13 +127,17 @@ public class AppointmentService {
         appointmentResponse.setPets(petRepository
                 .findByAppointment_Id(existingAppointment.getId()).stream()
                 .map(petMapper::toDto)
-                .collect(Collectors.toSet()));
+                .collect(toSet()));
 
         log.info("Appointment Service: Get appointment by id successful");
 
         return appointmentResponse;
     }
 
+    /**
+     * @param accountId
+     * @return
+     */
     @NotNull
     @Transactional(readOnly = true)
     public List<AppointmentResponse> getAllAppointmentByAccountId(Long accountId) {
@@ -128,15 +148,19 @@ public class AppointmentService {
                     appointmentResponse.setPets(new HashSet<>(petRepository
                             .findByAppointment_Id(appointment.getId())).stream()
                             .map(petMapper::toDto)
-                            .collect(Collectors.toSet()));
+                            .collect(toSet()));
                     return appointmentResponse;
-                }).collect(Collectors.toList());
+                }).collect(toList());
 
         log.info("Appointment Service: Get appointment by account id successful");
 
         return appointmentResponses;
     }
 
+    /**
+     * @param appointmentId
+     * @return
+     */
     public int checkInAppointment(Long appointmentId) {
         int checkIn = appointmentRepository
                 .checkInAppointment(appointmentId);
@@ -146,6 +170,10 @@ public class AppointmentService {
         return checkIn;
     }
 
+    /**
+     * @param appointmentId
+     * @return
+     */
     public int cancelAppointment(Long appointmentId) {
         int cancel = appointmentRepository
                 .cancelledAppointment(appointmentId);
@@ -155,6 +183,10 @@ public class AppointmentService {
         return cancel;
     }
 
+    /**
+     * @param status
+     * @return
+     */
     @NotNull
     @Transactional(readOnly = true)
     public List<AppointmentResponse> getByStatus(String status) {
@@ -162,13 +194,18 @@ public class AppointmentService {
                 .findAppointmentByStatus(AppointmentStatus
                         .valueOf(status)).stream()
                 .map(appointmentMapper::toDto)
-                .collect(Collectors.toList());
+                .collect(toList());
 
         log.info("Appointment Service: Get appointment by status successful");
 
         return appointmentResponses;
     }
 
+    /**
+     * @param status
+     * @param accountId
+     * @return
+     */
     @NotNull
     @Transactional(readOnly = true)
     public List<AppointmentResponse> getByStatusAndAccountId(String status, Long accountId) {
@@ -185,14 +222,18 @@ public class AppointmentService {
                                 .setPets(new HashSet<>(petRepository
                                         .findByAppointment_Id(appointment.getId()))
                                         .stream().map(petMapper::toDto)
-                                        .collect(Collectors.toSet()));
+                                        .collect(toSet()));
                         return appointmentResponse;
-                    }).collect(Collectors.toList());
+                    }).collect(toList());
         } catch (Exception e) {
             throw new APIException(ErrorCode.CUSTOMER_NOT_FOUND);
         }
     }
 
+    /**
+     * @param appointmentDate
+     * @return
+     */
     @NotNull
     @Transactional(readOnly = true)
     public List<AppointmentResponse> getAllAppointmentByAppointmentDate(Date appointmentDate) {
@@ -203,16 +244,23 @@ public class AppointmentService {
                     appointmentResponse.setPets(new HashSet<>(petRepository
                             .findByAppointment_Id(appointment.getId())).stream()
                             .map(petMapper::toDto)
-                            .collect(Collectors.toSet()));
+                            .collect(toSet()));
                     return appointmentResponse;
-                }).collect(Collectors.toList());
+                }).collect(toList());
 
         log.info("Appointment Service: Get appointment by appointment date and status in successful");
 
         return appointmentResponses;
     }
 
+    /**
+     * @param startDate
+     * @param endDate
+     * @param statues
+     * @return
+     */
     @NotNull
+    @Transactional(readOnly = true)
     public List<AppointmentResponse> filterAppointments(@NotNull LocalDate startDate, @NotNull LocalDate endDate, @Nullable Set<String> statues) {
 
         Date sDate = Date.from(startDate.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant());
@@ -232,13 +280,19 @@ public class AppointmentService {
         appointmentResponses = appointmentResponses.stream().peek(appointmentResponse -> appointmentResponse.setPets(new HashSet<>(petRepository
                 .findByAppointment_Id(appointmentResponse.getId())).stream()
                 .map(petMapper::toDto)
-                .collect(Collectors.toSet()))).toList();
+                .collect(toSet()))).toList();
 
         log.info("Appointment Service: Filter appointments successful");
 
         return appointmentResponses;
     }
 
+    /**
+     * @param appointmentCreateRequest
+     * @param notification
+     * @return
+     * @throws JsonProcessingException
+     */
     @NotNull
     @Transactional
     public AppointmentResponse createAppointment(@NotNull AppointmentCreateRequest appointmentCreateRequest, Boolean notification) throws JsonProcessingException {
@@ -258,7 +312,7 @@ public class AppointmentService {
         Set<Pet> pets = appointmentCreateRequest.getPets().stream()
                 .map(petMapper::toEntity)
                 .peek(pet -> pet.setAppointment(createSuccess))
-                .collect(Collectors.toSet());
+                .collect(toSet());
 
         petRepository.saveAll(pets);
 
@@ -288,8 +342,8 @@ public class AppointmentService {
             messageService.sendMessage("appointment-success-notification-queue", emailBookingSuccessful.getContent());
         }
 
-        appointmentResponse.setPets(pets.stream().map(petMapper::toDto).collect(Collectors.toSet()));
-        appointmentResponse.setServices(bookingService.stream().map(hospitalServiceMapper::toDto).collect(Collectors.toSet()));
+        appointmentResponse.setPets(pets.stream().map(petMapper::toDto).collect(toSet()));
+        appointmentResponse.setServices(bookingService.stream().map(hospitalServiceMapper::toDto).collect(toSet()));
 
         if (appointmentCreateRequest.getAccountId() == null) {
             appointmentResponse.setAccount("GUEST");

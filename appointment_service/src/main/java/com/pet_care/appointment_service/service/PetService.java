@@ -1,9 +1,10 @@
 package com.pet_care.appointment_service.service;
 
+import com.pet_care.appointment_service.dto.response.PetResponse;
 import com.pet_care.appointment_service.exception.APIException;
 import com.pet_care.appointment_service.exception.ErrorCode;
-import com.pet_care.appointment_service.model.Specie;
-import com.pet_care.appointment_service.repository.SpecieRepository;
+import com.pet_care.appointment_service.mapper.PetMapper;
+import com.pet_care.appointment_service.repository.PetRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -13,27 +14,30 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+import static java.util.stream.Collectors.toList;
+
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class SpecieService {
-    @NotNull SpecieRepository specieRepository;
+public class PetService {
+    @NotNull PetRepository petRepository;
+    @NotNull PetMapper petMapper;
 
     /**
      * @return
      */
-    @NotNull
     @Transactional(readOnly = true)
-    public List<Specie> getAll() {
-        return specieRepository.findAll();
+    public List<PetResponse> getAllPet() {
+        return petRepository.findAll().stream()
+                .map(petMapper::toDto).collect(toList());
     }
 
     /**
-     * @param name
+     * @param petId
      * @return
      */
     @Transactional(readOnly = true)
-    public Specie getByName(String name) {
-        return specieRepository.findById(name).orElseThrow(() -> new APIException(ErrorCode.SPECIE_NOT_FOUND));
+    public PetResponse getPetById(Long petId) {
+        return petRepository.findById(petId).map(petMapper::toDto).orElseThrow(() -> new APIException(ErrorCode.PET_NOT_FOUND));
     }
 }

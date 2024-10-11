@@ -8,7 +8,9 @@ import java.util.List;
 
 @Repository
 public interface PetRepository extends JpaRepository<Pet, Long> {
+    /**
+     * @param appointment_id
+     * @return
+     */
     List<Pet> findByAppointment_Id(Long appointment_id);
-
-    void deleteAllByAppointment_Id(Long appointment_id);
 }

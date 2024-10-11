@@ -16,6 +16,9 @@ import org.springframework.stereotype.Controller;
 
 import java.util.Map;
 
+/**
+ *
+ */
 @Controller
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
@@ -31,6 +34,10 @@ public class WebsocketController {
 
     @NotNull MessageService messageService;
 
+    /**
+     * @param message
+     * @throws Exception
+     */
     @MessageMapping("/sendMessage")
     public void sendMessage(@NotNull @Payload Map<String, String> message) throws Exception {
         // Xử lý tin nhắn tại đây
