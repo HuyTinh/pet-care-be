@@ -9,6 +9,9 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class ActiveMQConfig {
 
+    /**
+     * @return
+     */
     @NotNull
     @Bean
     public ConnectionFactory connectionFactory() {

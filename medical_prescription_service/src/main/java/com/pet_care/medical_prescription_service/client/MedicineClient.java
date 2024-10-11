@@ -7,10 +7,20 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
+import java.util.List;
+import java.util.Set;
+
 @Service
-@FeignClient(name = "medicineClient", url = "http://localhost:8085/api/v1/medicine-service/medicine")
+@FeignClient(name = "medicineClient", url = "http://localhost:8085/api/v1/medicine-service")
 public interface MedicineClient {
-    @GetMapping("/{medicineId}")
+    /**
+     * @param medicineId
+     * @return
+     */
+    @GetMapping("/medicine/{medicineId}")
     APIResponse<Medicine> getMedicineById(@PathVariable("medicineId") Long medicineId);
+
+    @GetMapping("/medicine/in/{medicineIds}")
+    APIResponse<List<Medicine>> getMedicineInIds(@PathVariable("medicineIds") Set<Long> medicineIds);
 }
 

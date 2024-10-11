@@ -20,11 +20,18 @@ import java.util.List;
 public class PrescriptionController {
     @NotNull PrescriptionService prescriptionService;
 
+    /**
+     * @return
+     */
     @GetMapping
-    public List<PrescriptionResponse> getAllPrescriptions() {
+    public List<PrescriptionResponse> getAllPrescription() {
         return prescriptionService.getAllPrescriptions();
     }
 
+    /**
+     * @param prescriptionId
+     * @return
+     */
     @GetMapping("/{prescriptionId}")
     public PrescriptionResponse getPrescriptionById(@NotNull @PathVariable("prescriptionId") Long prescriptionId) {
         return prescriptionService.getPrescriptionById(prescriptionId);

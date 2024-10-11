@@ -12,6 +12,10 @@ import java.util.List;
 @Service
 @FeignClient(name = "uploadClient", url = "http://localhost:8089/api/v1/upload-service/image/upload")
 public interface UploadImageClient {
+    /**
+     * @param files
+     * @return
+     */
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     List<String> uploadImage(@RequestPart("files") List<MultipartFile> files);
 }

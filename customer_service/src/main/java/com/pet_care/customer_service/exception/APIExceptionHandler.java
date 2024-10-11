@@ -11,9 +11,13 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 @ControllerAdvice
 public class APIExceptionHandler {
 
+    /**
+     * @param e
+     * @return
+     */
     @NotNull
     @ExceptionHandler(APIException.class)
-    public ResponseEntity<APIResponse<APIException>> HandlingCustomerException(@NotNull APIException e) {
+    public ResponseEntity<APIResponse<?>> HandlingCustomerException(@NotNull APIException e) {
         ErrorCode errorCode = e.getErrorCode();
 
         return ResponseEntity.status(errorCode.getStatus()).body(APIResponse.<APIException>builder()

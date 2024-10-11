@@ -16,6 +16,10 @@ public class MessageService {
 
     @NotNull ObjectMapper objectMapper;
 
+    /**
+     * @param destination
+     * @param appointment
+     */
     public void sendMessageQueue(@NotNull String destination, @NotNull String appointment) {
         jmsTemplate.convertAndSend(destination, appointment);
     }

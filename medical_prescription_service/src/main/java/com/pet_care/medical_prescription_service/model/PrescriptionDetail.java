@@ -21,6 +21,6 @@ public class PrescriptionDetail {
     Long medicineId;
 
     @ManyToOne
-    @JoinColumn(name = "prescriptionId")
+    @JoinColumn(name = "prescription_id")
     Prescription prescription;
 }

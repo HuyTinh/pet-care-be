@@ -8,13 +8,26 @@ import org.mapstruct.*;
 
 @Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE, componentModel = MappingConstants.ComponentModel.SPRING)
 public interface MedicineMapper {
+    /**
+     * @param medicineCreateRequest
+     * @return
+     */
     @Mapping(target = "calculationUnits", ignore = true)
     @Mapping(target = "manufactures", ignore = true)
     @Mapping(target = "locations", ignore = true)
     Medicine toEntity(MedicineCreateRequest medicineCreateRequest);
 
+    /**
+     * @param medicine
+     * @return
+     */
     MedicineResponse toDto(Medicine medicine);
 
+    /**
+     * @param medicineUpdateRequest
+     * @param medicine
+     * @return
+     */
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(target = "calculationUnits", ignore = true)
     @Mapping(target = "manufactures", ignore = true)

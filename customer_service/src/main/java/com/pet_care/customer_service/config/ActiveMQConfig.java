@@ -9,6 +9,9 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class ActiveMQConfig {
 
+    /**
+     * @return
+     */
     @NotNull
     @Bean
     public ConnectionFactory connectionFactory() {
@@ -18,20 +21,4 @@ public class ActiveMQConfig {
         return factory;
     }
 
-//    @Bean
-//    public DefaultJmsListenerContainerFactory topicFactory(ConnectionFactory connectionFactory) {
-//        DefaultJmsListenerContainerFactory factory = new DefaultJmsListenerContainerFactory();
-//        factory.setConnectionFactory(connectionFactory);
-//        factory.setSubscriptionDurable(true); // Enable durable subscriptions
-//        factory.setClientId("durableClientId");
-//        factory.setPubSubDomain(true); // Set to true for topics
-//        return factory;
-//    }
-//
-//    @Bean
-//    public DefaultJmsListenerContainerFactory queueFactory(ConnectionFactory connectionFactory) {
-//        DefaultJmsListenerContainerFactory factory = new DefaultJmsListenerContainerFactory();
-//        factory.setConnectionFactory(connectionFactory);
-//        return factory;
-//    }
 }
