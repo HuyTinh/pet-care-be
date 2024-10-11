@@ -2,6 +2,7 @@ package com.pet_care.customer_service.exception;
 
 import com.pet_care.customer_service.dto.response.APIResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -10,8 +11,9 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 @ControllerAdvice
 public class APIExceptionHandler {
 
+    @NotNull
     @ExceptionHandler(APIException.class)
-    public ResponseEntity<APIResponse<APIException>> HandlingCustomerException(APIException e) {
+    public ResponseEntity<APIResponse<APIException>> HandlingCustomerException(@NotNull APIException e) {
         ErrorCode errorCode = e.getErrorCode();
 
         return ResponseEntity.status(errorCode.getStatus()).body(APIResponse.<APIException>builder()
@@ -20,8 +22,9 @@ public class APIExceptionHandler {
                 .build());
     }
 
+    @NotNull
     @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<APIResponse<RuntimeException>> HandlingRuntimeException(RuntimeException e) {
+    public ResponseEntity<APIResponse<RuntimeException>> HandlingRuntimeException(@NotNull RuntimeException e) {
         log.error("RuntimeException", e);
         ErrorCode errorCode = ErrorCode.valueOf(e.getMessage());
 

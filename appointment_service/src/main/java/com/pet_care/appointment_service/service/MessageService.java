@@ -5,6 +5,7 @@ import com.pet_care.appointment_service.config.WebSocketHandler;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.jms.annotation.JmsListener;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -17,15 +18,15 @@ import java.util.Queue;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class MessageService {
 
-    Queue<String> petQueue;
+    @NotNull Queue<String> petQueue;
 
-    JmsTemplate jmsTemplate;
+    @NotNull JmsTemplate jmsTemplate;
 
-    ObjectMapper objectMapper;
+    @NotNull ObjectMapper objectMapper;
 
-    WebSocketHandler webSocketHandler;
+    @NotNull WebSocketHandler webSocketHandler;
 
-    WebSocketService webSocketService;
+    @NotNull WebSocketService webSocketService;
 
 
     @JmsListener(destination = "receptionist-appointment-queue", containerFactory = "queueFactory")
@@ -40,7 +41,7 @@ public class MessageService {
     }
 
 
-    public void sendMessage(String destination, String appointment) {
+    public void sendMessage(@NotNull String destination, @NotNull String appointment) {
         jmsTemplate.convertAndSend(destination, appointment);
     }
 

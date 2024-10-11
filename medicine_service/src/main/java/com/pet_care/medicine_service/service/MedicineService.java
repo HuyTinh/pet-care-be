@@ -14,6 +14,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
@@ -24,30 +25,33 @@ import java.util.List;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class MedicineService {
-    MedicineRepository medicineRepository;
+    @NotNull MedicineRepository medicineRepository;
 
-    LocationRepository locationRepository;
+    @NotNull LocationRepository locationRepository;
 
-    CalculationUnitRepository calculationUnitRepository;
+    @NotNull CalculationUnitRepository calculationUnitRepository;
 
-    ManufactureRepository manufactureRepository;
+    @NotNull ManufactureRepository manufactureRepository;
 
-    MedicineMapper medicineMapper;
+    @NotNull MedicineMapper medicineMapper;
 
+    @NotNull
     public List<Medicine> getAllMedicine() {
         List<Medicine> medicineList = medicineRepository.findAll();
         log.info("Find all medicine");
         return medicineList;
     }
 
-    public Medicine getMedicineById(Long id) {
+    @NotNull
+    public Medicine getMedicineById(@NotNull Long id) {
         Medicine medicineList = medicineRepository.findById(id)
                 .orElseThrow(() -> new APIException(ErrorCode.MEDICINE_NOT_FOUND));
         log.info("Find medicine by id: {}", medicineList.getId());
         return medicineList;
     }
 
-    public Medicine createMedicine(MedicineCreateRequest medicineCreateRequest) {
+    @NotNull
+    public Medicine createMedicine(@NotNull MedicineCreateRequest medicineCreateRequest) {
         Medicine newMedicine = medicineMapper.toEntity(medicineCreateRequest);
 
         newMedicine.setCalculationUnits(
@@ -69,7 +73,8 @@ public class MedicineService {
         return savedMedicine;
     }
 
-    public Medicine updateMedicine(Long medicineId, MedicineUpdateRequest medicineUpdateRequest) {
+    @NotNull
+    public Medicine updateMedicine(@NotNull Long medicineId, @NotNull MedicineUpdateRequest medicineUpdateRequest) {
         Medicine existingMedicine = medicineRepository.findById(medicineId).orElseThrow(() -> new APIException(ErrorCode.MEDICINE_NOT_FOUND));
 
         existingMedicine.setCalculationUnits(
@@ -93,7 +98,7 @@ public class MedicineService {
         return updatedMedicine;
     }
 
-    public void deleteMedicine(Long medicineId) {
+    public void deleteMedicine(@NotNull Long medicineId) {
         medicineRepository.deleteById(medicineId);
         log.info("Delete medicine successful");
     }

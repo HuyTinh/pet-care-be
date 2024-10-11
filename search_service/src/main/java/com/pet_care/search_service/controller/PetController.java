@@ -8,6 +8,7 @@ import com.pet_care.search_service.service.PetService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -20,9 +21,9 @@ import java.util.Objects;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class PetController {
 
-    PetService petService;
+    @NotNull PetService petService;
 
-    ESService esService;
+    @NotNull ESService esService;
 
     @GetMapping()
     Iterable<Pet> getAllPets() {
@@ -30,10 +31,11 @@ public class PetController {
     }
 
     @PostMapping()
-    Pet insertPet(@RequestBody Pet pet) {
+    Pet insertPet(@NotNull @RequestBody Pet pet) {
         return petService.insertPet(pet);
     }
 
+    @NotNull
     @GetMapping("/autoSuggestion/{partialPetName}")
     List<String> autoSuggestion(@PathVariable("partialPetName") String partialPetName) throws IOException {
         SearchResponse<Pet> searchResponse = esService.autoSuggestPet(partialPetName);

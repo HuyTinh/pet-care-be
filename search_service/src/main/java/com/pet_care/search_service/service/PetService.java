@@ -5,18 +5,21 @@ import com.pet_care.search_service.repository.PetRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class PetService {
-    PetRepository petRepository;
+    @NotNull PetRepository petRepository;
 
-    public Pet insertPet(Pet pet) {
+    @NotNull
+    public Pet insertPet(@NotNull Pet pet) {
         return petRepository.save(pet);
     }
 
+    @NotNull
     public Iterable<Pet> getAllPets() {
         return petRepository.findAll();
     }

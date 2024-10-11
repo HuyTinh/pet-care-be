@@ -3,6 +3,8 @@ package com.pet_care.identity_service.config;
 import com.nimbusds.jose.JOSEException;
 import com.pet_care.identity_service.dto.request.IntrospectRequest;
 import com.pet_care.identity_service.service.AuthenticationService;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
@@ -24,10 +26,11 @@ public class CustomJwtDecoder implements JwtDecoder {
     @Autowired
     private AuthenticationService authenticationService;
 
+    @Nullable
     private NimbusJwtDecoder nimbusJwtDecoder = null;
 
     @Override
-    public Jwt decode(String token) throws JwtException {
+    public Jwt decode(@NotNull String token) throws JwtException {
 
         try {
             var response = authenticationService.introspect(IntrospectRequest.builder()

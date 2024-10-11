@@ -16,5 +16,8 @@ public interface MedicineMapper {
     MedicineResponse toDto(Medicine medicine);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    @Mapping(target = "calculationUnits", ignore = true)
+    @Mapping(target = "manufactures", ignore = true)
+    @Mapping(target = "locations", ignore = true)
     Medicine partialUpdate(MedicineUpdateRequest medicineUpdateRequest, @MappingTarget Medicine medicine);
 }

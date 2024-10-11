@@ -9,6 +9,7 @@ import com.pet_care.appointment_service.service.AppointmentService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.web.bind.annotation.*;
 
 import java.text.ParseException;
@@ -23,7 +24,7 @@ import java.util.Set;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class AppointmentController {
-    AppointmentService appointmentService;
+    @NotNull AppointmentService appointmentService;
 
     @GetMapping
     public APIResponse<List<AppointmentResponse>> getAllAppointment(@RequestParam(value = "startDate", required = false) String startDate, @RequestParam(value = "endDate", required = false) String endDate) throws JsonProcessingException {
@@ -34,8 +35,8 @@ public class AppointmentController {
 
     @GetMapping("/filter")
     public APIResponse<List<AppointmentResponse>> getAllAppointmentByStartDateAndEndDate(
-            @RequestParam(value = "startDate", required = false) LocalDate startDate,
-            @RequestParam(value = "endDate", required = false) LocalDate endDate,
+            @NotNull @RequestParam(value = "startDate", required = false) LocalDate startDate,
+            @NotNull @RequestParam(value = "endDate", required = false) LocalDate endDate,
             @RequestParam(value = "statues", required = false) Set<String> statues) throws JsonProcessingException {
 
         return APIResponse.<List<AppointmentResponse>>builder()
@@ -44,7 +45,7 @@ public class AppointmentController {
     }
 
     @GetMapping("/{appointmentId}")
-    public APIResponse<AppointmentResponse> getAppointmentById(@PathVariable("appointmentId") Long appointmentId) throws JsonProcessingException {
+    public APIResponse<AppointmentResponse> getAppointmentById(@NotNull @PathVariable("appointmentId") Long appointmentId) throws JsonProcessingException {
         return APIResponse.<AppointmentResponse>builder()
                 .data(appointmentService.getAppointmentById(appointmentId))
                 .build();
@@ -58,14 +59,14 @@ public class AppointmentController {
     }
 
     @PostMapping
-    public APIResponse<AppointmentResponse> createAppointment(@RequestBody AppointmentCreateRequest appointmentCreateRequest, @RequestParam(value = "emailNotification") boolean emailNotification) throws JsonProcessingException {
+    public APIResponse<AppointmentResponse> createAppointment(@NotNull @RequestBody AppointmentCreateRequest appointmentCreateRequest, @RequestParam(value = "emailNotification") boolean emailNotification) throws JsonProcessingException {
         return APIResponse.<AppointmentResponse>builder()
                 .data(appointmentService.createAppointment(appointmentCreateRequest, emailNotification))
                 .build();
     }
 
     @PutMapping("/{appointmentId}")
-    public APIResponse<AppointmentResponse> updateAppointment(@PathVariable("appointmentId") Long appointmentId, @RequestBody AppointmentUpdateRequest appointmentUpdateRequest) throws JsonProcessingException {
+    public APIResponse<AppointmentResponse> updateAppointment(@NotNull @PathVariable("appointmentId") Long appointmentId, @NotNull @RequestBody AppointmentUpdateRequest appointmentUpdateRequest) throws JsonProcessingException {
         System.out.println(appointmentUpdateRequest);
         return APIResponse.<AppointmentResponse>builder()
                 .data(appointmentService.updateAppointment(appointmentId, appointmentUpdateRequest))

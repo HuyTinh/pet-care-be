@@ -13,6 +13,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
@@ -24,15 +25,15 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class RoleService {
-    RoleRepository roleRepository;
+    @NotNull RoleRepository roleRepository;
 
-    RoleMapper roleMapper;
+    @NotNull RoleMapper roleMapper;
 
-    PermissionMapper permissionMapper;
+    @NotNull PermissionMapper permissionMapper;
 
-    PermissionRepository permissionRepository;
+    @NotNull PermissionRepository permissionRepository;
 
-    public RoleResponse create(RoleCreationRequest request) {
+    public RoleResponse create(@NotNull RoleCreationRequest request) {
         var role = roleMapper.toEntity(request);
 
         var listPermission = permissionRepository.findAllById(request.getPermissions());
@@ -41,15 +42,16 @@ public class RoleService {
         return roleMapper.toDto(roleRepository.save(role));
     }
 
+    @NotNull
     public List<RoleResponse> getAll() {
         return roleRepository.findAll().stream().map(roleMapper::toDto).collect(Collectors.toList());
     }
 
-    public RoleResponse getById(String role) {
+    public RoleResponse getById(@NotNull String role) {
         return roleRepository.findById(role).map(roleMapper::toDto).orElseThrow(() -> new APIException(ErrorCode.ROLE_NOT_EXISTED));
     }
 
-    public RoleResponse update(String role, RoleUpdateRequest request) {
+    public RoleResponse update(@NotNull String role, @NotNull RoleUpdateRequest request) {
         var updatedRole = roleRepository.findById(role).orElseThrow(() -> new APIException(ErrorCode.ROLE_NOT_EXISTED));
 
         var listPermission = permissionRepository.findAllById(request.getPermissions());
@@ -58,7 +60,7 @@ public class RoleService {
         return roleMapper.toDto(roleRepository.save(updatedRole));
     }
 
-    public void delete(String role) {
+    public void delete(@NotNull String role) {
         roleRepository.deleteById(role);
     }
 }

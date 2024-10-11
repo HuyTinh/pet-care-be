@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Service;
 
@@ -12,11 +13,11 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class MessageService {
-    JmsTemplate jmsTemplate;
+    @NotNull JmsTemplate jmsTemplate;
 
-    ObjectMapper objectMapper;
+    @NotNull ObjectMapper objectMapper;
 
-    public void sendMessageQueue(String destination, String customer) throws JsonProcessingException {
+    public void sendMessageQueue(@NotNull String destination, @NotNull String customer) throws JsonProcessingException {
         jmsTemplate.convertAndSend(destination, customer);
     }
 }

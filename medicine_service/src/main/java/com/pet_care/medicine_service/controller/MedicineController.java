@@ -8,6 +8,7 @@ import com.pet_care.medicine_service.service.MedicineService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,7 +19,7 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class MedicineController {
 
-    MedicineService medicineService;
+    @NotNull MedicineService medicineService;
 
     @GetMapping
     public APIResponse<List<Medicine>> getAllMedicine() {
@@ -28,28 +29,28 @@ public class MedicineController {
     }
 
     @GetMapping("{medicineId}")
-    public APIResponse<Medicine> getMedicineById(@PathVariable("medicineId") Long medicineId) {
+    public APIResponse<Medicine> getMedicineById(@NotNull @PathVariable("medicineId") Long medicineId) {
         return APIResponse.<Medicine>builder()
                 .data(medicineService.getMedicineById(medicineId))
                 .build();
     }
 
     @PostMapping
-    public APIResponse<Medicine> createMedicine(@RequestBody MedicineCreateRequest medicineCreateRequest) {
+    public APIResponse<Medicine> createMedicine(@NotNull @RequestBody MedicineCreateRequest medicineCreateRequest) {
         return APIResponse.<Medicine>builder()
                 .data(medicineService.createMedicine(medicineCreateRequest))
                 .build();
     }
 
     @PutMapping("/{medicineId}")
-    public APIResponse<Medicine> updateMedicine(@PathVariable("medicineId") Long medicineId, @RequestBody MedicineUpdateRequest medicineUpdateRequest) {
+    public APIResponse<Medicine> updateMedicine(@NotNull @PathVariable("medicineId") Long medicineId, @NotNull @RequestBody MedicineUpdateRequest medicineUpdateRequest) {
         return APIResponse.<Medicine>builder()
                 .data(medicineService.updateMedicine(medicineId, medicineUpdateRequest))
                 .build();
     }
 
     @DeleteMapping("/{medicineId}")
-    public APIResponse<Medicine> deleteMedicine(@PathVariable("medicineId") Long medicineId, @RequestBody MedicineUpdateRequest medicineUpdateRequest) {
+    public APIResponse<Medicine> deleteMedicine(@NotNull @PathVariable("medicineId") Long medicineId, @RequestBody MedicineUpdateRequest medicineUpdateRequest) {
         medicineService.deleteMedicine(medicineId);
         return APIResponse.<Medicine>builder()
                 .message("Delete medicine successful")

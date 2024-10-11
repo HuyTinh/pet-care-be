@@ -15,6 +15,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,14 +27,17 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class PrescriptionService {
+    @NotNull
     private final PrescriptionDetailMapper prescriptionDetailMapper;
-    PrescriptionRepository PrescriptionRepository;
+    @NotNull PrescriptionRepository PrescriptionRepository;
 
-    PrescriptionMapper prescriptionMapper;
+    @NotNull PrescriptionMapper prescriptionMapper;
 
-    AppointmentClient appointmentClient;
+    @NotNull AppointmentClient appointmentClient;
+    @NotNull
     private final PrescriptionRepository prescriptionRepository;
 
+    @NotNull
     @Transactional(readOnly = true)
     public List<PrescriptionResponse> getAllPrescriptions() {
         List<Prescription> prescriptions = PrescriptionRepository.findAll();
@@ -53,8 +57,9 @@ public class PrescriptionService {
         return prescriptionResponses;
     }
 
+    @NotNull
     @Transactional(readOnly = true)
-    public PrescriptionResponse getPrescriptionById(Long prescriptionId) {
+    public PrescriptionResponse getPrescriptionById(@NotNull Long prescriptionId) {
         Prescription prescriptions = PrescriptionRepository.findById(prescriptionId)
                 .orElseThrow(() -> new APIException(ErrorCode.PRESCRIPTION_NOT_FOUND));
 
@@ -69,7 +74,7 @@ public class PrescriptionService {
     }
 
     @Transactional(readOnly = true)
-    public PrescriptionResponse createPrescription(PrescriptionCreateRequest prescriptionCreateRequest) {
+    public PrescriptionResponse createPrescription(@NotNull PrescriptionCreateRequest prescriptionCreateRequest) {
         Prescription newPrescription = prescriptionMapper
                 .toEntity(prescriptionCreateRequest);
 

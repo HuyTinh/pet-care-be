@@ -5,6 +5,7 @@ import com.pet_care.medical_prescription_service.service.PrescriptionService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,7 +18,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class PrescriptionController {
-    PrescriptionService prescriptionService;
+    @NotNull PrescriptionService prescriptionService;
 
     @GetMapping
     public List<PrescriptionResponse> getAllPrescriptions() {
@@ -25,7 +26,7 @@ public class PrescriptionController {
     }
 
     @GetMapping("/{prescriptionId}")
-    public PrescriptionResponse getPrescriptionById(@PathVariable("prescriptionId") Long prescriptionId) {
+    public PrescriptionResponse getPrescriptionById(@NotNull @PathVariable("prescriptionId") Long prescriptionId) {
         return prescriptionService.getPrescriptionById(prescriptionId);
     }
 

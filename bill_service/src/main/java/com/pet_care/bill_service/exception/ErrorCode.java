@@ -4,6 +4,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.http.HttpStatus;
 
 @Getter
@@ -15,6 +16,6 @@ public enum ErrorCode {
     ;
 
     int code;
-    String message;
-    HttpStatus status;
+    @NotNull String message;
+    @NotNull HttpStatus status;
 }

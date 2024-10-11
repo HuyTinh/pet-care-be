@@ -10,6 +10,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,7 +22,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class RoleController {
-    RoleService roleService;
+    @NotNull RoleService roleService;
 
     @PostMapping
     @PreAuthorize("hasRole('HOSPITAL_ADMINISTRATOR')")
@@ -33,7 +34,7 @@ public class RoleController {
 
     @PutMapping("/{role}")
     @PreAuthorize("hasRole('HOSPITAL_ADMINISTRATOR')")
-    APIResponse<RoleResponse> update(@PathVariable String role, @RequestBody RoleUpdateRequest request) {
+    APIResponse<RoleResponse> update(@PathVariable String role, @NotNull @RequestBody RoleUpdateRequest request) {
         return APIResponse.<RoleResponse>builder()
                 .data(roleService.update(role, request))
                 .build();

@@ -29,6 +29,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -48,23 +49,23 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class AuthenticationService {
-    AccountRepository accountRepository;
+    @NotNull AccountRepository accountRepository;
 
-    InvalidatedTokenRepository invalidatedTokenRepository;
+    @NotNull InvalidatedTokenRepository invalidatedTokenRepository;
 
     PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
 
-    MessageService messageService;
+    @NotNull MessageService messageService;
 
-    ObjectMapper objectMapper;
+    @NotNull ObjectMapper objectMapper;
 
-    FacebookClient facebookClient;
+    @NotNull FacebookClient facebookClient;
 
     @NonFinal
     @Value("${jwt.signerKey}")
     protected String SIGNER_KEY;
 
-    public IntrospectResponse introspect(IntrospectRequest request) throws JOSEException, ParseException {
+    public IntrospectResponse introspect(@NotNull IntrospectRequest request) throws JOSEException, ParseException {
         var token = request.getToken();
 
         boolean validToken = true;
@@ -81,7 +82,7 @@ public class AuthenticationService {
                 .build();
     }
 
-    public AuthenticationResponse authenticate(AuthenticationRequest request) {
+    public AuthenticationResponse authenticate(@NotNull AuthenticationRequest request) {
         var account = accountRepository.findByEmail(request.getEmail()).orElseThrow(() -> new APIException(ErrorCode.EMAIL_NOT_EXISTED));
 
         boolean authenticated = passwordEncoder.matches(request.getPassword(), account.getPassword());
@@ -98,7 +99,7 @@ public class AuthenticationService {
                 .build();
     }
 
-    private String generateToken(Account account) {
+    private String generateToken(@NotNull Account account) {
         JWSHeader jwsHeader = new JWSHeader(JWSAlgorithm.HS512);
         JWTClaimsSet jwtClaimsSet = new JWTClaimsSet.Builder()
                 .subject(account.getEmail())
@@ -126,7 +127,7 @@ public class AuthenticationService {
         }
     }
 
-    private AuthenticationResponse authenticationResponse(Account account) {
+    private AuthenticationResponse authenticationResponse(@NotNull Account account) {
         var token = generateToken(account);
 
         return AuthenticationResponse.builder()
@@ -135,7 +136,7 @@ public class AuthenticationService {
                 .build();
     }
 
-    public AuthenticationResponse refreshToken(RefreshRequest request) throws ParseException, JOSEException {
+    public AuthenticationResponse refreshToken(@NotNull RefreshRequest request) throws ParseException, JOSEException {
         var signJWT = verifyToken(request.getToken());
 
         var jit = signJWT.getJWTClaimsSet().getJWTID();
@@ -158,7 +159,7 @@ public class AuthenticationService {
         return AuthenticationResponse.builder().token(token).isAuthenticated(true).build();
     }
 
-    public void logout(LogoutRequest request) throws ParseException, JOSEException {
+    public void logout(@NotNull LogoutRequest request) throws ParseException, JOSEException {
         var signToken = verifyToken(request.getToken());
 
         String jit = signToken.getJWTClaimsSet().getJWTID();
@@ -176,7 +177,8 @@ public class AuthenticationService {
 
     }
 
-    private SignedJWT verifyToken(String token) throws JOSEException, ParseException {
+    @NotNull
+    private SignedJWT verifyToken(@NotNull String token) throws JOSEException, ParseException {
         JWSVerifier verifier = new MACVerifier(SIGNER_KEY);
 
         SignedJWT signedJWT = SignedJWT.parse(token);
@@ -196,7 +198,7 @@ public class AuthenticationService {
         return signedJWT;
     }
 
-    private String buildScope(Account account) {
+    private String buildScope(@NotNull Account account) {
         StringJoiner stringJoiner = new StringJoiner(" ");
         if (!CollectionUtils.isEmpty((account.getRoles()))) {
             account.getRoles().forEach(

@@ -6,6 +6,7 @@ import com.pet_care.appointment_service.enums.AppointmentStatus;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Date;
 import java.util.Set;
@@ -53,9 +54,11 @@ public class Appointment {
     @Enumerated(EnumType.STRING)
     AppointmentStatus status;
 
+    @NotNull
     @Builder.Default
     Date createdAt = new Date();
 
+    @NotNull
     @Builder.Default
     Date updatedAt = new Date();
 }

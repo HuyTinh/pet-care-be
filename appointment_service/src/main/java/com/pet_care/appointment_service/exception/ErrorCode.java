@@ -5,6 +5,7 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.experimental.FieldDefaults;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 
@@ -19,6 +20,6 @@ public enum ErrorCode {
     EMAIL_NOT_FOUND(1019, "Email not found", HttpStatus.NOT_FOUND),
     ;
     int code;
-    String message;
-    HttpStatusCode status;
+    @NotNull String message;
+    @NotNull HttpStatusCode status;
 }

@@ -6,6 +6,7 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Date;
 
@@ -41,6 +42,7 @@ public class CustomerCreateRequest {
     @JsonProperty("account_id")
     Long accountId;
 
+    @NotNull
     public String getImageUrl() {
         if (this.imageUrl == null || this.imageUrl.isEmpty()) {
             return "https://api.multiavatar.com/" + this.firstName + this.lastName + ".png";

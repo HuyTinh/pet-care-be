@@ -23,6 +23,8 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,25 +39,26 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class AppointmentService {
+    @NotNull
     private final HospitalServiceMapper hospitalServiceMapper;
 
-    AppointmentRepository appointmentRepository;
+    @NotNull AppointmentRepository appointmentRepository;
 
-    HospitalServiceRepository hospitalServiceRepository;
+    @NotNull HospitalServiceRepository hospitalServiceRepository;
 
-    AppointmentMapper appointmentMapper;
+    @NotNull AppointmentMapper appointmentMapper;
 
-    MessageService messageService;
+    @NotNull MessageService messageService;
 
-    Queue<String> queue;
+    @NotNull Queue<String> queue;
 
-    ObjectMapper objectMapper;
+    @NotNull ObjectMapper objectMapper;
 
-    PetRepository petRepository;
+    @NotNull PetRepository petRepository;
 
-    PetMapper petMapper;
+    @NotNull PetMapper petMapper;
 
-    public AppointmentResponse updateAppointment(Long appointmentId, AppointmentUpdateRequest appointmentUpdateRequest) throws JsonProcessingException {
+    public AppointmentResponse updateAppointment(@NotNull Long appointmentId, @NotNull AppointmentUpdateRequest appointmentUpdateRequest) throws JsonProcessingException {
         Appointment existingAppointment = appointmentRepository.findById(appointmentId)
                 .orElseThrow(() -> new APIException(ErrorCode.APPOINTMENT_NOT_FOUND));
 
@@ -78,6 +81,7 @@ public class AppointmentService {
         return appointmentMapper.toDto(updateAppointment);
     }
 
+    @NotNull
     @Transactional(readOnly = true)
     public List<AppointmentResponse> getAllAppointment() {
         List<AppointmentResponse> appointmentResponses = appointmentRepository.findAll().stream().map(appointment -> {
@@ -94,8 +98,9 @@ public class AppointmentService {
         return appointmentResponses;
     }
 
+    @NotNull
     @Transactional(readOnly = true)
-    public AppointmentResponse getAppointmentById(Long appointmentId) {
+    public AppointmentResponse getAppointmentById(@NotNull Long appointmentId) {
         Appointment existingAppointment = appointmentRepository
                 .findById(appointmentId)
                 .orElseThrow(() -> new APIException(ErrorCode.APPOINTMENT_NOT_FOUND));
@@ -113,6 +118,7 @@ public class AppointmentService {
         return appointmentResponse;
     }
 
+    @NotNull
     @Transactional(readOnly = true)
     public List<AppointmentResponse> getAllAppointmentByAccountId(Long accountId) {
 
@@ -149,6 +155,7 @@ public class AppointmentService {
         return cancel;
     }
 
+    @NotNull
     @Transactional(readOnly = true)
     public List<AppointmentResponse> getByStatus(String status) {
         List<AppointmentResponse> appointmentResponses = appointmentRepository
@@ -162,6 +169,7 @@ public class AppointmentService {
         return appointmentResponses;
     }
 
+    @NotNull
     @Transactional(readOnly = true)
     public List<AppointmentResponse> getByStatusAndAccountId(String status, Long accountId) {
         try {
@@ -185,6 +193,7 @@ public class AppointmentService {
         }
     }
 
+    @NotNull
     @Transactional(readOnly = true)
     public List<AppointmentResponse> getAllAppointmentByAppointmentDate(Date appointmentDate) {
         List<AppointmentResponse> appointmentResponses = appointmentRepository
@@ -203,7 +212,8 @@ public class AppointmentService {
         return appointmentResponses;
     }
 
-    public List<AppointmentResponse> filterAppointments(LocalDate startDate, LocalDate endDate, Set<String> statues) {
+    @NotNull
+    public List<AppointmentResponse> filterAppointments(@NotNull LocalDate startDate, @NotNull LocalDate endDate, @Nullable Set<String> statues) {
 
         Date sDate = Date.from(startDate.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant());
         Date eDate = Date.from(endDate.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant());
@@ -229,8 +239,9 @@ public class AppointmentService {
         return appointmentResponses;
     }
 
+    @NotNull
     @Transactional
-    public AppointmentResponse createAppointment(AppointmentCreateRequest appointmentCreateRequest, Boolean notification) throws JsonProcessingException {
+    public AppointmentResponse createAppointment(@NotNull AppointmentCreateRequest appointmentCreateRequest, Boolean notification) throws JsonProcessingException {
         Appointment appointment = appointmentMapper.toEntity(appointmentCreateRequest);
 
         Set<HospitalServiceEntity> bookingService = new HashSet<>(hospitalServiceRepository

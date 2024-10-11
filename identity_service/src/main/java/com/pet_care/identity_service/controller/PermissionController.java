@@ -8,6 +8,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,7 +20,7 @@ import java.util.List;
 @RequestMapping("permission")
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class PermissionController {
-    PermissionService permissionService;
+    @NotNull PermissionService permissionService;
 
     @GetMapping
     @PreAuthorize("hasRole('HOSPITAL_ADMINISTRATOR')")
@@ -38,7 +39,7 @@ public class PermissionController {
     }
 
     @PutMapping("/{permission}")
-    APIResponse<PermissionResponse> updatePermission(@PathVariable("permission") String permission, @RequestBody PermissionRequest permissionRequest) {
+    APIResponse<PermissionResponse> updatePermission(@PathVariable("permission") String permission, @NotNull @RequestBody PermissionRequest permissionRequest) {
         return APIResponse.<PermissionResponse>builder()
                 .data(permissionService.update(permission, permissionRequest))
                 .build();

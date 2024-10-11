@@ -16,6 +16,8 @@ import com.pet_care.customer_service.repository.CustomerRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.jms.annotation.JmsListener;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,23 +30,24 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class CustomerService {
-    CustomerRepository customerRepository;
+    @NotNull CustomerRepository customerRepository;
 
-    CustomerMapper customerMapper;
+    @NotNull CustomerMapper customerMapper;
 
-    MessageService messageService;
+    @NotNull MessageService messageService;
 
-    ObjectMapper objectMapper;
+    @NotNull ObjectMapper objectMapper;
 
-    UploadImageClient uploadImageClient;
+    @NotNull UploadImageClient uploadImageClient;
 
+    @NotNull
     @Transactional(readOnly = true)
     public List<CustomerResponse> getAllCustomer() {
         return customerRepository.findAll().stream().map(customerMapper::toDto).collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
-    public CustomerResponse getCustomerById(Long id) {
+    public CustomerResponse getCustomerById(@NotNull Long id) {
         return customerRepository.findById(id).map(customerMapper::toDto).orElseThrow(() -> new RuntimeException(("")));
     }
 
@@ -58,7 +61,7 @@ public class CustomerService {
         customerRepository.save(customerMapper.toEntity(objectMapper.readValue(customerRequest, CustomerCreateRequest.class)));
     }
 
-    public CustomerResponse createAppointment(AppointmentCreateRequest request, Boolean notification) throws JsonProcessingException {
+    public CustomerResponse createAppointment(@NotNull AppointmentCreateRequest request, Boolean notification) throws JsonProcessingException {
         Customer customerSave = customerRepository.findByAccountId(request.getAccountId()).orElse(null);
 
         if (customerSave == null) {
@@ -80,7 +83,7 @@ public class CustomerService {
     }
 
 
-    public CustomerResponse updateCustomer(Long accountId, CustomerUpdateRequest customerRequest, List<MultipartFile> files) {
+    public CustomerResponse updateCustomer(Long accountId, CustomerUpdateRequest customerRequest, @Nullable List<MultipartFile> files) {
         Customer existingCustomer = customerRepository
                 .findByAccountId(accountId)
                 .orElseThrow(() -> new APIException(ErrorCode.CUSTOMER_NOT_FOUND));
@@ -94,7 +97,7 @@ public class CustomerService {
         return customerMapper.toDto(customerRepository.save(existingCustomer));
     }
 
-    public void deleteCustomer(Long id) {
+    public void deleteCustomer(@NotNull Long id) {
         customerRepository.deleteById(id);
     }
 }

@@ -7,6 +7,7 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Set;
 
@@ -42,6 +43,7 @@ public class EmployeeCreateRequest {
     @Enumerated(EnumType.STRING)
     Set<Role> roles;
 
+    @NotNull
     public String getImageUrl() {
         if (this.imageUrl == null || this.imageUrl.isEmpty()) {
             return "https://api.multiavatar.com/" + this.firstName + this.lastName + ".png";

@@ -4,6 +4,7 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.experimental.FieldDefaults;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.http.HttpStatus;
 
 @Getter
@@ -26,6 +27,6 @@ public enum ErrorCode {
     PERMISSION_NOT_FOUND(1001, "Permission not found", HttpStatus.NOT_FOUND);
 
     int code;
-    String message;
-    HttpStatus status;
+    @NotNull String message;
+    @NotNull HttpStatus status;
 }
