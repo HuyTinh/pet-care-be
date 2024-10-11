@@ -9,6 +9,7 @@ import org.mapstruct.*;
 @Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE, componentModel = MappingConstants.ComponentModel.SPRING)
 public interface PrescriptionMapper {
 
+    @Mapping(target = "details", ignore = true)
     Prescription toEntity(PrescriptionCreateRequest prescription);
 
     @Mapping(target = "appointmentId", ignore = true)

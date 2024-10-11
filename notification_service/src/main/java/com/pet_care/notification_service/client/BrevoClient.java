@@ -1,5 +1,6 @@
 package com.pet_care.notification_service.client;
 
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,6 +15,7 @@ public class BrevoClient {
     @Value("${brevo.key}")
     private String brevoKey;
 
+    @NotNull
     @Bean
     public RestClient client() {
         return RestClient.create().mutate().baseUrl(brevoUrl)

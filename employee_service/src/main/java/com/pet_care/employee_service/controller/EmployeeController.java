@@ -8,6 +8,7 @@ import com.pet_care.employee_service.service.EmployeeService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -20,7 +21,7 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class EmployeeController {
 
-    EmployeeService employeeService;
+    @NotNull EmployeeService employeeService;
 
     @GetMapping
     public APIResponse<List<EmployeeResponse>> getAllEmployees() {
@@ -28,7 +29,7 @@ public class EmployeeController {
     }
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public APIResponse<EmployeeResponse> createEmployee(@ModelAttribute EmployeeCreateRequest employeeCreateRequest, @RequestPart(name = "files", required = false) List<MultipartFile> files) {
+    public APIResponse<EmployeeResponse> createEmployee(@NotNull @ModelAttribute EmployeeCreateRequest employeeCreateRequest, @RequestPart(name = "files", required = false) List<MultipartFile> files) {
         System.out.println(employeeCreateRequest);
         return APIResponse.<EmployeeResponse>builder()
                 .data(employeeService.createEmployee(employeeCreateRequest, files)).build();

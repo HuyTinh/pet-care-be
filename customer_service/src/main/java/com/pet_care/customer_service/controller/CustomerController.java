@@ -7,6 +7,7 @@ import com.pet_care.customer_service.service.CustomerService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -19,7 +20,7 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class CustomerController {
 
-    CustomerService customerService;
+    @NotNull CustomerService customerService;
 
     @GetMapping
     public APIResponse<List<CustomerResponse>> getAllCustomer() {
@@ -30,7 +31,7 @@ public class CustomerController {
 
 
     @GetMapping("/{customerId}")
-    public APIResponse<CustomerResponse> getCustomerById(@PathVariable("customerId") Long customerId) {
+    public APIResponse<CustomerResponse> getCustomerById(@NotNull @PathVariable("customerId") Long customerId) {
         return APIResponse.<CustomerResponse>builder()
                 .data(customerService.getCustomerById(customerId))
                 .build();
@@ -38,7 +39,7 @@ public class CustomerController {
 
 
     @DeleteMapping("/{customerId}")
-    public APIResponse<Void> deleteCustomer(@PathVariable Long customerId) {
+    public APIResponse<Void> deleteCustomer(@NotNull @PathVariable Long customerId) {
         customerService.deleteCustomer(customerId);
         return APIResponse.<Void>builder()
                 .message("Customer deleted successfully")

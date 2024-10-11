@@ -11,6 +11,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -22,20 +23,21 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class PermissionService {
-    PermissionRepository permissionRepository;
+    @NotNull PermissionRepository permissionRepository;
 
-    PermissionMapper permissionMapper;
+    @NotNull PermissionMapper permissionMapper;
 
     public PermissionResponse create(PermissionRequest request) {
         Permission permission = permissionMapper.toEntity(request);
         return permissionMapper.toDto(permissionRepository.save(permission));
     }
 
+    @NotNull
     public List<PermissionResponse> getAll() {
         return permissionRepository.findAll().stream().map(permissionMapper::toDto).collect(Collectors.toList());
     }
 
-    public PermissionResponse update(String permission, PermissionRequest request) {
+    public PermissionResponse update(@NotNull String permission, @NotNull PermissionRequest request) {
         Permission existPermission = permissionRepository.findById(permission).orElseThrow(() -> new APIException(ErrorCode.PERMISSION_NOT_FOUND));
 
         existPermission.setDescription(request.getDescription());
@@ -45,7 +47,7 @@ public class PermissionService {
         return permissionMapper.toDto(permissionRepository.save(existPermission));
     }
 
-    public void delete(String permission) {
+    public void delete(@NotNull String permission) {
         permissionRepository.deleteById(permission);
     }
 

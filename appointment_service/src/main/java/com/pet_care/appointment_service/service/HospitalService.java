@@ -10,6 +10,7 @@ import com.pet_care.appointment_service.repository.HospitalServiceRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,10 +22,11 @@ import java.util.stream.Collectors;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class HospitalService {
 
-    HospitalServiceRepository hospitalServiceRepository;
+    @NotNull HospitalServiceRepository hospitalServiceRepository;
 
-    HospitalServiceMapper hospitalServiceMapper;
+    @NotNull HospitalServiceMapper hospitalServiceMapper;
 
+    @NotNull
     @Transactional(readOnly = true)
     public List<HospitalServiceResponse> getAllHospitalService() {
         List<HospitalServiceEntity> hospitalServices = hospitalServiceRepository.findAll();
@@ -32,7 +34,7 @@ public class HospitalService {
     }
 
     @Transactional(readOnly = true)
-    public HospitalServiceResponse getHospitalServiceById(String name) {
+    public HospitalServiceResponse getHospitalServiceById(@NotNull String name) {
         HospitalServiceEntity hospitalServiceEntity = hospitalServiceRepository
                 .findById(name)
                 .orElseThrow(() -> new APIException(ErrorCode.HOSPITAL_SERVICE_NOT_FOUND));
@@ -45,7 +47,7 @@ public class HospitalService {
         return hospitalServiceMapper.toDto(hospitalServiceRepository.save(hospitalService));
     }
 
-    public HospitalServiceResponse updateHospitalService(String hospitalService, HospitalServiceRequest hospitalServiceRequest) {
+    public HospitalServiceResponse updateHospitalService(@NotNull String hospitalService, HospitalServiceRequest hospitalServiceRequest) {
         HospitalServiceEntity existHospitalServiceEntity = hospitalServiceRepository
                 .findById(hospitalService)
                 .orElseThrow(() -> new APIException(ErrorCode.HOSPITAL_SERVICE_NOT_FOUND));
@@ -54,7 +56,7 @@ public class HospitalService {
         return hospitalServiceMapper.toDto(hospitalServiceRepository.save(updatedHospitalServiceEntity));
     }
 
-    public void deleteHospitalService(String hospitalService) {
+    public void deleteHospitalService(@NotNull String hospitalService) {
         hospitalServiceRepository.deleteById(hospitalService);
     }
 }

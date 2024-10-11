@@ -3,11 +3,13 @@ package com.pet_care.search_service.util;
 import co.elastic.clients.elasticsearch._types.query_dsl.MatchPhrasePrefixQuery;
 import co.elastic.clients.elasticsearch._types.query_dsl.Query;
 import lombok.val;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Supplier;
 
 public class ESUtil {
 
+    @NotNull
     public static Supplier<Query> createSupplierAutoSuggest(String partialPetName) {
 
         return () -> Query.of(q -> q.matchPhrasePrefix(createAutoSuggestMatchQuery(partialPetName)));

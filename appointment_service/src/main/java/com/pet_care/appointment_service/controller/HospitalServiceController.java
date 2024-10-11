@@ -7,6 +7,7 @@ import com.pet_care.appointment_service.service.HospitalService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -16,7 +17,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class HospitalServiceController {
-    HospitalService hospitalService;
+    @NotNull HospitalService hospitalService;
 
     @PostMapping
     APIResponse<HospitalServiceResponse> createHospitalService(@RequestBody HospitalServiceRequest hospitalServiceRequest) {
@@ -32,7 +33,7 @@ public class HospitalServiceController {
     }
 
     @GetMapping("{service}")
-    APIResponse<HospitalServiceResponse> getHospitalServiceById(@PathVariable("service") String service) {
+    APIResponse<HospitalServiceResponse> getHospitalServiceById(@NotNull @PathVariable("service") String service) {
         return APIResponse.<HospitalServiceResponse>builder().data(hospitalService.getHospitalServiceById(service)).build();
     }
 }

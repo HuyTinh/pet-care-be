@@ -1,5 +1,6 @@
 package com.pet_care.identity_service.config;
 
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -19,7 +20,7 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableMethodSecurity
 public class SecurityConfig {
 
-    private final String[] PUBLIC_ENDPOINTS = {"/account/generate-token","/account",
+    private final String[] PUBLIC_ENDPOINTS = {"/account/generate-token", "/account",
             "/auth/token", "/auth/introspect", "/auth/logout", "/auth/google", "/auth/facebook"
     };
 
@@ -27,7 +28,7 @@ public class SecurityConfig {
     private CustomJwtDecoder customJwtDecoder;
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
+    public SecurityFilterChain filterChain(@NotNull HttpSecurity httpSecurity) throws Exception {
         httpSecurity.authorizeHttpRequests(request ->
                 request.requestMatchers(HttpMethod.POST, PUBLIC_ENDPOINTS).permitAll()
                         .anyRequest().authenticated());
@@ -43,6 +44,7 @@ public class SecurityConfig {
         return httpSecurity.build();
     }
 
+    @NotNull
     @Bean
     JwtAuthenticationConverter jwtAuthenticationConverter() {
         JwtGrantedAuthoritiesConverter jwtGrantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
@@ -54,6 +56,7 @@ public class SecurityConfig {
         return jwtAuthenticationConverter;
     }
 
+    @NotNull
     @Bean
     PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder(10);

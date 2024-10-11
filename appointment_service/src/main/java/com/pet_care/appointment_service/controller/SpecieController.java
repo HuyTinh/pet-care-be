@@ -6,6 +6,7 @@ import com.pet_care.appointment_service.service.SpecieService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -18,7 +19,7 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class SpecieController {
 
-    SpecieService specieService;
+    @NotNull SpecieService specieService;
 
     @GetMapping
     public APIResponse<List<Specie>> getAllSpecie() {

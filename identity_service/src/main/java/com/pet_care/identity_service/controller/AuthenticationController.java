@@ -12,6 +12,7 @@ import com.pet_care.identity_service.service.AuthenticationService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,31 +25,31 @@ import java.text.ParseException;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class AuthenticationController {
-    AuthenticationService authenticationService;
+    @NotNull AuthenticationService authenticationService;
 
     @PostMapping("token")
-    APIResponse<AuthenticationResponse> authenticate(@RequestBody AuthenticationRequest request) {
+    APIResponse<AuthenticationResponse> authenticate(@NotNull @RequestBody AuthenticationRequest request) {
         return APIResponse.<AuthenticationResponse>builder()
                 .data(authenticationService.authenticate(request))
                 .build();
     }
 
     @PostMapping("refresh")
-    APIResponse<AuthenticationResponse> refresh(@RequestBody RefreshRequest request) throws ParseException, JOSEException {
+    APIResponse<AuthenticationResponse> refresh(@NotNull @RequestBody RefreshRequest request) throws ParseException, JOSEException {
         return APIResponse.<AuthenticationResponse>builder()
                 .data(authenticationService.refreshToken(request))
                 .build();
     }
 
     @PostMapping("introspect")
-    APIResponse<IntrospectResponse> authenticate(@RequestBody IntrospectRequest request) throws ParseException, JOSEException {
+    APIResponse<IntrospectResponse> authenticate(@NotNull @RequestBody IntrospectRequest request) throws ParseException, JOSEException {
         return APIResponse.<IntrospectResponse>builder()
                 .data(authenticationService.introspect(request))
                 .build();
     }
 
     @PostMapping("/logout")
-    APIResponse<Void> logout(@RequestBody LogoutRequest request) throws ParseException, JOSEException {
+    APIResponse<Void> logout(@NotNull @RequestBody LogoutRequest request) throws ParseException, JOSEException {
         authenticationService.logout(request);
         return APIResponse.<Void>builder().build();
     }

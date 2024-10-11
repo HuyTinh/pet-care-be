@@ -12,6 +12,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -24,7 +25,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class AccountController {
-    AccountService accountService;
+    @NotNull AccountService accountService;
 
     @GetMapping
     @PreAuthorize("hasRole('HOSPITAL_ADMINISTRATOR')")
@@ -50,14 +51,14 @@ public class AccountController {
 
     @PostMapping("/generate-token")
     @ResponseStatus(HttpStatus.CREATED)
-    APIResponse<AuthenticationResponse> createUserAndGenerateToken(@Valid @RequestBody AccountCreateRequest request) throws JsonProcessingException {
+    APIResponse<AuthenticationResponse> createUserAndGenerateToken(@NotNull @Valid @RequestBody AccountCreateRequest request) throws JsonProcessingException {
         return APIResponse.<AuthenticationResponse>builder().code(1000).data(accountService.createAccountAndCustomerRequest(request)).build();
     }
 
     @PostMapping()
     @ResponseStatus(HttpStatus.CREATED)
     APIResponse<AccountResponse> createAccount(@RequestBody AccountCreateRequest request) throws JsonProcessingException {
-        log.info("{}",request);
+        log.info("{}", request);
         return APIResponse.<AccountResponse>builder().code(1000).data(accountService.createAccountRequest(request)).build();
     }
 

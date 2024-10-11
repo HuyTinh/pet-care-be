@@ -2,6 +2,7 @@ package com.pet_care.appointment_service.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Component;
@@ -27,6 +28,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
     @Autowired
     private ObjectMapper objectMapper;
 
+    @NotNull
     private Iterator<WebSocketSession> sessionIterator = sessions.iterator();
 
 
@@ -62,7 +64,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
         return false;
     }
 
-    public void sendMessageRoundRobin(String message) throws IOException {
+    public void sendMessageRoundRobin(@NotNull String message) throws IOException {
         synchronized (sessions) {
             if (!sessions.isEmpty()) {
                 if (sessionIterator == null || !sessionIterator.hasNext()) {

@@ -17,6 +17,7 @@ import com.pet_care.identity_service.repository.RoleRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -32,27 +33,28 @@ import java.util.stream.Collectors;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class AccountService {
 
-    AccountRepository accountRepository;
+    @NotNull AccountRepository accountRepository;
 
-    AccountMapper accountMapper;
+    @NotNull AccountMapper accountMapper;
 
     PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
 
-    RoleRepository roleRepository;
+    @NotNull RoleRepository roleRepository;
 
-    MessageService messageService;
+    @NotNull MessageService messageService;
 
-    AuthenticationService authenticationService;
+    @NotNull AuthenticationService authenticationService;
 
-    ObjectMapper objectMapper;
+    @NotNull ObjectMapper objectMapper;
 
+    @NotNull
     @Transactional(readOnly = true)
     public List<AccountResponse> getAllUser() {
         return accountRepository.findAll().stream().map(accountMapper::toDto).collect(Collectors.toList());
     }
 
     @Transactional
-    public AuthenticationResponse createAccountAndCustomerRequest(AccountCreateRequest request) throws JsonProcessingException {
+    public AuthenticationResponse createAccountAndCustomerRequest(@NotNull AccountCreateRequest request) throws JsonProcessingException {
         if (accountRepository.existsByEmail(request.getEmail()))
             throw new APIException(ErrorCode.USER_EXISTED);
 
@@ -73,13 +75,11 @@ public class AccountService {
     }
 
     @Transactional
-    public AccountResponse createAccountRequest(AccountCreateRequest request) {
+    public AccountResponse createAccountRequest(@NotNull AccountCreateRequest request) {
 
         Account account = accountMapper.toEntity(request);
 
         account.setPassword(passwordEncoder.encode(request.getPassword()));
-
-        System.out.println("Employee " + request);
 
         account.setRoles(new HashSet<>(roleRepository.findAllById(request.getRoles())));
 
@@ -89,19 +89,19 @@ public class AccountService {
     }
 
     @Transactional
-    public AccountResponse updateRequest(Long id, AccountUpdateRequest request) {
+    public AccountResponse updateRequest(@NotNull Long id, AccountUpdateRequest request) {
         Account existAccount = accountRepository.findById(id).orElseThrow(() -> new RuntimeException(""));
         return accountMapper.toDto(accountRepository.save(accountMapper.partialUpdate(request, existAccount)));
     }
 
     @Transactional
-    public void deleteRequest(Long id) {
+    public void deleteRequest(@NotNull Long id) {
         accountRepository.deleteById(id);
     }
 
     @PostAuthorize("returnObject.email == authentication.name || hasRole('HOSPITAL_ADMINISTRATOR')")
     @Transactional(readOnly = true)
-    public AccountResponse getUserById(Long id) {
+    public AccountResponse getUserById(@NotNull Long id) {
         return accountMapper
                 .toDto(accountRepository
                         .findById(id)

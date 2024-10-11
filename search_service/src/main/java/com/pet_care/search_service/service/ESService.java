@@ -9,6 +9,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -20,8 +21,9 @@ import java.util.function.Supplier;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class ESService {
 
-    ElasticsearchClient elasticsearchClient;
+    @NotNull ElasticsearchClient elasticsearchClient;
 
+    @NotNull
     public SearchResponse<Pet> autoSuggestPet(String partialPetName) throws IOException {
         Supplier<Query> supplier = ESUtil.createSupplierAutoSuggest(partialPetName);
         SearchResponse<Pet> searchResponse = elasticsearchClient.search(s -> s.index("pets").query(supplier.get()), Pet.class);

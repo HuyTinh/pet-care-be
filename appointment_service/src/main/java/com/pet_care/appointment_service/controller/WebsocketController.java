@@ -8,6 +8,7 @@ import com.pet_care.appointment_service.service.WebSocketService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -20,18 +21,18 @@ import java.util.Map;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class WebsocketController {
 
-    WebSocketService webSocketService;
+    @NotNull WebSocketService webSocketService;
 
-    SimpMessagingTemplate messagingTemplate;
+    @NotNull SimpMessagingTemplate messagingTemplate;
 
-    ObjectMapper objectMapper;
+    @NotNull ObjectMapper objectMapper;
 
-    AppointmentService appointmentService;
+    @NotNull AppointmentService appointmentService;
 
-    MessageService messageService;
+    @NotNull MessageService messageService;
 
     @MessageMapping("/sendMessage")
-    public void sendMessage(@Payload Map<String, String> message) throws Exception {
+    public void sendMessage(@NotNull @Payload Map<String, String> message) throws Exception {
         // Xử lý tin nhắn tại đây
         long appointmentId = Long.parseLong(message.get("appointmentId"));
         String sessionId = message.get("sessionId");
@@ -43,13 +44,11 @@ public class WebsocketController {
                     webSocketService.sendToExportPDFAppointment(sessionId, Long.toString(appointmentId));
                     messageService.sendMessage("doctor-appointment-queue", objectMapper.writeValueAsString(appointmentService.getAppointmentById(appointmentId)));
                 }
-                return;
             }
             case CANCELLED -> {
                 if (appointmentService.cancelAppointment((appointmentId)) > 0) {
                     webSocketService.sendToAllUpdateListAppointment(Long.toString(appointmentId), status);
                 }
-                return;
             }
         }
     }

@@ -5,6 +5,7 @@ import com.cloudinary.utils.ObjectUtils;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.core.io.buffer.DataBufferUtils;
 import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.stereotype.Service;
@@ -21,9 +22,9 @@ import java.util.Map;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class CloudinaryService {
 
-    Cloudinary cloudinary;
+    @NotNull Cloudinary cloudinary;
 
-    Mono<String> uploadImage(MultipartFile file) {
+    @NotNull Mono<String> uploadImage(@NotNull MultipartFile file) {
         return Mono.fromCallable(() -> {
             // Tải file lên Cloudinary thông qua API upload
             Map uploadResult = cloudinary.uploader().upload(file.getBytes(), ObjectUtils.emptyMap());
@@ -66,7 +67,8 @@ public class CloudinaryService {
 //        return files.flatMap(this::uploadFiles);
 //    }
 
-    public Mono<List<String>> uploadImages(Flux<FilePart> fileParts) {
+    @NotNull
+    public Mono<List<String>> uploadImages(@NotNull Flux<FilePart> fileParts) {
         return fileParts
                 .flatMap(filePart -> filePart.content()
                         .map(dataBuffer -> {
