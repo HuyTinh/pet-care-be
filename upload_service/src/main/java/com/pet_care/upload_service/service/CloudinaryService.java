@@ -24,49 +24,22 @@ public class CloudinaryService {
 
     @NotNull Cloudinary cloudinary;
 
+    /**
+     * @param file
+     * @return
+     */
     @NotNull Mono<String> uploadImage(@NotNull MultipartFile file) {
         return Mono.fromCallable(() -> {
             // Tải file lên Cloudinary thông qua API upload
-            Map uploadResult = cloudinary.uploader().upload(file.getBytes(), ObjectUtils.emptyMap());
+            Map<?,?> uploadResult = cloudinary.uploader().upload(file.getBytes(), ObjectUtils.emptyMap());
             return (String) uploadResult.get("url");
         }).subscribeOn(Schedulers.boundedElastic());
     }
-//    public Mono<Object> uploadFile(FilePart file) {
-//        return file.content()  // Get the file content as a Flux of DataBuffer
-//                .flatMap(dataBuffer -> {
-//                    // Transfer DataBuffer into byte array
-//                    ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-//                    try {
-//                        outputStream.write(dataBuffer.asByteBuffer().array());
-//                    } catch (IOException e) {
-//                        return Mono.error(new RuntimeException("Failed to read file", e));
-//                    }
-//                    return Mono.just(outputStream.toByteArray());
-//                })
-//                .reduce((bytes1, bytes2) -> {  // Combine all DataBuffer chunks into one byte array
-//                    ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-//                    try {
-//                        outputStream.write(bytes1);
-//                        outputStream.write(bytes2);
-//                    } catch (IOException e) {
-//                        throw new RuntimeException("Failed to combine file chunks", e);
-//                    }
-//                    return outputStream.toByteArray();
-//                })
-//                .flatMap(bytes -> {
-//                    // Upload to Cloudinary
-//                    try {
-//                        return Mono.just(cloudinary.uploader().upload(bytes, ObjectUtils.emptyMap()).get("url"));
-//                    } catch (IOException e) {
-//                        return Mono.error(new RuntimeException("Failed to upload to Cloudinary", e));
-//                    }
-//                });
-//    }
 
-//    public Flux<String> uploadFiles(Flux<FilePart> files) {
-//        return files.flatMap(this::uploadFiles);
-//    }
-
+    /**
+     * @param fileParts
+     * @return
+     */
     @NotNull
     public Mono<List<String>> uploadImages(@NotNull Flux<FilePart> fileParts) {
         return fileParts
@@ -80,7 +53,7 @@ public class CloudinaryService {
                         .next()  // Lấy buffer đầu tiên của FilePart
                         .flatMap(bytes -> Mono.fromCallable(() -> {
                             // Upload ảnh lên Cloudinary
-                            Map uploadResult = cloudinary.uploader().upload(bytes, ObjectUtils.emptyMap());
+                            Map<?,?> uploadResult = cloudinary.uploader().upload(bytes, ObjectUtils.emptyMap());
                             return (String) uploadResult.get("url");
                         }))
                 )

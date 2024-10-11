@@ -22,6 +22,9 @@ public class CustomerController {
 
     @NotNull CustomerService customerService;
 
+    /**
+     * @return
+     */
     @GetMapping
     public APIResponse<List<CustomerResponse>> getAllCustomer() {
         return APIResponse.<List<CustomerResponse>>builder()
@@ -30,6 +33,10 @@ public class CustomerController {
     }
 
 
+    /**
+     * @param customerId
+     * @return
+     */
     @GetMapping("/{customerId}")
     public APIResponse<CustomerResponse> getCustomerById(@NotNull @PathVariable("customerId") Long customerId) {
         return APIResponse.<CustomerResponse>builder()
@@ -38,6 +45,10 @@ public class CustomerController {
     }
 
 
+    /**
+     * @param customerId
+     * @return
+     */
     @DeleteMapping("/{customerId}")
     public APIResponse<Void> deleteCustomer(@NotNull @PathVariable Long customerId) {
         customerService.deleteCustomer(customerId);
@@ -46,6 +57,10 @@ public class CustomerController {
                 .build();
     }
 
+    /**
+     * @param accountId
+     * @return
+     */
     @GetMapping("/account/{accountId}")
     public APIResponse<CustomerResponse> getCustomerByAccountId(@PathVariable("accountId") Long accountId) {
         return APIResponse.<CustomerResponse>builder()
@@ -53,6 +68,12 @@ public class CustomerController {
                 .build();
     }
 
+    /**
+     * @param accountId
+     * @param customerRequest
+     * @param files
+     * @return
+     */
     @PutMapping(value = "/account/{accountId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public APIResponse<CustomerResponse> updateCustomer(
             @PathVariable("accountId") Long accountId,

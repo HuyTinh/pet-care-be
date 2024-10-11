@@ -15,6 +15,9 @@ public class BrevoClient {
     @Value("${brevo.key}")
     private String brevoKey;
 
+    /**
+     * @return
+     */
     @NotNull
     @Bean
     public RestClient client() {

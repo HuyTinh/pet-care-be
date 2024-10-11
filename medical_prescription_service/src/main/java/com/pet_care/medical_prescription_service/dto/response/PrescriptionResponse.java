@@ -24,11 +24,11 @@ public class PrescriptionResponse {
     Appointment appointment;
 
     @JsonProperty("details")
-    Set<PetPrescription> prescriptionDetails;
+    Set<PetPrescription> details;
 
     @Enumerated(EnumType.STRING)
     PrescriptionStatus status;
 
-    @JsonProperty("amount")
-    Double prescriptionAmount;
+    Double totalMoney;
+
 }

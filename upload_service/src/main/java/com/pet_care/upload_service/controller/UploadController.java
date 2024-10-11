@@ -24,6 +24,10 @@ import java.util.List;
 public class UploadController {
     @NotNull CloudinaryService cloudinaryService;
 
+    /**
+     * @param files
+     * @return
+     */
     @NotNull
     @PostMapping(value = "upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Mono<List<String>>> uploadImages(@NotNull @RequestPart("files") Flux<FilePart> files) {

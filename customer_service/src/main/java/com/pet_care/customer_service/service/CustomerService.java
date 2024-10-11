@@ -40,27 +40,49 @@ public class CustomerService {
 
     @NotNull UploadImageClient uploadImageClient;
 
+    /**
+     * @return
+     */
     @NotNull
     @Transactional(readOnly = true)
     public List<CustomerResponse> getAllCustomer() {
         return customerRepository.findAll().stream().map(customerMapper::toDto).collect(Collectors.toList());
     }
 
+    /**
+     * @param id
+     * @return
+     */
     @Transactional(readOnly = true)
     public CustomerResponse getCustomerById(@NotNull Long id) {
         return customerRepository.findById(id).map(customerMapper::toDto).orElseThrow(() -> new RuntimeException(("")));
     }
 
+    /**
+     * @param accountId
+     * @return
+     */
     @Transactional(readOnly = true)
     public CustomerResponse getCustomerByAccountId(Long accountId) {
         return customerRepository.findByAccountId(accountId).map(customerMapper::toDto).orElseThrow(() -> new APIException(ErrorCode.EMAIL_NOT_FOUND));
     }
 
+    /**
+     * @param customerRequest
+     * @throws JsonProcessingException
+     */
     @JmsListener(destination = "customer-create-queue")
+    @Transactional
     public void addCustomerFromMessageQueue(String customerRequest) throws JsonProcessingException {
         customerRepository.save(customerMapper.toEntity(objectMapper.readValue(customerRequest, CustomerCreateRequest.class)));
     }
 
+    /**
+     * @param request
+     * @param notification
+     * @return
+     * @throws JsonProcessingException
+     */
     public CustomerResponse createAppointment(@NotNull AppointmentCreateRequest request, Boolean notification) throws JsonProcessingException {
         Customer customerSave = customerRepository.findByAccountId(request.getAccountId()).orElse(null);
 
@@ -83,6 +105,12 @@ public class CustomerService {
     }
 
 
+    /**
+     * @param accountId
+     * @param customerRequest
+     * @param files
+     * @return
+     */
     public CustomerResponse updateCustomer(Long accountId, CustomerUpdateRequest customerRequest, @Nullable List<MultipartFile> files) {
         Customer existingCustomer = customerRepository
                 .findByAccountId(accountId)

@@ -16,6 +16,10 @@ public class BrevoService {
 
     @NotNull RestClient restClient;
 
+    /**
+     * @param message 
+     * @throws JsonProcessingException
+     */
     @JmsListener(destination = "appointment-success-notification-queue")
     public void sendAppointmentSuccessfulEmail(@NotNull String message) throws JsonProcessingException {
         restClient.post().body(message).retrieve();

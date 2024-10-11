@@ -12,6 +12,7 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequiredArgsConstructor
@@ -21,6 +22,9 @@ public class MedicineController {
 
     @NotNull MedicineService medicineService;
 
+    /**
+     * @return
+     */
     @GetMapping
     public APIResponse<List<Medicine>> getAllMedicine() {
         return APIResponse.<List<Medicine>>builder()
@@ -28,6 +32,10 @@ public class MedicineController {
                 .build();
     }
 
+    /**
+     * @param medicineId
+     * @return
+     */
     @GetMapping("{medicineId}")
     public APIResponse<Medicine> getMedicineById(@NotNull @PathVariable("medicineId") Long medicineId) {
         return APIResponse.<Medicine>builder()
@@ -35,6 +43,21 @@ public class MedicineController {
                 .build();
     }
 
+    /**
+     * @param medicineIds
+     * @return
+     */
+    @GetMapping("/in/{medicineIds}")
+    public APIResponse<List<Medicine>> getMedicineInIds(@NotNull @PathVariable("medicineIds") Set<Long> medicineIds) {
+        return APIResponse.<List<Medicine>>builder()
+                .data(medicineService.getMedicineInIds(medicineIds))
+                .build();
+    }
+
+    /**
+     * @param medicineCreateRequest
+     * @return
+     */
     @PostMapping
     public APIResponse<Medicine> createMedicine(@NotNull @RequestBody MedicineCreateRequest medicineCreateRequest) {
         return APIResponse.<Medicine>builder()
@@ -42,6 +65,11 @@ public class MedicineController {
                 .build();
     }
 
+    /**
+     * @param medicineId
+     * @param medicineUpdateRequest
+     * @return
+     */
     @PutMapping("/{medicineId}")
     public APIResponse<Medicine> updateMedicine(@NotNull @PathVariable("medicineId") Long medicineId, @NotNull @RequestBody MedicineUpdateRequest medicineUpdateRequest) {
         return APIResponse.<Medicine>builder()
@@ -49,6 +77,11 @@ public class MedicineController {
                 .build();
     }
 
+    /**
+     * @param medicineId
+     * @param medicineUpdateRequest
+     * @return
+     */
     @DeleteMapping("/{medicineId}")
     public APIResponse<Medicine> deleteMedicine(@NotNull @PathVariable("medicineId") Long medicineId, @RequestBody MedicineUpdateRequest medicineUpdateRequest) {
         medicineService.deleteMedicine(medicineId);
