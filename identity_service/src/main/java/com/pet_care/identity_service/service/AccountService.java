@@ -52,7 +52,7 @@ public class AccountService {
     }
 
     @Transactional
-    public AuthenticationResponse createRequest(AccountCreateRequest request) throws JsonProcessingException {
+    public AuthenticationResponse createAccountAndCustomerRequest(AccountCreateRequest request) throws JsonProcessingException {
         if (accountRepository.existsByEmail(request.getEmail()))
             throw new APIException(ErrorCode.USER_EXISTED);
 
@@ -70,6 +70,22 @@ public class AccountService {
         messageService.sendMessageQueue("customer-create-queue", objectMapper.writeValueAsString(customerCreateRequest));
 
         return authenticationService.authenticate(AuthenticationRequest.builder().email(saveAccount.getEmail()).password(request.getPassword()).build());
+    }
+
+    @Transactional
+    public AccountResponse createAccountRequest(AccountCreateRequest request) {
+
+        Account account = accountMapper.toEntity(request);
+
+        account.setPassword(passwordEncoder.encode(request.getPassword()));
+
+        System.out.println("Employee " + request);
+
+        account.setRoles(new HashSet<>(roleRepository.findAllById(request.getRoles())));
+
+        Account saveAccount = accountRepository.save(account);
+
+        return accountMapper.toDto(saveAccount);
     }
 
     @Transactional

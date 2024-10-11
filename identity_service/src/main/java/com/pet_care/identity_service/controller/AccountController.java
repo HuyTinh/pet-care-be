@@ -51,7 +51,14 @@ public class AccountController {
     @PostMapping("/generate-token")
     @ResponseStatus(HttpStatus.CREATED)
     APIResponse<AuthenticationResponse> createUserAndGenerateToken(@Valid @RequestBody AccountCreateRequest request) throws JsonProcessingException {
-        return APIResponse.<AuthenticationResponse>builder().code(1000).data(accountService.createRequest(request)).build();
+        return APIResponse.<AuthenticationResponse>builder().code(1000).data(accountService.createAccountAndCustomerRequest(request)).build();
+    }
+
+    @PostMapping()
+    @ResponseStatus(HttpStatus.CREATED)
+    APIResponse<AccountResponse> createAccount(@RequestBody AccountCreateRequest request) throws JsonProcessingException {
+        log.info("{}",request);
+        return APIResponse.<AccountResponse>builder().code(1000).data(accountService.createAccountRequest(request)).build();
     }
 
     @PutMapping("/{id}")
