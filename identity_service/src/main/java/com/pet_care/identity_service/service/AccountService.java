@@ -81,8 +81,6 @@ public class AccountService {
 
         account.setPassword(passwordEncoder.encode(request.getPassword()));
 
-        System.out.println("Employee " + request);
-
         account.setRoles(new HashSet<>(roleRepository.findAllById(request.getRoles())));
 
         Account saveAccount = accountRepository.save(account);
