@@ -1,5 +1,6 @@
 package com.pet_care.employee_service.service;
 
+import com.pet_care.employee_service.client.AccountClient;
 import com.pet_care.employee_service.client.UploadImageClient;
 import com.pet_care.employee_service.dto.request.EmployeeCreateRequest;
 import com.pet_care.employee_service.dto.request.EmployeeUpdateRequest;
@@ -12,6 +13,7 @@ import com.pet_care.employee_service.repository.EmployeeRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -20,6 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
@@ -29,6 +32,8 @@ public class EmployeeService {
     EmployeeMapper employeeMapper;
 
     UploadImageClient uploadImageClient;
+
+    AccountClient accountClient;
 
     @Transactional(readOnly = true)
     public List<EmployeeResponse> getAllEmployee() {
@@ -45,6 +50,7 @@ public class EmployeeService {
                 .orElseThrow(() -> new APIException(ErrorCode.EMPLOYEE_NOT_FOUND)));
     }
 
+    @Transactional
     public EmployeeResponse createEmployee(EmployeeCreateRequest employeeCreateRequest, List<MultipartFile> files) {
         if (employeeRepository
                 .getEmployeeByEmail(employeeCreateRequest.getEmail())
@@ -53,13 +59,26 @@ public class EmployeeService {
             if (!CollectionUtils.isEmpty(files)) {
                 employeeCreateRequest.setImageUrl(uploadImageClient.uploadImage(files).get(0));
             }
-            return employeeMapper.toDto(employeeRepository
-                    .save(employeeMapper.toEntity(employeeCreateRequest)));
+
+            Employee employee = employeeMapper.toEntity(employeeCreateRequest);
+
+            employee.setAccountId(accountClient
+                    .createAccount(employeeCreateRequest)
+                    .getData().getId());
+
+            employee.setRole(employeeCreateRequest.getRoles().stream().toList().get(0));
+
+            Employee savedEmployee = employeeRepository.save(employee);
+
+            log.info("Employee saved: {}", savedEmployee);
+
+            return employeeMapper.toDto(savedEmployee);
 
         }
         throw new APIException(ErrorCode.EMAIl_EXIST);
     }
 
+    @Transactional
     public EmployeeResponse updateEmployee(Long employeeId, EmployeeUpdateRequest employeeUpdateRequest, List<MultipartFile> files) {
         Employee existingEmployee = employeeRepository
                 .findById(employeeId)

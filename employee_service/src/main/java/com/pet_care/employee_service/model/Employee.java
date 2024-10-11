@@ -2,6 +2,7 @@ package com.pet_care.employee_service.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.pet_care.employee_service.enums.Gender;
+import com.pet_care.employee_service.enums.Role;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -36,6 +37,9 @@ public class Employee {
 
     @JsonProperty("account_id")
     Long accountId;
+
+    @Enumerated(EnumType.STRING)
+    Role role;
 
     @JsonProperty("phone_number")
     String phoneNumber;

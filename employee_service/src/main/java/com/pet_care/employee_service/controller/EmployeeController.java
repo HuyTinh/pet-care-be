@@ -29,6 +29,7 @@ public class EmployeeController {
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public APIResponse<EmployeeResponse> createEmployee(@ModelAttribute EmployeeCreateRequest employeeCreateRequest, @RequestPart(name = "files", required = false) List<MultipartFile> files) {
+        System.out.println(employeeCreateRequest);
         return APIResponse.<EmployeeResponse>builder()
                 .data(employeeService.createEmployee(employeeCreateRequest, files)).build();
     }
