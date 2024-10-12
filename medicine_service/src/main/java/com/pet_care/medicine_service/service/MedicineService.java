@@ -78,6 +78,7 @@ public class MedicineService {
      * @return
      */
     @NotNull
+    @Transactional
     public Medicine createMedicine(@NotNull MedicineCreateRequest medicineCreateRequest) {
         Medicine newMedicine = medicineMapper.toEntity(medicineCreateRequest);
 
@@ -106,6 +107,7 @@ public class MedicineService {
      * @return
      */
     @NotNull
+    @Transactional
     public Medicine updateMedicine(@NotNull Long medicineId, @NotNull MedicineUpdateRequest medicineUpdateRequest) {
         Medicine existingMedicine = medicineRepository.findById(medicineId).orElseThrow(() -> new APIException(ErrorCode.MEDICINE_NOT_FOUND));
 
@@ -133,6 +135,7 @@ public class MedicineService {
     /**
      * @param medicineId
      */
+    @Transactional
     public void deleteMedicine(@NotNull Long medicineId) {
         medicineRepository.deleteById(medicineId);
         log.info("Delete medicine successful");

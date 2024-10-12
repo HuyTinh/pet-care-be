@@ -47,12 +47,20 @@ public class AccountService {
 
     @NotNull ObjectMapper objectMapper;
 
+    /**
+     * @return
+     */
     @NotNull
     @Transactional(readOnly = true)
     public List<AccountResponse> getAllUser() {
         return accountRepository.findAll().stream().map(accountMapper::toDto).collect(Collectors.toList());
     }
 
+    /**
+     * @param request
+     * @return
+     * @throws JsonProcessingException
+     */
     @Transactional
     public AuthenticationResponse createAccountAndCustomerRequest(@NotNull AccountCreateRequest request) throws JsonProcessingException {
         if (accountRepository.existsByEmail(request.getEmail()))
@@ -69,13 +77,17 @@ public class AccountService {
         CustomerCreateRequest customerCreateRequest = accountMapper.toCustomerRequest(request);
         customerCreateRequest.setAccountId(saveAccount.getId());
 
-        messageService.sendMessageQueue("customer-create-queue", objectMapper.writeValueAsString(customerCreateRequest));
+        messageService.sendMessageQueue("customer-createPermission-queue", objectMapper.writeValueAsString(customerCreateRequest));
 
         return authenticationService.authenticate(AuthenticationRequest.builder().email(saveAccount.getEmail()).password(request.getPassword()).build());
     }
 
+    /**
+     * @param request
+     * @return
+     */
     @Transactional
-    public AccountResponse createAccountRequest(@NotNull AccountCreateRequest request) {
+    public AccountResponse createAccount(@NotNull AccountCreateRequest request) {
 
         Account account = accountMapper.toEntity(request);
 
@@ -89,13 +101,13 @@ public class AccountService {
     }
 
     @Transactional
-    public AccountResponse updateRequest(@NotNull Long id, AccountUpdateRequest request) {
+    public AccountResponse updateAccount(@NotNull Long id, AccountUpdateRequest request) {
         Account existAccount = accountRepository.findById(id).orElseThrow(() -> new RuntimeException(""));
         return accountMapper.toDto(accountRepository.save(accountMapper.partialUpdate(request, existAccount)));
     }
 
     @Transactional
-    public void deleteRequest(@NotNull Long id) {
+    public void deleteAccount(@NotNull Long id) {
         accountRepository.deleteById(id);
     }
 

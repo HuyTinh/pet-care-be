@@ -7,8 +7,12 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 @ControllerAdvice
-public class GlobalExceptionHandler {
+public class APIExceptionHandler {
 
+    /**
+     * @param e
+     * @return
+     */
     @NotNull
     @ExceptionHandler(APIException.class)
     public ResponseEntity<?> handleAPIException(@NotNull APIException e) {

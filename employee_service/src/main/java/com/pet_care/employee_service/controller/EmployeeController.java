@@ -23,11 +23,19 @@ public class EmployeeController {
 
     @NotNull EmployeeService employeeService;
 
+    /**
+     * @return
+     */
     @GetMapping
     public APIResponse<List<EmployeeResponse>> getAllEmployees() {
         return APIResponse.<List<EmployeeResponse>>builder().data(employeeService.getAllEmployee()).build();
     }
 
+    /**
+     * @param employeeCreateRequest
+     * @param files
+     * @return
+     */
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public APIResponse<EmployeeResponse> createEmployee(@NotNull @ModelAttribute EmployeeCreateRequest employeeCreateRequest, @RequestPart(name = "files", required = false) List<MultipartFile> files) {
         System.out.println(employeeCreateRequest);
@@ -35,6 +43,12 @@ public class EmployeeController {
                 .data(employeeService.createEmployee(employeeCreateRequest, files)).build();
     }
 
+    /**
+     * @param employeeId
+     * @param employeeUpdateRequest
+     * @param files
+     * @return
+     */
     @PutMapping(value = "/{employeeId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public APIResponse<EmployeeResponse> updateEmployee(@PathVariable("employeeId") Long employeeId,
                                                         @ModelAttribute EmployeeUpdateRequest employeeUpdateRequest,
@@ -43,11 +57,9 @@ public class EmployeeController {
                 .data(employeeService.updateEmployee(employeeId, employeeUpdateRequest, files)).build();
     }
 
-//    @PutMapping
-//    public APIResponse<EmployeeResponse> updateEmployee() {
-//        return APIResponse.<EmployeeResponse>builder().data(EmployeeResponse.builder().build()).build();
-//    }
-
+    /**
+     * @return
+     */
     @DeleteMapping
     public APIResponse<EmployeeResponse> deleteEmployee() {
         return APIResponse.<EmployeeResponse>builder().message("Delete employee successful!").build();

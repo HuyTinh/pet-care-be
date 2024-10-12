@@ -104,6 +104,7 @@ public class PrescriptionService {
      * @param prescriptionCreateRequest
      * @return
      */
+    @Transactional
     public PrescriptionResponse createPrescription(@NotNull PrescriptionCreateRequest prescriptionCreateRequest) {
         Prescription newPrescription = prescriptionMapper
                 .toEntity(prescriptionCreateRequest);

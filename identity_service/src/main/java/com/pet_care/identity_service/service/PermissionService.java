@@ -13,6 +13,7 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -27,17 +28,32 @@ public class PermissionService {
 
     @NotNull PermissionMapper permissionMapper;
 
-    public PermissionResponse create(PermissionRequest request) {
+    /**
+     * @param request
+     * @return
+     */
+    @Transactional
+    public PermissionResponse createPermission(PermissionRequest request) {
         Permission permission = permissionMapper.toEntity(request);
         return permissionMapper.toDto(permissionRepository.save(permission));
     }
 
+    /**
+     * @return
+     */
     @NotNull
-    public List<PermissionResponse> getAll() {
+    @Transactional(readOnly = true)
+    public List<PermissionResponse> getAllPermission() {
         return permissionRepository.findAll().stream().map(permissionMapper::toDto).collect(Collectors.toList());
     }
 
-    public PermissionResponse update(@NotNull String permission, @NotNull PermissionRequest request) {
+    /**
+     * @param permission
+     * @param request
+     * @return
+     */
+    @Transactional
+    public PermissionResponse updatePermission(@NotNull String permission, @NotNull PermissionRequest request) {
         Permission existPermission = permissionRepository.findById(permission).orElseThrow(() -> new APIException(ErrorCode.PERMISSION_NOT_FOUND));
 
         existPermission.setDescription(request.getDescription());
@@ -47,7 +63,11 @@ public class PermissionService {
         return permissionMapper.toDto(permissionRepository.save(existPermission));
     }
 
-    public void delete(@NotNull String permission) {
+    /**
+     * @param permission
+     */
+    @Transactional
+    public void deletePermission(@NotNull String permission) {
         permissionRepository.deleteById(permission);
     }
 

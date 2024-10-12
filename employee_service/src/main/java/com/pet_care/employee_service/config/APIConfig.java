@@ -8,6 +8,9 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class APIConfig {
 
+    /**
+     * @return
+     */
     @NotNull
     @Bean
     public ObjectMapper objectMapper() {

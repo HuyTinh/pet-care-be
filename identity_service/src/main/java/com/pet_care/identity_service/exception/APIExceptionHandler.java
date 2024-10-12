@@ -14,6 +14,10 @@ import java.util.Objects;
 @ControllerAdvice
 public class APIExceptionHandler {
 
+    /**
+     * @param ex
+     * @return
+     */
     @NotNull
     @ExceptionHandler(Exception.class)
     ResponseEntity<APIResponse<?>> handlingRuntimeException(@NotNull RuntimeException ex) {
@@ -21,6 +25,10 @@ public class APIExceptionHandler {
         return ResponseEntity.status(errorCode.getStatus()).body(APIResponse.builder().code(ErrorCode.UNCATEGORIZED_EXCEPTION.getCode()).message(ErrorCode.UNCATEGORIZED_EXCEPTION.getMessage()).build());
     }
 
+    /**
+     * @param ex
+     * @return
+     */
     @NotNull
     @ExceptionHandler(APIException.class)
     ResponseEntity<APIResponse<?>> handlingIdentityException(@NotNull APIException ex) {
@@ -35,6 +43,10 @@ public class APIExceptionHandler {
         return ResponseEntity.status(ErrorCode.UNAUTHORIZED.getCode()).body(APIResponse.builder().code(errorCode.getCode()).message(errorCode.getMessage()).build());
     }
 
+    /**
+     * @param ex
+     * @return
+     */
     @NotNull
     @ExceptionHandler(AuthorizationDeniedException.class)
     ResponseEntity<APIResponse<?>> handlingAuthorizationDeniedException(AuthorizationDeniedException ex) {
@@ -42,6 +54,10 @@ public class APIExceptionHandler {
         return ResponseEntity.status(errorCode.getStatus()).body(APIResponse.builder().code(errorCode.getCode()).message(errorCode.getMessage()).build());
     }
 
+    /**
+     * @param ex
+     * @return
+     */
     @NotNull
     @ExceptionHandler(MethodArgumentNotValidException.class)
     ResponseEntity<APIResponse<?>> handlingMethodArgumentNotValidException(@NotNull MethodArgumentNotValidException ex) {

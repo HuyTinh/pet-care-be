@@ -36,6 +36,9 @@ public class EmployeeService {
 
     @NotNull AccountClient accountClient;
 
+    /**
+     * @return
+     */
     @NotNull
     @Transactional(readOnly = true)
     public List<EmployeeResponse> getAllEmployee() {
@@ -45,6 +48,10 @@ public class EmployeeService {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * @param id
+     * @return
+     */
     @Transactional(readOnly = true)
     public EmployeeResponse getEmployeeById(long id) {
         return employeeMapper.toDto(employeeRepository
@@ -52,6 +59,11 @@ public class EmployeeService {
                 .orElseThrow(() -> new APIException(ErrorCode.EMPLOYEE_NOT_FOUND)));
     }
 
+    /**
+     * @param employeeCreateRequest
+     * @param files
+     * @return
+     */
     @Transactional
     public EmployeeResponse createEmployee(@NotNull EmployeeCreateRequest employeeCreateRequest, List<MultipartFile> files) {
         if (employeeRepository
@@ -80,6 +92,12 @@ public class EmployeeService {
         throw new APIException(ErrorCode.EMAIl_EXIST);
     }
 
+    /**
+     * @param employeeId
+     * @param employeeUpdateRequest
+     * @param files
+     * @return
+     */
     @Transactional
     public EmployeeResponse updateEmployee(@NotNull Long employeeId, @NotNull EmployeeUpdateRequest employeeUpdateRequest, List<MultipartFile> files) {
         Employee existingEmployee = employeeRepository

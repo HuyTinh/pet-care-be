@@ -17,6 +17,11 @@ public class MessageService {
 
     @NotNull ObjectMapper objectMapper;
 
+    /**
+     * @param destination
+     * @param customer
+     * @throws JsonProcessingException
+     */
     public void sendMessageQueue(@NotNull String destination, @NotNull String customer) throws JsonProcessingException {
         jmsTemplate.convertAndSend(destination, customer);
     }
