@@ -25,8 +25,8 @@ CREATE TABLE invalidated_tokens
 
 CREATE TABLE permissions
 (
-    name          VARCHAR(255) NOT NULL, `
-    description ` VARCHAR(255) NULL,
+    name          VARCHAR(255) NOT NULL,
+    description  VARCHAR(255) NULL,
     created_at    date         NULL,
     updated_at    date         NULL,
     CONSTRAINT pk_permissions PRIMARY KEY (name)
@@ -34,8 +34,8 @@ CREATE TABLE permissions
 
 CREATE TABLE roles
 (
-    name          VARCHAR(255) NOT NULL, `
-    description ` VARCHAR(255) NULL,
+    name          VARCHAR(255) NOT NULL, 
+    description  VARCHAR(255) NULL,
     created_at    date         NULL,
     updated_at    date         NULL,
     CONSTRAINT pk_roles PRIMARY KEY (name)

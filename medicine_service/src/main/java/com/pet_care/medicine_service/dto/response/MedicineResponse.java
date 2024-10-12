@@ -1,14 +1,13 @@
 package com.pet_care.medicine_service.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.pet_care.medicine_service.enums.MedicineStatus;
 import com.pet_care.medicine_service.model.CalculationUnit;
 import com.pet_care.medicine_service.model.Location;
 import com.pet_care.medicine_service.model.Manufacture;
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.ManyToMany;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -27,9 +26,11 @@ public class MedicineResponse {
     String name;
 
     @JsonProperty("manufacturing_date")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, timezone = "GMT+08:00", pattern = "yyyy-MM-dd")
     Date manufacturingDate;
 
     @JsonProperty("expiry_date")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, timezone = "GMT+08:00", pattern = "yyyy-MM-dd")
     Date expiryDate;
 
     Integer quantity;
