@@ -1,5 +1,6 @@
 package com.pet_care.medicine_service.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.*;
@@ -43,5 +44,7 @@ public class Medicine {
 
     String note;
 
-    Boolean status;
+    @JsonIgnore
+    @Builder.Default
+    Boolean status = true;
 }

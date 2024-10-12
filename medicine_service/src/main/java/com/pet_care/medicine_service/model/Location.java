@@ -1,5 +1,6 @@
 package com.pet_care.medicine_service.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -29,6 +30,7 @@ public class Location {
     @JsonProperty("column_location")
     Integer columnLocation;
 
+    @JsonIgnore
     Boolean status;
 
 }
