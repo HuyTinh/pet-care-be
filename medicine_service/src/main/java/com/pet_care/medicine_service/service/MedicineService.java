@@ -2,6 +2,7 @@ package com.pet_care.medicine_service.service;
 
 import com.pet_care.medicine_service.dto.request.MedicineCreateRequest;
 import com.pet_care.medicine_service.dto.request.MedicineUpdateRequest;
+import com.pet_care.medicine_service.dto.response.MedicineResponse;
 import com.pet_care.medicine_service.exception.APIException;
 import com.pet_care.medicine_service.exception.ErrorCode;
 import com.pet_care.medicine_service.mapper.MedicineMapper;
@@ -21,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -42,8 +44,8 @@ public class MedicineService {
      */
     @NotNull
     @Transactional(readOnly = true)
-    public List<Medicine> getAllMedicine() {
-        List<Medicine> medicineList = medicineRepository.findAll();
+    public List<MedicineResponse> getAllMedicine() {
+        List<MedicineResponse> medicineList = medicineRepository.findAll().stream().map(medicineMapper::toDto).collect(Collectors.toList());
         log.info("Find all medicine");
         return medicineList;
     }

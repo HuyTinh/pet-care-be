@@ -41,7 +41,7 @@ public class AccountController {
      * @return
      */
     @GetMapping("/{id}")
-    APIResponse<AccountResponse> getUserById(@PathVariable("id") Long id) {
+    APIResponse<AccountResponse> getUserById(@PathVariable("id") @NotNull Long id) {
         return APIResponse.<AccountResponse>builder().code(1000).data(accountService.getUserById(id)).build();
     }
 
@@ -72,7 +72,7 @@ public class AccountController {
      */
     @PostMapping()
     @ResponseStatus(HttpStatus.CREATED)
-    APIResponse<AccountResponse> createAccount(@RequestBody AccountCreateRequest request) throws JsonProcessingException {
+    APIResponse<AccountResponse> createAccount(@RequestBody @NotNull AccountCreateRequest request) throws JsonProcessingException {
         log.info("{}", request);
         return APIResponse.<AccountResponse>builder().code(1000).data(accountService.createAccount(request)).build();
     }
@@ -83,7 +83,7 @@ public class AccountController {
      * @return
      */
     @PutMapping("/{id}")
-    APIResponse<AccountResponse> updateUser(@PathVariable("id") Long id, @RequestBody @Valid AccountUpdateRequest request) {
+    APIResponse<AccountResponse> updateUser(@PathVariable("id") @NotNull Long id, @RequestBody @Valid AccountUpdateRequest request) {
         return APIResponse.<AccountResponse>builder().code(1000).data(accountService.updateAccount(id, request)).build();
     }
 
@@ -93,7 +93,7 @@ public class AccountController {
      */
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('HOSPITAL_ADMINISTRATOR')")
-    APIResponse<String> deleteUser(@PathVariable("id") Long id) {
+    APIResponse<String> deleteUser(@PathVariable("id") @NotNull Long id) {
         accountService.deleteAccount(id);
         return APIResponse.<String>builder().code(1000).message("Delete account successful").build();
     }

@@ -8,7 +8,7 @@ spring:
     password: root
 
   flyway:
-    enabled: true
+    enabled: false
     url: jdbc:mysql://localhost:3311/medicine_service
     user: root
     password: root

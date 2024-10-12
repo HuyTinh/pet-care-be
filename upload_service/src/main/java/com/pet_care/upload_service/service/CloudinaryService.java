@@ -31,7 +31,7 @@ public class CloudinaryService {
     @NotNull Mono<String> uploadImage(@NotNull MultipartFile file) {
         return Mono.fromCallable(() -> {
             // Tải file lên Cloudinary thông qua API upload
-            Map<?,?> uploadResult = cloudinary.uploader().upload(file.getBytes(), ObjectUtils.emptyMap());
+            Map<?, ?> uploadResult = cloudinary.uploader().upload(file.getBytes(), ObjectUtils.emptyMap());
             return (String) uploadResult.get("url");
         }).subscribeOn(Schedulers.boundedElastic());
     }
@@ -53,7 +53,7 @@ public class CloudinaryService {
                         .next()  // Lấy buffer đầu tiên của FilePart
                         .flatMap(bytes -> Mono.fromCallable(() -> {
                             // Upload ảnh lên Cloudinary
-                            Map<?,?> uploadResult = cloudinary.uploader().upload(bytes, ObjectUtils.emptyMap());
+                            Map<?, ?> uploadResult = cloudinary.uploader().upload(bytes, ObjectUtils.emptyMap());
                             return (String) uploadResult.get("url");
                         }))
                 )

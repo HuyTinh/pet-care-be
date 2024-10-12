@@ -1,10 +1,19 @@
 package com.pet_care.medicine_service.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.pet_care.medicine_service.enums.MedicineStatus;
+import com.pet_care.medicine_service.model.CalculationUnit;
+import com.pet_care.medicine_service.model.Location;
+import com.pet_care.medicine_service.model.Manufacture;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.ManyToMany;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.util.Date;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -29,5 +38,13 @@ public class MedicineResponse {
 
     String note;
 
-    Boolean status;
+    @JsonProperty("calculation_units")
+    Set<CalculationUnit> calculationUnits;
+
+    Set<Manufacture> manufactures;
+
+    Set<Location> locations;
+
+    @Enumerated(EnumType.STRING)
+    MedicineStatus status;
 }

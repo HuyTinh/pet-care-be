@@ -1,6 +1,9 @@
 package com.pet_care.medicine_service.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.pet_care.medicine_service.enums.MedicineStatus;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -34,5 +37,6 @@ public class MedicineUpdateRequest {
 
     String note;
 
-    Boolean status;
+    @Enumerated(EnumType.STRING)
+    MedicineStatus status;
 }

@@ -30,7 +30,6 @@ public class Location {
     @JsonProperty("column_location")
     Integer columnLocation;
 
-    @JsonIgnore
     Boolean status;
 
 }

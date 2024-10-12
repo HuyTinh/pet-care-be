@@ -33,7 +33,7 @@ public class SpecieService {
      * @return
      */
     @Transactional(readOnly = true)
-    public Specie getByName(String name) {
+    public Specie getByName(@NotNull String name) {
         return specieRepository.findById(name).orElseThrow(() -> new APIException(ErrorCode.SPECIE_NOT_FOUND));
     }
 }

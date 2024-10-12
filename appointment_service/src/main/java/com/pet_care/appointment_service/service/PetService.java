@@ -27,7 +27,7 @@ public class PetService {
      * @return
      */
     @Transactional(readOnly = true)
-    public List<PetResponse> getAllPet() {
+    public @NotNull List<PetResponse> getAllPet() {
         return petRepository.findAll().stream()
                 .map(petMapper::toDto).collect(toList());
     }
@@ -37,7 +37,7 @@ public class PetService {
      * @return
      */
     @Transactional(readOnly = true)
-    public PetResponse getPetById(Long petId) {
+    public PetResponse getPetById(@NotNull Long petId) {
         return petRepository.findById(petId).map(petMapper::toDto).orElseThrow(() -> new APIException(ErrorCode.PET_NOT_FOUND));
     }
 }
