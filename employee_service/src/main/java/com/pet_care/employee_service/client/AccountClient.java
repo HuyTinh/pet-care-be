@@ -10,6 +10,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 @Service
 @FeignClient(name = "identityClient", url = "http://localhost:8081/api/v1/identity-service")
 public interface AccountClient {
+    /**
+     * @param request
+     * @return
+     */
     @PostMapping("/account")
     APIResponse<AccountResponse> createAccount(EmployeeCreateRequest request);
 }

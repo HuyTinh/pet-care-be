@@ -8,5 +8,9 @@ import java.util.Optional;
 
 @Repository
 public interface EmployeeRepository extends JpaRepository<Employee, Long> {
+    /**
+     * @param email
+     * @return
+     */
     Optional<Employee> getEmployeeByEmail(String email);
 }

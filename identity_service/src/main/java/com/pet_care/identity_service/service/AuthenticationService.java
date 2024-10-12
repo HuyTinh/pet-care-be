@@ -34,6 +34,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import java.text.ParseException;
@@ -65,6 +66,13 @@ public class AuthenticationService {
     @Value("${jwt.signerKey}")
     protected String SIGNER_KEY;
 
+    /**
+     * @param request
+     * @return
+     * @throws JOSEException
+     * @throws ParseException
+     */
+    @Transactional(readOnly = true)
     public IntrospectResponse introspect(@NotNull IntrospectRequest request) throws JOSEException, ParseException {
         var token = request.getToken();
 
@@ -82,6 +90,11 @@ public class AuthenticationService {
                 .build();
     }
 
+    /**
+     * @param request
+     * @return
+     */
+    @Transactional(readOnly = true)
     public AuthenticationResponse authenticate(@NotNull AuthenticationRequest request) {
         var account = accountRepository.findByEmail(request.getEmail()).orElseThrow(() -> new APIException(ErrorCode.EMAIL_NOT_EXISTED));
 
@@ -99,6 +112,10 @@ public class AuthenticationService {
                 .build();
     }
 
+    /**
+     * @param account
+     * @return
+     */
     private String generateToken(@NotNull Account account) {
         JWSHeader jwsHeader = new JWSHeader(JWSAlgorithm.HS512);
         JWTClaimsSet jwtClaimsSet = new JWTClaimsSet.Builder()
@@ -122,11 +139,15 @@ public class AuthenticationService {
             jwsObject.sign(new MACSigner(SIGNER_KEY.getBytes()));
             return jwsObject.serialize();
         } catch (JOSEException e) {
-            log.error("Cannot create token", e);
+            log.error("Cannot createPermission token", e);
             throw new APIException(ErrorCode.UNAUTHENTICATED);
         }
     }
 
+    /**
+     * @param account
+     * @return
+     */
     private AuthenticationResponse authenticationResponse(@NotNull Account account) {
         var token = generateToken(account);
 
@@ -136,6 +157,13 @@ public class AuthenticationService {
                 .build();
     }
 
+    /**
+     * @param request
+     * @return
+     * @throws ParseException
+     * @throws JOSEException
+     */
+    @Transactional(readOnly = true)
     public AuthenticationResponse refreshToken(@NotNull RefreshRequest request) throws ParseException, JOSEException {
         var signJWT = verifyToken(request.getToken());
 
@@ -159,6 +187,11 @@ public class AuthenticationService {
         return AuthenticationResponse.builder().token(token).isAuthenticated(true).build();
     }
 
+    /**
+     * @param request
+     * @throws ParseException
+     * @throws JOSEException
+     */
     public void logout(@NotNull LogoutRequest request) throws ParseException, JOSEException {
         var signToken = verifyToken(request.getToken());
 
@@ -177,6 +210,12 @@ public class AuthenticationService {
 
     }
 
+    /**
+     * @param token
+     * @return
+     * @throws JOSEException
+     * @throws ParseException
+     */
     @NotNull
     private SignedJWT verifyToken(@NotNull String token) throws JOSEException, ParseException {
         JWSVerifier verifier = new MACVerifier(SIGNER_KEY);
@@ -198,6 +237,10 @@ public class AuthenticationService {
         return signedJWT;
     }
 
+    /**
+     * @param account
+     * @return
+     */
     private String buildScope(@NotNull Account account) {
         StringJoiner stringJoiner = new StringJoiner(" ");
         if (!CollectionUtils.isEmpty((account.getRoles()))) {
@@ -213,6 +256,11 @@ public class AuthenticationService {
         return stringJoiner.toString();
     }
 
+    /**
+     * @param accessToken
+     * @return
+     */
+    @Transactional(readOnly = true)
     public AuthenticationResponse authenticateWithGoogle(String accessToken) {
 
         try {
@@ -248,7 +296,7 @@ public class AuthenticationService {
                         .imageUrl(userInfo.getPicture())
                         .build();
 
-                messageService.sendMessageQueue("customer-create-queue", objectMapper.writeValueAsString(customerCreateRequest));
+                messageService.sendMessageQueue("customer-createPermission-queue", objectMapper.writeValueAsString(customerCreateRequest));
             }
 
             return authenticationResponse(account);
@@ -258,6 +306,11 @@ public class AuthenticationService {
         }
     }
 
+    /**
+     * @param accessToken
+     * @return
+     */
+    @Transactional(readOnly = true)
     public AuthenticationResponse authenticateWithFacebook(String accessToken) {
         try {
             FacebookUserInfo facebookUserInfo = facebookClient.getUserProfile("name, email,first_name,last_name,gender,picture{url}", accessToken);
@@ -280,7 +333,7 @@ public class AuthenticationService {
                         .lastName(facebookUserInfo.getLastName())
                         .build();
 
-                messageService.sendMessageQueue("customer-create-queue", objectMapper.writeValueAsString(customerCreateRequest));
+                messageService.sendMessageQueue("customer-createPermission-queue", objectMapper.writeValueAsString(customerCreateRequest));
             }
 
             return authenticationResponse(account);

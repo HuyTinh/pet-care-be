@@ -26,6 +26,10 @@ public class APIExceptionHandler {
                 .build());
     }
 
+    /**
+     * @param e
+     * @return
+     */
     @NotNull
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<APIResponse<RuntimeException>> HandlingRuntimeException(@NotNull RuntimeException e) {

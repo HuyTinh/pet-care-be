@@ -125,6 +125,9 @@ public class CustomerService {
         return customerMapper.toDto(customerRepository.save(existingCustomer));
     }
 
+    /**
+     * @param id
+     */
     public void deleteCustomer(@NotNull Long id) {
         customerRepository.deleteById(id);
     }

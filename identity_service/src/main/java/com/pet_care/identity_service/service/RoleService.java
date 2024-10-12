@@ -15,6 +15,7 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashSet;
 import java.util.List;
@@ -33,7 +34,12 @@ public class RoleService {
 
     @NotNull PermissionRepository permissionRepository;
 
-    public RoleResponse create(@NotNull RoleCreationRequest request) {
+    /**
+     * @param request
+     * @return
+     */
+    @Transactional
+    public RoleResponse createRole(@NotNull RoleCreationRequest request) {
         var role = roleMapper.toEntity(request);
 
         var listPermission = permissionRepository.findAllById(request.getPermissions());
@@ -43,15 +49,27 @@ public class RoleService {
     }
 
     @NotNull
-    public List<RoleResponse> getAll() {
+    @Transactional(readOnly = true)
+    public List<RoleResponse> getAllRole() {
         return roleRepository.findAll().stream().map(roleMapper::toDto).collect(Collectors.toList());
     }
 
+    /**
+     * @param role
+     * @return
+     */
+    @Transactional(readOnly = true)
     public RoleResponse getById(@NotNull String role) {
         return roleRepository.findById(role).map(roleMapper::toDto).orElseThrow(() -> new APIException(ErrorCode.ROLE_NOT_EXISTED));
     }
 
-    public RoleResponse update(@NotNull String role, @NotNull RoleUpdateRequest request) {
+    /**
+     * @param role
+     * @param request
+     * @return
+     */
+    @Transactional
+    public RoleResponse updateRole(@NotNull String role, @NotNull RoleUpdateRequest request) {
         var updatedRole = roleRepository.findById(role).orElseThrow(() -> new APIException(ErrorCode.ROLE_NOT_EXISTED));
 
         var listPermission = permissionRepository.findAllById(request.getPermissions());
@@ -60,7 +78,11 @@ public class RoleService {
         return roleMapper.toDto(roleRepository.save(updatedRole));
     }
 
-    public void delete(@NotNull String role) {
+    /**
+     * @param role
+     */
+    @Transactional
+    public void deleteRole(@NotNull String role) {
         roleRepository.deleteById(role);
     }
 }

@@ -27,6 +27,10 @@ import java.text.ParseException;
 public class AuthenticationController {
     @NotNull AuthenticationService authenticationService;
 
+    /**
+     * @param request
+     * @return
+     */
     @PostMapping("token")
     APIResponse<AuthenticationResponse> authenticate(@NotNull @RequestBody AuthenticationRequest request) {
         return APIResponse.<AuthenticationResponse>builder()
@@ -34,6 +38,12 @@ public class AuthenticationController {
                 .build();
     }
 
+    /**
+     * @param request
+     * @return
+     * @throws ParseException
+     * @throws JOSEException
+     */
     @PostMapping("refresh")
     APIResponse<AuthenticationResponse> refresh(@NotNull @RequestBody RefreshRequest request) throws ParseException, JOSEException {
         return APIResponse.<AuthenticationResponse>builder()
@@ -41,6 +51,12 @@ public class AuthenticationController {
                 .build();
     }
 
+    /**
+     * @param request
+     * @return
+     * @throws ParseException
+     * @throws JOSEException
+     */
     @PostMapping("introspect")
     APIResponse<IntrospectResponse> authenticate(@NotNull @RequestBody IntrospectRequest request) throws ParseException, JOSEException {
         return APIResponse.<IntrospectResponse>builder()
@@ -48,17 +64,33 @@ public class AuthenticationController {
                 .build();
     }
 
+    /**
+     * @param request
+     * @return
+     * @throws ParseException
+     * @throws JOSEException
+     */
     @PostMapping("/logout")
     APIResponse<Void> logout(@NotNull @RequestBody LogoutRequest request) throws ParseException, JOSEException {
         authenticationService.logout(request);
         return APIResponse.<Void>builder().build();
     }
 
+    /**
+     * @param accessToken
+     * @return
+     * @throws Exception
+     */
     @PostMapping("/google")
     public APIResponse<AuthenticationResponse> authenticateWithGoogle(@RequestBody String accessToken) throws Exception {
         return APIResponse.<AuthenticationResponse>builder().data(authenticationService.authenticateWithGoogle(accessToken)).build();
     }
 
+    /**
+     * @param accessToken
+     * @return
+     * @throws Exception
+     */
     @PostMapping("/facebook")
     public APIResponse<AuthenticationResponse> authenticateWithFacebook(@RequestBody String accessToken) throws Exception {
         return APIResponse.<AuthenticationResponse>builder().data(authenticationService.authenticateWithFacebook(accessToken)).build();

@@ -24,34 +24,50 @@ import java.util.List;
 public class RoleController {
     @NotNull RoleService roleService;
 
+    /**
+     * @param request
+     * @return
+     */
     @PostMapping
     @PreAuthorize("hasRole('HOSPITAL_ADMINISTRATOR')")
-    APIResponse<RoleResponse> create(@RequestBody RoleCreationRequest request) {
+    APIResponse<RoleResponse> createRole(@RequestBody RoleCreationRequest request) {
         return APIResponse.<RoleResponse>builder()
-                .data(roleService.create(request))
+                .data(roleService.createRole(request))
                 .build();
     }
 
+    /**
+     * @param role
+     * @param request
+     * @return
+     */
     @PutMapping("/{role}")
     @PreAuthorize("hasRole('HOSPITAL_ADMINISTRATOR')")
-    APIResponse<RoleResponse> update(@PathVariable String role, @NotNull @RequestBody RoleUpdateRequest request) {
+    APIResponse<RoleResponse> updateRole(@PathVariable String role, @NotNull @RequestBody RoleUpdateRequest request) {
         return APIResponse.<RoleResponse>builder()
-                .data(roleService.update(role, request))
+                .data(roleService.updateRole(role, request))
                 .build();
     }
 
+    /**
+     * @return
+     */
     @GetMapping
     @PreAuthorize("hasRole('HOSPITAL_ADMINISTRATOR')")
-    APIResponse<List<RoleResponse>> getAll() {
+    APIResponse<List<RoleResponse>> getAllRole() {
         return APIResponse.<List<RoleResponse>>builder()
-                .data(roleService.getAll())
+                .data(roleService.getAllRole())
                 .build();
     }
 
+    /**
+     * @param role
+     * @return
+     */
     @DeleteMapping("/{role}")
     @PreAuthorize("hasRole('HOSPITAL_ADMINISTRATOR')")
-    APIResponse<Void> delete(@PathVariable("role") String role) {
-        roleService.delete(role);
+    APIResponse<Void> deleteRole(@PathVariable("role") String role) {
+        roleService.deleteRole(role);
         return APIResponse.<Void>builder().build();
     }
 

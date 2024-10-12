@@ -7,11 +7,24 @@ import org.mapstruct.*;
 
 @Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE, componentModel = MappingConstants.ComponentModel.SPRING)
 public interface RoleMapper {
+    /**
+     * @param roleCreationRequest
+     * @return
+     */
     @Mapping(target = "permissions", ignore = true)
     Role toEntity(RoleCreationRequest roleCreationRequest);
 
+    /**
+     * @param role
+     * @return
+     */
     RoleResponse toDto(Role role);
 
+    /**
+     * @param roleCreationRequest
+     * @param role
+     * @return
+     */
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(target = "permissions", ignore = true)
     Role partialUpdate(RoleCreationRequest roleCreationRequest, @MappingTarget Role role);

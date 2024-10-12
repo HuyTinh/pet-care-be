@@ -20,6 +20,10 @@ public interface MedicineClient {
     @GetMapping("/medicine/{medicineId}")
     APIResponse<Medicine> getMedicineById(@PathVariable("medicineId") Long medicineId);
 
+    /**
+     * @param medicineIds
+     * @return
+     */
     @GetMapping("/medicine/in/{medicineIds}")
     APIResponse<List<Medicine>> getMedicineInIds(@PathVariable("medicineIds") Set<Long> medicineIds);
 }

@@ -13,8 +13,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/invoice")
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class InvoiceController {
+    /**
+     * @return
+     */
     @GetMapping
-    public ResponseEntity<String> getInvoice() {
-
+    public ResponseEntity<String> getAllInvoice() {
+        return ResponseEntity.ok("All invoices");
     }
 }

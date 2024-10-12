@@ -22,33 +22,49 @@ import java.util.List;
 public class PermissionController {
     @NotNull PermissionService permissionService;
 
+    /**
+     * @return
+     */
     @GetMapping
     @PreAuthorize("hasRole('HOSPITAL_ADMINISTRATOR')")
     APIResponse<List<PermissionResponse>> getAllPermission() {
         return APIResponse.<List<PermissionResponse>>builder()
-                .data(permissionService.getAll())
+                .data(permissionService.getAllPermission())
                 .build();
     }
 
+    /**
+     * @param permissionRequest
+     * @return
+     */
     @PostMapping
     @PreAuthorize("hasRole('HOSPITAL_ADMINISTRATOR')")
     APIResponse<PermissionResponse> createPermission(@RequestBody PermissionRequest permissionRequest) {
         return APIResponse.<PermissionResponse>builder()
-                .data(permissionService.create(permissionRequest))
+                .data(permissionService.createPermission(permissionRequest))
                 .build();
     }
 
+    /**
+     * @param permission
+     * @param permissionRequest
+     * @return
+     */
     @PutMapping("/{permission}")
     APIResponse<PermissionResponse> updatePermission(@PathVariable("permission") String permission, @NotNull @RequestBody PermissionRequest permissionRequest) {
         return APIResponse.<PermissionResponse>builder()
-                .data(permissionService.update(permission, permissionRequest))
+                .data(permissionService.updatePermission(permission, permissionRequest))
                 .build();
     }
 
+    /**
+     * @param permission
+     * @return
+     */
     @DeleteMapping("/{permission}")
     @PreAuthorize("hasRole('HOSPITAL_ADMINISTRATOR')")
     APIResponse<Void> deletePermission(@PathVariable("permission") String permission) {
-        permissionService.delete(permission);
+        permissionService.deletePermission(permission);
         return APIResponse.<Void>builder().build();
     }
 }
