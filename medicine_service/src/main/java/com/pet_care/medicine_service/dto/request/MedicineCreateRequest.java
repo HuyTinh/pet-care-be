@@ -26,6 +26,7 @@ public class MedicineCreateRequest {
 
     Double price;
 
+    @JsonProperty("calculation_units")
     Set<Long> calculationUnits;
 
     Set<Long> manufactures;
@@ -34,5 +35,4 @@ public class MedicineCreateRequest {
 
     String note;
 
-    Boolean status;
 }

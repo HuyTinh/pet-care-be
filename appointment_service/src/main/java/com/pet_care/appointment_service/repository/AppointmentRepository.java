@@ -20,8 +20,8 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
      * @return
      */
     @Modifying
-    @Query(value = "UPDATE appointments set status = 'CHECKED_IN' Where id = ?1")
-    int checkInAppointment(Long id);
+    @Query(value = "UPDATE appointments set status = 'CHECKED_IN' Where id = :id")
+    int checkInAppointment(@Param("id") Long id);
 
 
     /**

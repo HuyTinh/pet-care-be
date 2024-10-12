@@ -13,4 +13,6 @@ public interface PetRepository extends JpaRepository<Pet, Long> {
      * @return
      */
     List<Pet> findByAppointment_Id(Long appointment_id);
+
+    void deleteAllByAppointment_Id(Long appointment_id);
 }

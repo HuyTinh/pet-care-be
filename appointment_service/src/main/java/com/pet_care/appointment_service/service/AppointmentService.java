@@ -73,10 +73,7 @@ public class AppointmentService {
 
         appointmentMapper.partialUpdate(appointmentUpdateRequest, existingAppointment);
 
-        petRepository.deleteAllById(appointmentUpdateRequest.getPets().stream()
-                .map(petCreateRequest -> petCreateRequest.getId() == null ?
-                        0 : petCreateRequest.getId()).toList());
-
+        petRepository.deleteAllByAppointment_Id(appointmentId);
 
         petRepository.saveAll(appointmentUpdateRequest.getPets().stream()
                 .peek(petCreateRequest -> petCreateRequest
@@ -162,6 +159,7 @@ public class AppointmentService {
      * @return
      */
     public int checkInAppointment(Long appointmentId) {
+        System.out.println(appointmentId);
         int checkIn = appointmentRepository
                 .checkInAppointment(appointmentId);
 

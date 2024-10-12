@@ -2,6 +2,7 @@ package com.pet_care.appointment_service.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
@@ -27,6 +28,7 @@ import java.util.Set;
 @Slf4j
 @Component
 @RequiredArgsConstructor
+@NoArgsConstructor(force = true)
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class WebSocketHandler extends TextWebSocketHandler {
 

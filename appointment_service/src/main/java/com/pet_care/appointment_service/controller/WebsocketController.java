@@ -13,6 +13,7 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Map;
 
@@ -38,9 +39,11 @@ public class WebsocketController {
      * @param message
      * @throws Exception
      */
+    @Transactional
     @MessageMapping("/sendMessage")
-    public void sendMessage(@NotNull @Payload Map<String, String> message) throws Exception {
+    public void sendMessage(@Payload Map<String, String> message) throws Exception {
         // Xử lý tin nhắn tại đây
+
         long appointmentId = Long.parseLong(message.get("appointmentId"));
         String sessionId = message.get("sessionId");
         AppointmentStatus status = AppointmentStatus.valueOf(message.get("status"));

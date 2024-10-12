@@ -1,6 +1,7 @@
 package com.pet_care.appointment_service.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.pet_care.appointment_service.enums.AppointmentStatus;
 import com.pet_care.appointment_service.model.HospitalServiceEntity;
@@ -20,6 +21,7 @@ import java.util.Set;
 @NoArgsConstructor
 @ToString
 @FieldDefaults(level = AccessLevel.PRIVATE)
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class AppointmentUpdateRequest {
     @JsonProperty("first_name")
     String firstName;
@@ -37,11 +39,11 @@ public class AppointmentUpdateRequest {
     Long accountId;
 
     @JsonProperty("appointment_date")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, timezone = "GMT+07:00", pattern = "yyyy-MM-dd")
     Date appointmentDate;
 
     @JsonProperty("appointment_time")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, timezone = "GMT+08:00", pattern = "HH:mm")
     Date appointmentTime;
 
     Set<Pet> pets;

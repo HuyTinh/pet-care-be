@@ -114,7 +114,8 @@ public class AppointmentController {
      * @return
      */
     @PostMapping("/approved/{appointmentId}")
-    public APIResponse<Integer> checkInAppointment(@PathVariable Long appointmentId) {
+    public APIResponse<Integer> checkInAppointment(@PathVariable("appointmentId") Long appointmentId) {
+
         return APIResponse.<Integer>builder()
                 .data(appointmentService.checkInAppointment(appointmentId))
                 .build();
