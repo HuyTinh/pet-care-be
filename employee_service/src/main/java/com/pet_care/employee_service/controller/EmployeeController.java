@@ -50,8 +50,8 @@ public class EmployeeController {
      * @return
      */
     @PutMapping(value = "/{employeeId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public APIResponse<EmployeeResponse> updateEmployee(@PathVariable("employeeId") Long employeeId,
-                                                        @ModelAttribute EmployeeUpdateRequest employeeUpdateRequest,
+    public APIResponse<EmployeeResponse> updateEmployee(@PathVariable("employeeId") @NotNull Long employeeId,
+                                                        @ModelAttribute @NotNull EmployeeUpdateRequest employeeUpdateRequest,
                                                         @RequestPart(name = "files", required = false) List<MultipartFile> files) {
         return APIResponse.<EmployeeResponse>builder()
                 .data(employeeService.updateEmployee(employeeId, employeeUpdateRequest, files)).build();

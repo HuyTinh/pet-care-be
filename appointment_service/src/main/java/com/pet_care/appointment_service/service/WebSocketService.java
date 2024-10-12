@@ -15,7 +15,7 @@ import java.util.Map;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class WebSocketService {
 
-    SimpMessagingTemplate messagingTemplate;
+    @NotNull SimpMessagingTemplate messagingTemplate;
 
     /**
      * @param message

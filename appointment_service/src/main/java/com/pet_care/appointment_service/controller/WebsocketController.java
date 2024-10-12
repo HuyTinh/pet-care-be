@@ -41,7 +41,7 @@ public class WebsocketController {
      */
     @Transactional
     @MessageMapping("/sendMessage")
-    public void sendMessage(@Payload Map<String, String> message) throws Exception {
+    public void sendMessage(@Payload @NotNull Map<String, String> message) throws Exception {
         // Xử lý tin nhắn tại đây
 
         long appointmentId = Long.parseLong(message.get("appointmentId"));

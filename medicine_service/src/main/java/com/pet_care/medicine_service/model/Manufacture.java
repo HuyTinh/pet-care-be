@@ -22,6 +22,5 @@ public class Manufacture {
 
     String name;
 
-    @JsonIgnore
     Boolean status;
 }

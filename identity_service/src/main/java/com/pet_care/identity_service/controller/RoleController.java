@@ -30,7 +30,7 @@ public class RoleController {
      */
     @PostMapping
     @PreAuthorize("hasRole('HOSPITAL_ADMINISTRATOR')")
-    APIResponse<RoleResponse> createRole(@RequestBody RoleCreationRequest request) {
+    APIResponse<RoleResponse> createRole(@RequestBody @NotNull RoleCreationRequest request) {
         return APIResponse.<RoleResponse>builder()
                 .data(roleService.createRole(request))
                 .build();
@@ -43,7 +43,7 @@ public class RoleController {
      */
     @PutMapping("/{role}")
     @PreAuthorize("hasRole('HOSPITAL_ADMINISTRATOR')")
-    APIResponse<RoleResponse> updateRole(@PathVariable String role, @NotNull @RequestBody RoleUpdateRequest request) {
+    APIResponse<RoleResponse> updateRole(@PathVariable @NotNull String role, @NotNull @RequestBody RoleUpdateRequest request) {
         return APIResponse.<RoleResponse>builder()
                 .data(roleService.updateRole(role, request))
                 .build();
@@ -66,7 +66,7 @@ public class RoleController {
      */
     @DeleteMapping("/{role}")
     @PreAuthorize("hasRole('HOSPITAL_ADMINISTRATOR')")
-    APIResponse<Void> deleteRole(@PathVariable("role") String role) {
+    APIResponse<Void> deleteRole(@PathVariable("role") @NotNull String role) {
         roleService.deleteRole(role);
         return APIResponse.<Void>builder().build();
     }

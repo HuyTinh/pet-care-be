@@ -26,11 +26,13 @@ public class PetController {
     @NotNull ESService esService;
 
     @GetMapping()
+    @NotNull
     Iterable<Pet> getAllPets() {
         return petService.getAllPets();
     }
 
     @PostMapping()
+    @NotNull
     Pet insertPet(@NotNull @RequestBody Pet pet) {
         return petService.insertPet(pet);
     }

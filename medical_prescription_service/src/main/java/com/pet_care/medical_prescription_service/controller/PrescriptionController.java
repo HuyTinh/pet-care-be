@@ -24,7 +24,7 @@ public class PrescriptionController {
      * @return
      */
     @GetMapping
-    public List<PrescriptionResponse> getAllPrescription() {
+    public @NotNull List<PrescriptionResponse> getAllPrescription() {
         return prescriptionService.getAllPrescriptions();
     }
 
@@ -33,7 +33,7 @@ public class PrescriptionController {
      * @return
      */
     @GetMapping("/{prescriptionId}")
-    public PrescriptionResponse getPrescriptionById(@NotNull @PathVariable("prescriptionId") Long prescriptionId) {
+    public @NotNull PrescriptionResponse getPrescriptionById(@NotNull @PathVariable("prescriptionId") Long prescriptionId) {
         return prescriptionService.getPrescriptionById(prescriptionId);
     }
 

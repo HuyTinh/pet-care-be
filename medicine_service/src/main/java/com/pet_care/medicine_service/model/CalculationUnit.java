@@ -20,7 +20,6 @@ public class CalculationUnit {
 
     String name;
 
-    @JsonIgnore
     Boolean status;
 
 }

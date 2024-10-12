@@ -2,9 +2,11 @@ package com.pet_care.medicine_service.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.pet_care.medicine_service.enums.MedicineStatus;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Date;
 import java.util.Set;
@@ -44,7 +46,6 @@ public class Medicine {
 
     String note;
 
-    @JsonIgnore
     @Builder.Default
-    Boolean status = true;
+    MedicineStatus status = MedicineStatus.ACTIVE;
 }

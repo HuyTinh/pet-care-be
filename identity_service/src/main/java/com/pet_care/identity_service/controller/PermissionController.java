@@ -51,7 +51,7 @@ public class PermissionController {
      * @return
      */
     @PutMapping("/{permission}")
-    APIResponse<PermissionResponse> updatePermission(@PathVariable("permission") String permission, @NotNull @RequestBody PermissionRequest permissionRequest) {
+    APIResponse<PermissionResponse> updatePermission(@PathVariable("permission") @NotNull String permission, @NotNull @RequestBody PermissionRequest permissionRequest) {
         return APIResponse.<PermissionResponse>builder()
                 .data(permissionService.updatePermission(permission, permissionRequest))
                 .build();
@@ -63,7 +63,7 @@ public class PermissionController {
      */
     @DeleteMapping("/{permission}")
     @PreAuthorize("hasRole('HOSPITAL_ADMINISTRATOR')")
-    APIResponse<Void> deletePermission(@PathVariable("permission") String permission) {
+    APIResponse<Void> deletePermission(@PathVariable("permission") @NotNull String permission) {
         permissionService.deletePermission(permission);
         return APIResponse.<Void>builder().build();
     }

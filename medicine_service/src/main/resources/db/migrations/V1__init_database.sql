@@ -1,39 +1,39 @@
 CREATE TABLE calculation_units
 (
     id     BIGINT AUTO_INCREMENT NOT NULL,
-    name   VARCHAR(255)          NULL,
-    status BIT(1)                NULL,
+    name   VARCHAR(255) NULL,
+    status BIT(1)       NULL,
     CONSTRAINT pk_calculation_units PRIMARY KEY (id)
 );
 
 CREATE TABLE locations
 (
     id              BIGINT AUTO_INCREMENT NOT NULL,
-    area            VARCHAR(255)          NULL,
-    row_location    INT                   NULL,
-    column_location INT                   NULL,
-    status          BIT(1)                NULL,
+    area            VARCHAR(255) NULL,
+    row_location    INT          NULL,
+    column_location INT          NULL,
+    status          BIT(1)       NULL,
     CONSTRAINT pk_locations PRIMARY KEY (id)
 );
 
 CREATE TABLE manufactures
 (
     id     BIGINT AUTO_INCREMENT NOT NULL,
-    name   VARCHAR(255)          NULL,
-    status BIT(1)                NULL,
+    name   VARCHAR(255) NULL,
+    status BIT(1)       NULL,
     CONSTRAINT pk_manufactures PRIMARY KEY (id)
 );
 
 CREATE TABLE medicines
 (
     id                 BIGINT AUTO_INCREMENT NOT NULL,
-    name               VARCHAR(255)          NULL,
-    manufacturing_date datetime              NULL,
-    expiry_date        datetime              NULL,
-    quantity           INT                   NULL,
-    price              DOUBLE                NULL,
-    note               VARCHAR(255)          NULL,
-    status             BIT(1)                NULL,
+    name               VARCHAR(255) NULL,
+    manufacturing_date datetime     NULL,
+    expiry_date        datetime     NULL,
+    quantity           INT          NULL,
+    price DOUBLE NULL,
+    note               VARCHAR(255) NULL,
+    status             BIT(1)       NULL,
     CONSTRAINT pk_medicines PRIMARY KEY (id)
 );
 

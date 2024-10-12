@@ -17,7 +17,7 @@ public class BrevoService {
     @NotNull RestClient restClient;
 
     /**
-     * @param message 
+     * @param message
      * @throws JsonProcessingException
      */
     @JmsListener(destination = "appointment-success-notification-queue")
