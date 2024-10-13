@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.pet_care.appointment_service.enums.AppointmentStatus;
-import com.pet_care.appointment_service.model.HospitalServiceEntity;
 import com.pet_care.appointment_service.model.Pet;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
