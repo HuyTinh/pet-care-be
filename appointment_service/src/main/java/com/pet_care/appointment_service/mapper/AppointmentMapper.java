@@ -11,6 +11,7 @@ public interface AppointmentMapper {
     @Mapping(target = "services", ignore = true)
     Appointment toEntity(AppointmentCreateRequest appointmentCreateRequest);
 
+    @Mapping(target = "services", ignore = true)
     AppointmentResponse toDto(Appointment appointment);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)

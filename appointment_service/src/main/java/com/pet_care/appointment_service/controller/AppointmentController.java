@@ -139,7 +139,7 @@ public class AppointmentController {
      * @throws JsonProcessingException
      */
     @GetMapping("/account/{accountId}")
-    public APIResponse<List<AppointmentResponse>> getAppointmentsByStatus(@PathVariable("accountId") Long accountId, @RequestParam("status") String status) throws JsonProcessingException {
+    public APIResponse<List<AppointmentResponse>> getAppointmentsByStatusAndAccountId(@PathVariable("accountId") Long accountId, @RequestParam("status") String status) throws JsonProcessingException {
         return APIResponse.<List<AppointmentResponse>>builder()
                 .data(appointmentService.getByStatusAndAccountId(status, accountId))
                 .build();
@@ -150,8 +150,7 @@ public class AppointmentController {
      * @return
      */
     @GetMapping("/status/{status}")
-    public APIResponse<List<AppointmentResponse>> getByStatusAndCustomerId(@PathVariable("status") String status) {
-
+    public APIResponse<List<AppointmentResponse>> getByStatus(@PathVariable("status") String status) {
         return APIResponse.<List<AppointmentResponse>>builder()
                 .data(appointmentService.getByStatus(status))
                 .build();

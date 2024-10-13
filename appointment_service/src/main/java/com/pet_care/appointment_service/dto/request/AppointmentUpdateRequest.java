@@ -48,7 +48,7 @@ public class AppointmentUpdateRequest {
 
     Set<Pet> pets;
 
-    Set<HospitalServiceEntity> services;
+    Set<String> services;
 
     @Enumerated(EnumType.STRING)
     AppointmentStatus status;

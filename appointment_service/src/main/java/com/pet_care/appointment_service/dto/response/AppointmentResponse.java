@@ -48,7 +48,7 @@ public class AppointmentResponse {
 
     AppointmentStatus status;
 
-    Set<HospitalServiceResponse> services;
+    Set<String> services;
 
     Set<PetResponse> pets;
 }
