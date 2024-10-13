@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pet_care.appointment_service.dto.request.AppointmentCreateRequest;
 import com.pet_care.appointment_service.dto.request.AppointmentUpdateRequest;
 import com.pet_care.appointment_service.dto.response.AppointmentResponse;
-import com.pet_care.appointment_service.dto.response.HospitalServiceResponse;
 import com.pet_care.appointment_service.enums.AppointmentStatus;
 import com.pet_care.appointment_service.exception.APIException;
 import com.pet_care.appointment_service.exception.ErrorCode;
@@ -68,7 +67,7 @@ public class AppointmentService {
      * @throws JsonProcessingException
      */
     @Transactional
-    public AppointmentResponse updateAppointment(@NotNull Long appointmentId, @NotNull AppointmentUpdateRequest appointmentUpdateRequest){
+    public AppointmentResponse updateAppointment(@NotNull Long appointmentId, @NotNull AppointmentUpdateRequest appointmentUpdateRequest) {
         Appointment existingAppointment = appointmentRepository.findById(appointmentId)
                 .orElseThrow(() -> new APIException(ErrorCode.APPOINTMENT_NOT_FOUND));
 
