@@ -20,16 +20,20 @@ public class InvoiceResponse {
     @JsonProperty("customer_id")
     Long customerId;
 
-    @JsonProperty("")
+    @JsonProperty("prescription_id")
     Long prescriptionId;
 
+    @JsonProperty("appointment_id")
     Long appointmentId;
 
+    @JsonProperty("prescription_amount")
     Double prescriptionAmount;
 
+    @JsonProperty("appointment_amount")
     Double appointmentAmount;
 
     @Enumerated(EnumType.STRING)
+    @JsonProperty("payment_method")
     PaymentMethod paymentMethod;
 
     InvoiceStatus status;
