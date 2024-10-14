@@ -20,5 +20,4 @@ public class CalculationUnit {
     String name;
 
     Boolean status;
-
 }
