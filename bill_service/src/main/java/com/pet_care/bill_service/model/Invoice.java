@@ -19,8 +19,6 @@ public class Invoice {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
-    Long customerId;
-
     Long prescriptionId;
 
     Long appointmentId;

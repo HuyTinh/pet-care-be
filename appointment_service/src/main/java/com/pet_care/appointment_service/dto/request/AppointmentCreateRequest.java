@@ -40,7 +40,7 @@ public class AppointmentCreateRequest {
     Date appointmentDate;
 
     @JsonProperty("appointment_time")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, timezone = "GMT+07:00", pattern = "HH:mm")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, timezone = "GMT+08:00", pattern = "HH:mm")
     Date appointmentTime;
 
     @Enumerated(EnumType.STRING)
