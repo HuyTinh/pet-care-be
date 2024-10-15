@@ -30,5 +30,4 @@ public class PrescriptionResponse {
     PrescriptionStatus status;
 
     Double totalMoney;
-
 }

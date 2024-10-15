@@ -1,15 +1,16 @@
 package com.pet_care.medical_prescription_service.controller;
 
+import com.pet_care.medical_prescription_service.dto.request.PrescriptionCreateRequest;
+import com.pet_care.medical_prescription_service.dto.request.PrescriptionUpdateRequest;
+import com.pet_care.medical_prescription_service.dto.response.APIResponse;
 import com.pet_care.medical_prescription_service.dto.response.PrescriptionResponse;
+import com.pet_care.medical_prescription_service.repository.PrescriptionRepository;
 import com.pet_care.medical_prescription_service.service.PrescriptionService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.jetbrains.annotations.NotNull;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -19,13 +20,16 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class PrescriptionController {
     @NotNull PrescriptionService prescriptionService;
+    private final PrescriptionRepository prescriptionRepository;
 
     /**
      * @return
      */
     @GetMapping
-    public @NotNull List<PrescriptionResponse> getAllPrescription() {
-        return prescriptionService.getAllPrescriptions();
+    public @NotNull APIResponse<List<PrescriptionResponse>> getAllPrescription() {
+        return APIResponse.<List<PrescriptionResponse>>builder()
+                .data(prescriptionService.getAllPrescriptions())
+                .build();
     }
 
     /**
@@ -33,8 +37,44 @@ public class PrescriptionController {
      * @return
      */
     @GetMapping("/{prescriptionId}")
-    public @NotNull PrescriptionResponse getPrescriptionById(@NotNull @PathVariable("prescriptionId") Long prescriptionId) {
-        return prescriptionService.getPrescriptionById(prescriptionId);
+    public @NotNull APIResponse<PrescriptionResponse> getPrescriptionById(@NotNull @PathVariable("prescriptionId") Long prescriptionId) {
+        return APIResponse.<PrescriptionResponse>builder()
+                .data(prescriptionService.getPrescriptionById(prescriptionId))
+                .build();
+    }
+
+    /**
+     * @param prescriptionCreateRequest
+     * @return
+     */
+    @PostMapping
+    public @NotNull APIResponse<PrescriptionResponse> createPrescription(@NotNull @RequestBody PrescriptionCreateRequest prescriptionCreateRequest) {
+        return APIResponse.<PrescriptionResponse>builder()
+                .data(prescriptionService.createPrescription(prescriptionCreateRequest))
+                .build();
+    }
+
+    /**
+     * @param prescriptionUpdateRequest
+     * @return
+     */
+    @PutMapping
+    public @NotNull APIResponse<PrescriptionResponse> updatePrescription(@NotNull @RequestBody PrescriptionUpdateRequest prescriptionUpdateRequest) {
+        return  APIResponse.<PrescriptionResponse>builder()
+                .data(null)
+                .build();
+    }
+
+    /**
+     * @param prescriptionId
+     * @return
+     */
+    @DeleteMapping("/{prescriptionId}")
+    public APIResponse<String> deletePrescription(@NotNull @PathVariable("prescriptionId") Long prescriptionId) {
+        prescriptionRepository.deleteById(prescriptionId);
+        return APIResponse.<String>builder()
+                .message("Delete prescription successfully")
+                .build();
     }
 
 }

@@ -15,5 +15,6 @@ public interface AppointmentMapper {
     AppointmentResponse toDto(Appointment appointment);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    @Mapping(target = "services", ignore = true)
     Appointment partialUpdate(AppointmentUpdateRequest appointmentUpdateRequest, @MappingTarget Appointment appointment);
 }

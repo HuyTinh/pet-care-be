@@ -282,17 +282,23 @@ public class AppointmentService {
         List<AppointmentResponse> appointmentResponses = appointmentsBetweenDate.stream().map(appointmentMapper::toDto).toList();
 
 
-        appointmentResponses = appointmentResponses.stream().peek(appointmentResponse -> appointmentResponse.setPets(new HashSet<>(petRepository
-                .findByAppointment_Id(appointmentResponse.getId())).stream()
-                .map(petMapper::toDto)
-                .collect(toSet()))).toList();
 
-        if (!(statues == null)) {
+
+        if (statues != null) {
             appointmentResponses = appointmentsBetweenDate.stream()
                     .map(appointmentMapper::toDto)
                     .filter(appointment -> statues.stream()
                             .anyMatch(s -> s.equals(appointment.getStatus().name()))).toList();
         }
+
+
+        appointmentResponses = appointmentResponses.stream().peek(appointmentResponse -> appointmentResponse.setPets(new HashSet<>(petRepository
+                .findByAppointment_Id(appointmentResponse.getId())).stream()
+                .map(petMapper::toDto)
+                .collect(toSet()))).toList();
+
+
+        System.out.println(appointmentResponses);
 
         log.info("Appointment Service: Filter appointments successful");
 

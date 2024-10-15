@@ -17,9 +17,6 @@ public class InvoiceResponse {
 
     Long id;
 
-    @JsonProperty("customer_id")
-    Long customerId;
-
     @JsonProperty("prescription_id")
     Long prescriptionId;
 
