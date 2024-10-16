@@ -24,7 +24,7 @@ CREATE TABLE manufactures
     CONSTRAINT pk_manufactures PRIMARY KEY (id)
 );
 
-CREATE TABLE medicines
+CREATE TABLE medicineResponses
 (
     id                 BIGINT AUTO_INCREMENT NOT NULL,
     name               VARCHAR(255) NULL,
@@ -62,16 +62,16 @@ ALTER TABLE medicines_calculation_units
     ADD CONSTRAINT fk_medcaluni_on_calculation_unit FOREIGN KEY (calculation_units_id) REFERENCES calculation_units (id);
 
 ALTER TABLE medicines_calculation_units
-    ADD CONSTRAINT fk_medcaluni_on_medicine FOREIGN KEY (medicines_id) REFERENCES medicines (id);
+    ADD CONSTRAINT fk_medcaluni_on_medicine FOREIGN KEY (medicines_id) REFERENCES medicineResponses (id);
 
 ALTER TABLE medicines_locations
     ADD CONSTRAINT fk_medloc_on_location FOREIGN KEY (locations_id) REFERENCES locations (id);
 
 ALTER TABLE medicines_locations
-    ADD CONSTRAINT fk_medloc_on_medicine FOREIGN KEY (medicines_id) REFERENCES medicines (id);
+    ADD CONSTRAINT fk_medloc_on_medicine FOREIGN KEY (medicines_id) REFERENCES medicineResponses (id);
 
 ALTER TABLE medicines_manufactures
     ADD CONSTRAINT fk_medman_on_manufacture FOREIGN KEY (manufactures_id) REFERENCES manufactures (id);
 
 ALTER TABLE medicines_manufactures
-    ADD CONSTRAINT fk_medman_on_medicine FOREIGN KEY (medicines_id) REFERENCES medicines (id);
+    ADD CONSTRAINT fk_medman_on_medicine FOREIGN KEY (medicines_id) REFERENCES medicineResponses (id);

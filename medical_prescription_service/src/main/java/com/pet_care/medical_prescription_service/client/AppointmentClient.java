@@ -2,8 +2,8 @@ package com.pet_care.medical_prescription_service.client;
 
 
 import com.pet_care.medical_prescription_service.dto.response.APIResponse;
-import com.pet_care.medical_prescription_service.model.Appointment;
-import com.pet_care.medical_prescription_service.model.Pet;
+import com.pet_care.medical_prescription_service.dto.response.AppointmentResponse;
+import com.pet_care.medical_prescription_service.dto.response.PetResponse;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,13 +17,13 @@ public interface AppointmentClient {
      * @return
      */
     @GetMapping("/appointment/{appointmentId}")
-    APIResponse<Appointment> getAppointmentById(@PathVariable("appointmentId") Long appointmentId);
+    APIResponse<AppointmentResponse> getAppointmentById(@PathVariable("appointmentId") Long appointmentId);
 
     /**
      * @param petId
      * @return
      */
     @GetMapping("/pet/{petId}")
-    APIResponse<Pet> getPetById(@PathVariable("petId") Long petId);
+    APIResponse<PetResponse> getPetById(@PathVariable("petId") Long petId);
 
 }

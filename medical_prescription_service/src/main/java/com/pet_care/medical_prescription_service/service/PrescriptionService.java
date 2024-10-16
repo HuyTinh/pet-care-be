@@ -3,8 +3,7 @@ package com.pet_care.medical_prescription_service.service;
 import com.pet_care.medical_prescription_service.client.AppointmentClient;
 import com.pet_care.medical_prescription_service.client.MedicineClient;
 import com.pet_care.medical_prescription_service.dto.request.PrescriptionCreateRequest;
-import com.pet_care.medical_prescription_service.dto.response.PetPrescriptionResponse;
-import com.pet_care.medical_prescription_service.dto.response.PrescriptionResponse;
+import com.pet_care.medical_prescription_service.dto.response.*;
 import com.pet_care.medical_prescription_service.exception.APIException;
 import com.pet_care.medical_prescription_service.exception.ErrorCode;
 import com.pet_care.medical_prescription_service.mapper.PrescriptionDetailMapper;
@@ -55,20 +54,20 @@ public class PrescriptionService {
 
         List<PrescriptionResponse> prescriptionResponses = prescriptions.stream().
                 map(prescription -> {
-                    Appointment appointment = appointmentClient
+                    AppointmentResponse appointmentResponse = appointmentClient
                             .getAppointmentById(prescription.getAppointmentId()).getData();
                     PrescriptionResponse prescriptionResponse = prescriptionMapper.toResponse(prescription);
-                    prescriptionResponse.setAppointment(appointment);
+                    prescriptionResponse.setAppointmentResponse(appointmentResponse);
 
                     prescriptionResponse.setDetails(prescription.getDetails().stream().map(prescriptionDetail -> {
-                        Pet pet = appointmentClient.getPetById(prescriptionDetail.getPetId()).getData();
+                        PetResponse petResponse = appointmentClient.getPetById(prescriptionDetail.getPetId()).getData();
 
-                        Set<Medicine> medicines = new HashSet<>(medicineClient.getMedicineInIds(prescription.getDetails().stream().map(PrescriptionDetail::getMedicineId).collect(toSet())).getData());
+                        Set<MedicineResponse> medicineResponses = new HashSet<>(medicineClient.getMedicineInIds(prescription.getDetails().stream().map(PrescriptionDetail::getMedicineId).collect(toSet())).getData());
 
                         return PetPrescriptionResponse
                                 .builder()
-                                .pet(pet)
-                                .medicines(medicines)
+                                .petResponse(petResponse)
+                                .medicines(medicineResponses)
                                 .build();
                     }).collect(toSet()));
 
@@ -93,7 +92,7 @@ public class PrescriptionService {
 
         PrescriptionResponse prescriptionResponse = prescriptionMapper.toResponse(prescriptions);
 
-        prescriptionResponse.setAppointment(appointmentClient
+        prescriptionResponse.setAppointmentResponse(appointmentClient
                 .getAppointmentById(prescriptions.getAppointmentId()).getData());
 
         log.info("Get prescription successful");

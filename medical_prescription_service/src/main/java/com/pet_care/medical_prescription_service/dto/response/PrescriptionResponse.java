@@ -2,7 +2,6 @@ package com.pet_care.medical_prescription_service.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.pet_care.medical_prescription_service.enums.PrescriptionStatus;
-import com.pet_care.medical_prescription_service.model.Appointment;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import lombok.*;
@@ -20,7 +19,7 @@ public class PrescriptionResponse {
     Long id;
 
     @JsonProperty("appointment_id")
-    Appointment appointment;
+    AppointmentResponse appointmentResponse;
 
     @JsonProperty("details")
     Set<PetPrescriptionResponse> details;
