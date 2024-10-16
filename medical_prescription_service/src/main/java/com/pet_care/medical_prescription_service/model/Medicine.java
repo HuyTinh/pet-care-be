@@ -1,5 +1,6 @@
 package com.pet_care.medical_prescription_service.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -9,12 +10,11 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Medicine {
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class  Medicine {
     Long id;
 
     String name;
-
-    Integer quantity;
 
     Double price;
 }
