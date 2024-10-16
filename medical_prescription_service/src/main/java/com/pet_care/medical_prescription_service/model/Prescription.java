@@ -25,8 +25,5 @@ public class Prescription {
     @Enumerated(EnumType.STRING)
     PrescriptionStatus status = PrescriptionStatus.APPROVED;
 
-    @OneToMany(mappedBy = "prescription", cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = true)
-    Set<PrescriptionDetail> details;
-
     Double totalMoney;
 }

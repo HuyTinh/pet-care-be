@@ -3,6 +3,7 @@ package com.pet_care.medical_prescription_service.service;
 import com.pet_care.medical_prescription_service.client.AppointmentClient;
 import com.pet_care.medical_prescription_service.client.MedicineClient;
 import com.pet_care.medical_prescription_service.dto.request.PrescriptionCreateRequest;
+import com.pet_care.medical_prescription_service.dto.response.PetPrescriptionResponse;
 import com.pet_care.medical_prescription_service.dto.response.PrescriptionResponse;
 import com.pet_care.medical_prescription_service.exception.APIException;
 import com.pet_care.medical_prescription_service.exception.ErrorCode;
@@ -64,7 +65,7 @@ public class PrescriptionService {
 
                         Set<Medicine> medicines = new HashSet<>(medicineClient.getMedicineInIds(prescription.getDetails().stream().map(PrescriptionDetail::getMedicineId).collect(toSet())).getData());
 
-                        return PetPrescription
+                        return PetPrescriptionResponse
                                 .builder()
                                 .pet(pet)
                                 .medicines(medicines)

@@ -1,4 +1,4 @@
-package com.pet_care.medical_prescription_service.model;
+package com.pet_care.medical_prescription_service.dto.response;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -9,15 +9,9 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Pet {
-
+public class MedicinePrescriptionResponse {
     Long id;
-
     String name;
-
-    String age;
-
-    String weight;
-
-    String specie;
+    String quantity;
+    String calculateUnit;
 }

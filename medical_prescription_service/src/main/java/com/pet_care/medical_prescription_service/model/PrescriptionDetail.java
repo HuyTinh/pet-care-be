@@ -16,11 +16,15 @@ public class PrescriptionDetail {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
-    Long petId;
-
     Long medicineId;
 
+    Long calculationId;
+
+    Long quantity;
+
+    Double totalMoney;
+
     @ManyToOne
-    @JoinColumn(name = "prescription_id")
-    Prescription prescription;
+    @JoinColumn(name = "pet_prescription_id")
+    PetPrescription petPrescription;
 }
