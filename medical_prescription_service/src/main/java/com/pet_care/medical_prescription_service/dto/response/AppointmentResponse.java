@@ -1,4 +1,4 @@
-package com.pet_care.medical_prescription_service.model;
+package com.pet_care.medical_prescription_service.dto.response;
 
 
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -19,7 +19,7 @@ import java.util.Set;
 @ToString
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class Appointment {
+public class AppointmentResponse {
     Long id;
 
     @JsonProperty("account_id")
@@ -49,8 +49,8 @@ public class Appointment {
 
     AppointmentStatus status;
 
-    Set<HospitalService> services;
+    Set<HospitalServiceResponse> services;
 
-    Set<Pet> pets;
+    Set<PetResponse> petResponses;
 }
 

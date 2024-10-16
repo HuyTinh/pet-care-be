@@ -1,4 +1,4 @@
-package com.pet_care.medical_prescription_service.model;
+package com.pet_care.medical_prescription_service.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.*;
@@ -11,7 +11,7 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class  Medicine {
+public class MedicineResponse {
     Long id;
 
     String name;

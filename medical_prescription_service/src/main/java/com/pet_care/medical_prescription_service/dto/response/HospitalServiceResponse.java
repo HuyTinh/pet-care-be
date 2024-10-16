@@ -1,4 +1,4 @@
-package com.pet_care.medical_prescription_service.model;
+package com.pet_care.medical_prescription_service.dto.response;
 
 import com.pet_care.medical_prescription_service.enums.HospitalServiceStatus;
 import jakarta.persistence.EnumType;
@@ -12,7 +12,7 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class HospitalService {
+public class HospitalServiceResponse {
     String name;
 
     String description;
