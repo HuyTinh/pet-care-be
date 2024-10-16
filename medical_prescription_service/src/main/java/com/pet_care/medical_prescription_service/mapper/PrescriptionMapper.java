@@ -13,14 +13,12 @@ public interface PrescriptionMapper {
      * @param prescription
      * @return
      */
-    @Mapping(target = "details", ignore = true)
     Prescription toEntity(PrescriptionCreateRequest prescription);
 
     /**
      * @param prescription
      * @return
      */
-    @Mapping(target = "appointmentId", ignore = true)
     PrescriptionResponse toResponse(Prescription prescription);
 
     /**
