@@ -1,0 +1,36 @@
+services:
+  mysql:
+    image: "mysql:latest"
+    container_name: "mysql"
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: petcare
+      MYSQL_USERNAME: root
+      MYSQL_PASSWORD: root
+    ports:
+      - "2501:3306"
+    volumes:
+      - ./database/mysql:/var/lib/mysql
+
+  redis:
+    image: redis:6.2-alpine
+    container_name: redis_manager
+    hostname: redis_manager
+    #    ports mac dinh
+    ports:
+      - '6379:6379'
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+      - REDIS_DISABLE_COMMANDS=FLUSHDB;FLUSHALL
+
+#spring:
+#  datasource:
+#    url: jdbc:mysql://localhost:2501/petcare
+#    username: root
+#    password: 00000000
+#    driver-class-name: com.mysql.cj.jdbc.Driver
+##
+#  jpa:
+#    hibernate:
+#      ddl-auto: update
+#    database-platform: org.hibernate.dialect.MySQL8Dialect
