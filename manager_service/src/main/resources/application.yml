@@ -11,10 +11,15 @@
 #      ddl-auto: update
 
 spring:
+#  datasource:
+#    url: jdbc:mysql://localhost:2501/petcare
+#    username: root
+#    password: root
+
   datasource:
-    url: jdbc:mysql://localhost:2501/petcare
+    url: jdbc:mysql://junction.proxy.rlwy.net:19557/manager_service
     username: root
-    password: root
+    password: UdiScGBGvUSGxtztmMzWmaIbfIqvndvn
 
   jpa:
     hibernate:

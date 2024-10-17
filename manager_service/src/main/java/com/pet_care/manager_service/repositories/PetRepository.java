@@ -14,5 +14,5 @@ public interface PetRepository extends JpaRepository<Pet, Long> {
                     " JOIN p.customer c " +
                     " JOIN p.species sp " +
                     " WHERE c.id = :id ")
-    List<Object[]> getAllPetByCustomerId(@Param("id") Long id);
+    List<Object[]> getPetByCustomerId(@Param("id") Long id);
 }

@@ -5,6 +5,7 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.util.Date;
+import java.util.Set;
 
 @Data
 @AllArgsConstructor
@@ -15,4 +16,5 @@ public class PrescriptionResponse {
     Long id;
     Date create_date;
     String note;
+    Set<PresriptionDetailResponse> presriptionDetailResponse;
 }

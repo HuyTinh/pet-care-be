@@ -7,4 +7,8 @@ import java.util.List;
 public interface CustomerService {
 
     List<CustomerPetAndServiceResponse> getAllCustomers();
+
+    List<CustomerPetAndServiceResponse> getAllCustomersTrue();
+
+    CustomerPetAndServiceResponse deleteCustomer(Long id);
 }

@@ -1,11 +1,10 @@
 package com.pet_care.manager_service.services.impl;
 
 import com.pet_care.manager_service.dto.response.*;
-import com.pet_care.manager_service.entity.Customer;
-import com.pet_care.manager_service.entity.Pet;
-import com.pet_care.manager_service.entity.Services;
+import com.pet_care.manager_service.entity.*;
 import com.pet_care.manager_service.exception.AppException;
 import com.pet_care.manager_service.exception.ErrorCode;
+import com.pet_care.manager_service.mapper.CustomerMapper;
 import com.pet_care.manager_service.mapper.PetMapper;
 import com.pet_care.manager_service.mapper.PrescriptionMapper;
 import com.pet_care.manager_service.mapper.ServiceMapper;
@@ -37,12 +36,6 @@ public class CustomerServiceImpl implements CustomerService {
     PetRepository petRepository;
 
     @Autowired
-    AppointmentRepository appointmentRepository;
-
-    @Autowired
-    AppointmentService appointmentService;
-
-    @Autowired
     ServiceMapper serviceMapper;
 
     @Autowired
@@ -52,7 +45,17 @@ public class CustomerServiceImpl implements CustomerService {
     PrescriptionMapper prescriptionMapper;
 
     @Autowired
+    CustomerMapper customerMapper;
+
+
+    @Autowired
     PrescriptionRepository prescriptionRepository;
+
+    @Autowired
+    PrescriptionDetailRepository prescriptionDetailRepository;
+
+    @Autowired
+    private MedicineRepository medicineRepository;
 
 
     public List<Customer> getAllCustomer(){
@@ -79,6 +82,25 @@ public class CustomerServiceImpl implements CustomerService {
                 .collect(Collectors.toList());
     }
 
+    @Override
+    public List<CustomerPetAndServiceResponse> getAllCustomersTrue() {
+        List<Object[]> listCustomers = customerRepository.getAllCustomerByStatusTrue();
+        if (listCustomers.isEmpty()) {
+            throw new AppException(ErrorCode.ACCOUNT_NOTFOUND);
+        }
+        return listCustomers.stream()
+                .map(this::convertCustomerResponse)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public CustomerPetAndServiceResponse deleteCustomer(Long id) {
+        Customer customer = customerRepository.findById(id).get();
+        customer.setStatus(false);
+        customerRepository.save(customer);
+        return customerMapper.toCustomerResponse(customer);
+    }
+
     public ServiceResponse findServiceById(Long id) {
         Services service = servicesRepository.findById(id)
                 .orElseThrow( () -> new AppException(ErrorCode.SERVICE_NOTFOUND));
@@ -102,21 +124,32 @@ public class CustomerServiceImpl implements CustomerService {
         if(pres == null){
             throw new AppException(ErrorCode.PRESCRIPTION_NOTFOUND);
         }
+        Prescription prescription = prescriptionRepository.findById((Long) pres[0]).get();
+        List<Prescription_Details> prescription_details = prescriptionDetailRepository.findByPrescription(prescription);
+
+        Set<PresriptionDetailResponse> presriptionDetailResponses = prescription_details.stream()
+                .map(this::convertToPrescriptionDetailResponse)
+                .collect(Collectors.toSet());
+
+//        for (Prescription_Details prescription_detail : prescription_details) {
+//            convertToPrescriptionDetailResponse(prescription_detail);
+//        }
         return PrescriptionResponse.builder()
                 .id( (Long) pres[0])
                 .create_date( (Date) pres[1])
                 .note((String) pres[2])
+                .presriptionDetailResponse(presriptionDetailResponses)
                 .build();
     }
 
     public CustomerPetAndServiceResponse convertCustomerResponse(Object[] row){
-        List<Object[]> listPet = petRepository.getAllPetByCustomerId((Long) row[0]);
+        List<Object[]> listPet = petRepository.getPetByCustomerId((Long) row[0]);
         if(listPet.isEmpty()){
             throw new AppException(ErrorCode.PET_NOTFOUND);
         }
 //      Lấy pet
-        Set<PetResponse> pets_set = new HashSet<>();
-        for(Object[] obj : listPet){
+        Set<PetResponse> petResponses = new HashSet<>();
+        for(Object[] obj : listPet) {
             Pet pet = petRepository.findById((Long) obj[0]).get();
             PetResponse petResponse = PetResponse.builder()
                     .id(pet.getId())
@@ -126,9 +159,8 @@ public class CustomerServiceImpl implements CustomerService {
                     .prescription(convertPrescriptionByPetId(pet.getId())) // get Prescription
                     .species(convertToSpeciesResponse(pet)) // get Species
                     .build();
-            pets_set.add(petResponse);
+            petResponses.add(petResponse);
         }
-
         Set<ServiceResponse> service_set = new HashSet<>();
         List<Object[]> listServices = servicesRepository.findServicesByCustomerId( (Long) row[0]);
         if(listServices.isEmpty()){
@@ -148,7 +180,7 @@ public class CustomerServiceImpl implements CustomerService {
                 .last_name((String) row[1])
                 .first_name((String) row[2])
                 .phone_number((String) row[3])
-                .petResponses(pets_set)
+                .petResponses(petResponses)
                 .serviceResponses(service_set)
                 .build();
     }
@@ -158,6 +190,22 @@ public class CustomerServiceImpl implements CustomerService {
         return SpeciesResponse.builder()
                 .id( (Long) species[0])
                 .name((String) species[1])
+                .build();
+    }
+
+    public MedicineResponse convertToMedicineResponse(Medicine medicine){
+        return MedicineResponse.builder()
+                .id( medicine.getId())
+                .name(medicine.getName())
+                .build();
+    }
+    public PresriptionDetailResponse convertToPrescriptionDetailResponse(Prescription_Details prescription_details){
+        Medicine medicine = medicineRepository.findById(prescription_details.getMedicine().getId()).get();
+        MedicineResponse medicineResponse = convertToMedicineResponse(medicine);
+        return PresriptionDetailResponse.builder()
+                .id(prescription_details.getId())
+                .quantity(prescription_details.getQuantity())
+                .medicineResponse(medicineResponse)
                 .build();
     }
 

@@ -21,6 +21,9 @@ public class Prescription {
     @Column(name = "create_date", nullable = false)
     Date create_date;
 
+    @Column(name = "disease_name", nullable = true)
+    String disease_name;
+
     @Column(name = "note", columnDefinition = "text", nullable = true)
     String note;
 

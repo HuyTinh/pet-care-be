@@ -5,8 +5,8 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.sql.Time;
-import java.util.Date;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.Set;
 
 @Data
@@ -22,10 +22,10 @@ public class Appointment {
     Long id;
 
     @Column(name = "appointment_date", columnDefinition = "date", nullable = false)
-    Date appointment_date;
+    LocalDate appointment_date;
 
     @Column(name = "appointment_time", columnDefinition = "time", nullable = false)
-    Time appointment_time;
+    LocalTime appointment_time;
 
     @Column(name = "status", nullable = false)
     boolean status;

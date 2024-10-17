@@ -21,19 +21,20 @@ public class CustomerController {
     CustomerServiceImpl customerService;
 
     @GetMapping
-    public ResponseEntity<ApiResponse<List<CustomerPetAndServiceResponse>>> getAllOwner(){
+    public ResponseEntity<ApiResponse<List<CustomerPetAndServiceResponse>>> getAllCustomersTrue(){
+        List<CustomerPetAndServiceResponse> listCustomer = customerService.getAllCustomersTrue();
+        return ResponseEntity.ok(new ApiResponse<>(2000, "Get All Customers", listCustomer));
+    }
+
+    @GetMapping("/getAllCustomer")
+    public ResponseEntity<ApiResponse<List<CustomerPetAndServiceResponse>>> getAllCustomers(){
         List<CustomerPetAndServiceResponse> listCustomer = customerService.getAllCustomers();
         return ResponseEntity.ok(new ApiResponse<>(2000, "Get All Customers", listCustomer));
     }
 
-    @GetMapping("/{customerId}")
-    public ResponseEntity<Customer> getById(@PathVariable("customerId") Long customerId){
-        return ResponseEntity.ok(customerService.findById(customerId));
+    @DeleteMapping("/{id}")
+    public ResponseEntity<ApiResponse<CustomerPetAndServiceResponse>> deleteCustomer(@PathVariable Long id){
+        CustomerPetAndServiceResponse customerResponse = customerService.deleteCustomer(id);
+        return  ResponseEntity.ok(new ApiResponse<>(2000, "Get All Customers", null));
     }
-
-    @PostMapping
-    public ResponseEntity<Customer> create(@RequestBody Customer customer){
-        return ResponseEntity.ok(customerService.save(customer));
-    }
-
 }

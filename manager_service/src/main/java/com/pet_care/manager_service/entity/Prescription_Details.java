@@ -26,4 +26,7 @@ public class Prescription_Details {
     @JoinColumn(name = "medicine_id", nullable = false)
     Medicine medicine;
 
+    @ManyToOne
+    @JoinColumn(name = "prescription_id", nullable = false)
+    Prescription prescription;
 }
