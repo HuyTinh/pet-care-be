@@ -60,7 +60,7 @@ public class PrescriptionController {
      */
     @PutMapping
     public @NotNull APIResponse<PrescriptionResponse> updatePrescription(@NotNull @RequestBody PrescriptionUpdateRequest prescriptionUpdateRequest) {
-        return  APIResponse.<PrescriptionResponse>builder()
+        return APIResponse.<PrescriptionResponse>builder()
                 .data(null)
                 .build();
     }

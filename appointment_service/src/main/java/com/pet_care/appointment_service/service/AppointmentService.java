@@ -284,8 +284,6 @@ public class AppointmentService {
         List<AppointmentResponse> appointmentResponses = appointmentsBetweenDate.stream().map(appointmentMapper::toDto).toList();
 
 
-
-
         if (statues != null) {
             appointmentResponses = appointmentsBetweenDate.stream()
                     .map(appointmentMapper::toDto)

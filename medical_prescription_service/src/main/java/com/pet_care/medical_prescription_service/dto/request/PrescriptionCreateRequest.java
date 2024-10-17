@@ -1,7 +1,6 @@
 package com.pet_care.medical_prescription_service.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.pet_care.medical_prescription_service.model.PetPrescription;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 

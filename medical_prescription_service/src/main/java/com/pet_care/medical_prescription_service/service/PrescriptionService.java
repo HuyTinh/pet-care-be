@@ -3,13 +3,16 @@ package com.pet_care.medical_prescription_service.service;
 import com.pet_care.medical_prescription_service.client.AppointmentClient;
 import com.pet_care.medical_prescription_service.client.MedicineClient;
 import com.pet_care.medical_prescription_service.dto.request.PrescriptionCreateRequest;
-import com.pet_care.medical_prescription_service.dto.response.*;
+import com.pet_care.medical_prescription_service.dto.response.MedicinePrescriptionResponse;
+import com.pet_care.medical_prescription_service.dto.response.PetPrescriptionResponse;
+import com.pet_care.medical_prescription_service.dto.response.PrescriptionResponse;
 import com.pet_care.medical_prescription_service.exception.APIException;
 import com.pet_care.medical_prescription_service.exception.ErrorCode;
 import com.pet_care.medical_prescription_service.mapper.PetPrescriptionMapper;
 import com.pet_care.medical_prescription_service.mapper.PrescriptionDetailMapper;
 import com.pet_care.medical_prescription_service.mapper.PrescriptionMapper;
-import com.pet_care.medical_prescription_service.model.*;
+import com.pet_care.medical_prescription_service.model.PetPrescription;
+import com.pet_care.medical_prescription_service.model.Prescription;
 import com.pet_care.medical_prescription_service.repository.PetPrescriptionRepository;
 import com.pet_care.medical_prescription_service.repository.PrescriptionDetailRepository;
 import com.pet_care.medical_prescription_service.repository.PrescriptionRepository;
@@ -21,10 +24,7 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toSet;
@@ -127,15 +127,15 @@ public class PrescriptionService {
         Prescription savePrescription = prescriptionRepository.save(newPrescription);
 
         List<PetPrescription> newPetPrescriptionList = prescriptionCreateRequest.getDetails().stream().map(petPrescriptionCreateRequest ->
-                    {
-                        PetPrescription petPrescription = petPrescriptionMapper.toEntity(petPrescriptionCreateRequest);
+                {
+                    PetPrescription petPrescription = petPrescriptionMapper.toEntity(petPrescriptionCreateRequest);
 
-                        petPrescription.setMedicines(petPrescriptionCreateRequest.getMedicines().stream().map(prescriptionDetailMapper::toEntity).collect(toSet()));
+                    petPrescription.setMedicines(petPrescriptionCreateRequest.getMedicines().stream().map(prescriptionDetailMapper::toEntity).collect(toSet()));
 
-                        petPrescription.setPrescription(savePrescription);
+                    petPrescription.setPrescription(savePrescription);
 
-                        return petPrescriptionRepository.save(petPrescription);
-                    })
+                    return petPrescriptionRepository.save(petPrescription);
+                })
                 .peek(petPrescription -> {
                     prescriptionDetailRepository.saveAll(petPrescription.getMedicines());
                 }).toList();

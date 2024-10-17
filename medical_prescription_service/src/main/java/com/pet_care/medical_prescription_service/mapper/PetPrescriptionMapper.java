@@ -1,7 +1,6 @@
 package com.pet_care.medical_prescription_service.mapper;
 
 import com.pet_care.medical_prescription_service.dto.request.PetPrescriptionCreateRequest;
-import com.pet_care.medical_prescription_service.dto.response.PetPrescriptionResponse;
 import com.pet_care.medical_prescription_service.model.PetPrescription;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
