@@ -26,6 +26,8 @@ public class PetPrescription {
 
     String note;
 
-    @OneToMany(mappedBy = "petPrescription", cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = true)
+    String diagnosis;
+
+    @OneToMany(mappedBy = "petPrescription")
     Set<PrescriptionDetail> medicines;
 }

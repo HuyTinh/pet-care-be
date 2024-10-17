@@ -2,6 +2,7 @@ package com.pet_care.medical_prescription_service.dto.response;
 
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.pet_care.medical_prescription_service.enums.AppointmentStatus;
@@ -19,6 +20,7 @@ import java.util.Set;
 @ToString
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class AppointmentResponse {
     Long id;
 
@@ -49,8 +51,8 @@ public class AppointmentResponse {
 
     AppointmentStatus status;
 
-    Set<HospitalServiceResponse> services;
+    Set<String> services;
 
-    Set<PetResponse> petResponses;
+    Set<PetResponse> pets;
 }
 

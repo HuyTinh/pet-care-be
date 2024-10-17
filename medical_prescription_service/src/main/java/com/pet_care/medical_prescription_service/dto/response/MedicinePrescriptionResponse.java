@@ -12,6 +12,6 @@ import lombok.experimental.FieldDefaults;
 public class MedicinePrescriptionResponse {
     Long id;
     String name;
-    String quantity;
+    Long quantity;
     String calculateUnit;
 }

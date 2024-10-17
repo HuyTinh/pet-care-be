@@ -128,6 +128,8 @@ public class AppointmentService {
                 .map(petMapper::toDto)
                 .collect(toSet()));
 
+        appointmentResponse.setServices(existingAppointment.getServices().stream().map(HospitalServiceEntity::getName).collect(toSet()));
+
         log.info("Appointment Service: Get appointment by id successful");
 
         return appointmentResponse;

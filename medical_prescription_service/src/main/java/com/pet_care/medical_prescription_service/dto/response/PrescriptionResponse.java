@@ -18,7 +18,7 @@ import java.util.Set;
 public class PrescriptionResponse {
     Long id;
 
-    @JsonProperty("appointment_id")
+    @JsonProperty("appointment")
     AppointmentResponse appointmentResponse;
 
     @JsonProperty("details")

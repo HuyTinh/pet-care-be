@@ -3,17 +3,16 @@ package com.pet_care.medical_prescription_service.dto.response;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.util.Set;
-
 @Getter
 @Setter
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class PetPrescriptionResponse {
-    PetResponse pet;
-    String note;
-    String diagnosis;
-    Set<MedicinePrescriptionResponse> medicines;
+public class CalculationUnitResponse {
+    Long id;
+
+    String name;
+
+    Boolean status;
 }
