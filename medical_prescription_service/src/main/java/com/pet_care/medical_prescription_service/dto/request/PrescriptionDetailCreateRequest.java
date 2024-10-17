@@ -16,10 +16,10 @@ public class PrescriptionDetailCreateRequest {
     @JsonProperty("medicine_id")
     Long medicineId;
 
-    Long quantity;
-
     @JsonProperty("calculation_id")
     Long calculationId;
+
+    Long quantity;
 
     @JsonProperty("total_money")
     Double totalMoney;

@@ -1,5 +1,6 @@
 package com.pet_care.medical_prescription_service.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -16,12 +17,15 @@ public class PrescriptionDetail {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
+    @JsonProperty("medicine_id")
     Long medicineId;
 
+    @JsonProperty("calculation_id")
     Long calculationId;
 
     Long quantity;
 
+    @JsonProperty("total_money")
     Double totalMoney;
 
     @ManyToOne

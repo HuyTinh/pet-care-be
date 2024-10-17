@@ -10,6 +10,7 @@ import com.pet_care.medical_prescription_service.mapper.PetPrescriptionMapper;
 import com.pet_care.medical_prescription_service.mapper.PrescriptionDetailMapper;
 import com.pet_care.medical_prescription_service.mapper.PrescriptionMapper;
 import com.pet_care.medical_prescription_service.model.*;
+import com.pet_care.medical_prescription_service.repository.PetPrescriptionRepository;
 import com.pet_care.medical_prescription_service.repository.PrescriptionRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +20,7 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -45,6 +47,9 @@ public class PrescriptionService {
 
     @NotNull
     MedicineClient medicineClient;
+
+    @NotNull
+    PetPrescriptionRepository petPrescriptionRepository;
 
     /**
      * @return
@@ -84,9 +89,24 @@ public class PrescriptionService {
         Prescription newPrescription = prescriptionMapper
                 .toEntity(prescriptionCreateRequest);
 
-        List<PetPrescription> newPetPrescriptionList = prescriptionCreateRequest.getDetails().stream().map(petPrescriptionMapper::toEntity).toList();
+        Prescription savePrescription = prescriptionRepository.save(newPrescription);
+
+        List<PetPrescription> newPetPrescriptionList = prescriptionCreateRequest.getDetails().stream().map(petPrescriptionCreateRequest ->
+                {
+                    PetPrescription petPrescription = petPrescriptionMapper.toEntity(petPrescriptionCreateRequest);
+
+                    petPrescription.setMedicines(petPrescriptionCreateRequest.getMedicines().stream().map(prescriptionDetailMapper::toEntity).collect(toSet()));
+
+                    return petPrescription;
+                }
+                ).peek(petPrescription -> {
+            petPrescription.setPrescription(savePrescription);
+        }).toList();
+
+        petPrescriptionRepository.saveAll(newPetPrescriptionList);
 
         log.info("Create prescription successful");
-        return null;
+
+        return prescriptionMapper.toResponse(newPrescription);
     }
 }
