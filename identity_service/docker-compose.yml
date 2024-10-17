@@ -1,7 +1,7 @@
 services:
   mysql:
     image: "mysql:latest"
-    container_name: "mysql_identity_service"
+    container_name: "mysql"
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: identity_service
@@ -10,4 +10,4 @@ services:
     ports:
       - "3307:3306"
     volumes:
-      - ./database/mysql:/var/lib/mysql
+      -  ./database/mysql:/var/lib/mysql

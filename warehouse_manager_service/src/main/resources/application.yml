@@ -1,0 +1,24 @@
+
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:2504/petcare
+    username: root
+    password: root
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL8Dialect
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+  api-docs:
+    path: /api-docs
+
+server:
+  port: 8866
+  servlet:
+    context-path: /api/v1

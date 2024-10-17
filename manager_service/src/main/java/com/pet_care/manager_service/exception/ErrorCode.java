@@ -1,0 +1,27 @@
+package com.pet_care.manager_service.exception;
+
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.experimental.FieldDefaults;
+
+@Getter
+@FieldDefaults(level = AccessLevel.PRIVATE)
+@AllArgsConstructor
+public enum ErrorCode {
+
+    ACCOUNT_NOTFOUND(2001, "Account Not Found"),
+    ACCOUNT_ALREADY_EXIST(2004, "Account Already Exist"),
+    ACCOUNT_IS_EMPTY(2005, "Account Is Empty"),
+    ROLE_NOTFOUND(2002, "Role Not Found"),
+    ROLE_IS_EMPTY(2003, "List Role Is Empty"),
+    CUSTOMER_NOTFOUND(2006, "Customer Not Found"),
+    SERVICE_NOTFOUND(2015, "Service Not Found"),
+
+    PET_NOTFOUND(2030, "Pet Not Found"),
+
+    PRESCRIPTION_NOTFOUND(2040, "Prescription Not Found"),
+    ;
+    int code;
+    String message;
+}

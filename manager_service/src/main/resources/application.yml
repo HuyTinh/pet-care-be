@@ -1,0 +1,42 @@
+#spring:
+#  application:
+#    name: petcare
+#  datasource:
+#    url: "jdbc:mysql://localhost:2501/petcare"
+#    username: root
+#    password: 00000000
+#  jpa:
+#    show-sql: false
+#    hibernate:
+#      ddl-auto: update
+
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:2501/petcare
+    username: root
+    password: root
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL8Dialect
+  data:
+    redis:
+      port: 6379
+      host: localhost
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+  api-docs:
+    path: /api-docs
+flyway:
+  locations: classpath:/db/migration
+  baseline-on-migrate: true
+
+server:
+  port: 8090
+  servlet:
+    context-path: /api/v1
