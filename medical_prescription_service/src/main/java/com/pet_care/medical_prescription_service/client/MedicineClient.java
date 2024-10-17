@@ -1,6 +1,7 @@
 package com.pet_care.medical_prescription_service.client;
 
 import com.pet_care.medical_prescription_service.dto.response.APIResponse;
+import com.pet_care.medical_prescription_service.dto.response.CalculationUnitResponse;
 import com.pet_care.medical_prescription_service.dto.response.MedicineResponse;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.stereotype.Service;
@@ -26,5 +27,9 @@ public interface MedicineClient {
      */
     @GetMapping("/medicine/in/{medicineIds}")
     APIResponse<List<MedicineResponse>> getMedicineInIds(@PathVariable("medicineIds") Set<Long> medicineIds);
+
+
+    @GetMapping("/calculation-unit/{calculationUnitId}")
+    APIResponse<CalculationUnitResponse> getCalculationUnitById(@PathVariable("calculationUnitId") Long calculationUnitId);
 }
 

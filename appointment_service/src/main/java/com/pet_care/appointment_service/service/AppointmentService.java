@@ -128,6 +128,8 @@ public class AppointmentService {
                 .map(petMapper::toDto)
                 .collect(toSet()));
 
+        appointmentResponse.setServices(existingAppointment.getServices().stream().map(HospitalServiceEntity::getName).collect(toSet()));
+
         log.info("Appointment Service: Get appointment by id successful");
 
         return appointmentResponse;
@@ -280,8 +282,6 @@ public class AppointmentService {
         List<Appointment> appointmentsBetweenDate = appointmentRepository.findByAppointmentDateBetween(sDate, eDate);
 
         List<AppointmentResponse> appointmentResponses = appointmentsBetweenDate.stream().map(appointmentMapper::toDto).toList();
-
-
 
 
         if (statues != null) {

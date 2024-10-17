@@ -10,14 +10,9 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class PetResponse {
-
     Long id;
-
     String name;
-
     String age;
-
-    String weight;
-
-    String specie;
+    Double weight;
+    String species;
 }

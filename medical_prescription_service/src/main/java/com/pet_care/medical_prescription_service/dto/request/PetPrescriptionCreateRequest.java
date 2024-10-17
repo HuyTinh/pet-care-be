@@ -18,5 +18,7 @@ public class PetPrescriptionCreateRequest {
 
     String note;
 
+    String diagnosis;
+
     Set<PrescriptionDetailCreateRequest> medicines;
 }

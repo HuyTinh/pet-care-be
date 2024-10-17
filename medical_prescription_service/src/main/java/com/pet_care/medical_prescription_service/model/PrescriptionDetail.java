@@ -29,6 +29,6 @@ public class PrescriptionDetail {
     Double totalMoney;
 
     @ManyToOne
-    @JoinColumn(name = "pet_prescription_id")
+    @JoinColumn(name = "pet_prescriptions_id")
     PetPrescription petPrescription;
 }

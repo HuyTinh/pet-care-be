@@ -3,14 +3,18 @@ package com.pet_care.medical_prescription_service.service;
 import com.pet_care.medical_prescription_service.client.AppointmentClient;
 import com.pet_care.medical_prescription_service.client.MedicineClient;
 import com.pet_care.medical_prescription_service.dto.request.PrescriptionCreateRequest;
-import com.pet_care.medical_prescription_service.dto.response.*;
+import com.pet_care.medical_prescription_service.dto.response.MedicinePrescriptionResponse;
+import com.pet_care.medical_prescription_service.dto.response.PetPrescriptionResponse;
+import com.pet_care.medical_prescription_service.dto.response.PrescriptionResponse;
 import com.pet_care.medical_prescription_service.exception.APIException;
 import com.pet_care.medical_prescription_service.exception.ErrorCode;
 import com.pet_care.medical_prescription_service.mapper.PetPrescriptionMapper;
 import com.pet_care.medical_prescription_service.mapper.PrescriptionDetailMapper;
 import com.pet_care.medical_prescription_service.mapper.PrescriptionMapper;
-import com.pet_care.medical_prescription_service.model.*;
+import com.pet_care.medical_prescription_service.model.PetPrescription;
+import com.pet_care.medical_prescription_service.model.Prescription;
 import com.pet_care.medical_prescription_service.repository.PetPrescriptionRepository;
+import com.pet_care.medical_prescription_service.repository.PrescriptionDetailRepository;
 import com.pet_care.medical_prescription_service.repository.PrescriptionRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -20,10 +24,8 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
+import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toSet;
 
@@ -50,6 +52,7 @@ public class PrescriptionService {
 
     @NotNull
     PetPrescriptionRepository petPrescriptionRepository;
+    private final PrescriptionDetailRepository prescriptionDetailRepository;
 
     /**
      * @return
@@ -57,7 +60,39 @@ public class PrescriptionService {
     @NotNull
     @Transactional(readOnly = true)
     public List<PrescriptionResponse> getAllPrescriptions() {
-        return null;
+
+        return prescriptionRepository.findAll().stream().map(prescription -> {
+            PrescriptionResponse prescriptionResponse = prescriptionMapper.toResponse(prescription);
+
+            prescriptionResponse.setAppointmentResponse(appointmentClient.getAppointmentById(prescription.getAppointmentId()).getData());
+
+            prescriptionResponse.setDetails(
+                    petPrescriptionRepository.findAllByPrescriptionId(prescription.getId()).stream().map(
+                            petPrescription -> {
+                                return PetPrescriptionResponse.builder()
+                                        .pet(
+                                                appointmentClient.getPetById(petPrescription.getPetId()).getData()
+                                        )
+                                        .note(petPrescription.getNote())
+                                        .medicines(petPrescription.getMedicines().stream().map(prescriptionDetail ->
+                                        {
+                                            String medicine = medicineClient.getMedicineById(prescriptionDetail.getMedicineId()).getData().getName();
+
+
+                                            String calculateUnit = medicineClient.getCalculationUnitById(prescriptionDetail.getCalculationId()).getData().getName();
+
+                                            return MedicinePrescriptionResponse.builder()
+                                                    .name(medicine)
+                                                    .calculateUnit(calculateUnit)
+                                                    .quantity(prescriptionDetail.getQuantity())
+                                                    .build();
+                                        }).collect(toSet()))
+                                        .build();
+                            }
+                    ).collect(toSet()));
+
+            return prescriptionResponse;
+        }).collect(Collectors.toList());
     }
 
     /**
@@ -97,15 +132,21 @@ public class PrescriptionService {
 
                     petPrescription.setMedicines(petPrescriptionCreateRequest.getMedicines().stream().map(prescriptionDetailMapper::toEntity).collect(toSet()));
 
-                    return petPrescription;
-                }
-                ).peek(petPrescription -> {
-            petPrescription.setPrescription(savePrescription);
-        }).toList();
+                    petPrescription.setPrescription(savePrescription);
 
-        petPrescriptionRepository.saveAll(newPetPrescriptionList);
+                    return petPrescriptionRepository.save(petPrescription);
+                })
+                .peek(petPrescription -> {
+                    prescriptionDetailRepository.saveAll(petPrescription.getMedicines());
+                }).toList();
 
-        log.info("Create prescription successful");
+
+        newPetPrescriptionList.forEach(val -> {
+            val.getMedicines().forEach(medicine -> {
+                medicine.setPetPrescription(val);
+            });
+            prescriptionDetailRepository.saveAll(val.getMedicines()); // Sử dụng saveAll cho hiệu suất tốt hơn
+        });
 
         return prescriptionMapper.toResponse(newPrescription);
     }
