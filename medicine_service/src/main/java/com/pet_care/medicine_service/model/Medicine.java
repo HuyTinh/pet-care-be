@@ -36,8 +36,9 @@ public class Medicine {
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.PERSIST})
     Set<CalculationUnit> calculationUnits;
 
-    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.PERSIST})
-    Set<Manufacture> manufactures;
+    @ManyToOne()
+    @JoinColumn("manufacture_id")
+    Manufacture manufacture;
 
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.PERSIST})
     Set<Location> locations;

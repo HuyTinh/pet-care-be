@@ -1,11 +1,10 @@
 package com.pet_care.medicine_service.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+
+import java.util.Set;
 
 @Getter
 @Setter
@@ -22,4 +21,7 @@ public class Manufacture {
     String name;
 
     Boolean status;
+
+    @OneToMany(mappedBy = "manufacture")
+    Set<Medicine> medicines;
 }

@@ -92,9 +92,9 @@ public class MedicineService {
                 new HashSet<>(locationRepository
                         .findAllById(medicineCreateRequest.getLocations())));
 
-        newMedicine.setManufactures(
-                new HashSet<>(manufactureRepository
-                        .findAllById(medicineCreateRequest.getManufactures())));
+//        newMedicine.setManufactures(
+//                new HashSet<>(manufactureRepository
+//                        .findAllById(medicineCreateRequest.getManufactures())));
 
         Medicine savedMedicine = medicineRepository.save(newMedicine);
 
@@ -121,9 +121,9 @@ public class MedicineService {
                 new HashSet<>(locationRepository
                         .findAllById(medicineUpdateRequest.getLocations())));
 
-        existingMedicine.setManufactures(
-                new HashSet<>(manufactureRepository
-                        .findAllById(medicineUpdateRequest.getManufactures())));
+//        existingMedicine.setManufactures(
+//                new HashSet<>(manufactureRepository
+//                        .findAllById(medicineUpdateRequest.getManufactures())));
 
         medicineMapper.partialUpdate(medicineUpdateRequest, existingMedicine);
 
