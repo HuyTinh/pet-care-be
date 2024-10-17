@@ -1,9 +1,0 @@
-services:
-  activemq:
-    image: rmohr/activemq:latest
-    environment:
-      ACTIVEMQ_USER: admin
-      ACTIVEMQ_PASSWORD: admin
-    ports:
-      - "61616:61616"  # OpenWire
-      - "8161:8161"   # Web Console
