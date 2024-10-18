@@ -3,9 +3,7 @@ package com.pet_care.medical_prescription_service.service;
 import com.pet_care.medical_prescription_service.client.AppointmentClient;
 import com.pet_care.medical_prescription_service.client.MedicineClient;
 import com.pet_care.medical_prescription_service.dto.request.PrescriptionCreateRequest;
-import com.pet_care.medical_prescription_service.dto.response.MedicinePrescriptionResponse;
-import com.pet_care.medical_prescription_service.dto.response.PetPrescriptionResponse;
-import com.pet_care.medical_prescription_service.dto.response.PrescriptionResponse;
+import com.pet_care.medical_prescription_service.dto.response.*;
 import com.pet_care.medical_prescription_service.exception.APIException;
 import com.pet_care.medical_prescription_service.exception.ErrorCode;
 import com.pet_care.medical_prescription_service.mapper.PetPrescriptionMapper;
@@ -25,6 +23,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toSet;
@@ -61,38 +61,11 @@ public class PrescriptionService {
     @Transactional(readOnly = true)
     public List<PrescriptionResponse> getAllPrescriptions() {
 
-        return prescriptionRepository.findAll().stream().map(prescription -> {
-            PrescriptionResponse prescriptionResponse = prescriptionMapper.toResponse(prescription);
+        List<PrescriptionResponse> prescriptionResponseList = prescriptionRepository.findAll().stream().map(this::toPrescriptionResponse).collect(Collectors.toList());
 
-            prescriptionResponse.setAppointmentResponse(appointmentClient.getAppointmentById(prescription.getAppointmentId()).getData());
+        log.info("Get all prescriptions");
 
-            prescriptionResponse.setDetails(
-                    petPrescriptionRepository.findAllByPrescriptionId(prescription.getId()).stream().map(
-                            petPrescription -> {
-                                return PetPrescriptionResponse.builder()
-                                        .pet(
-                                                appointmentClient.getPetById(petPrescription.getPetId()).getData()
-                                        )
-                                        .note(petPrescription.getNote())
-                                        .medicines(petPrescription.getMedicines().stream().map(prescriptionDetail ->
-                                        {
-                                            String medicine = medicineClient.getMedicineById(prescriptionDetail.getMedicineId()).getData().getName();
-
-
-                                            String calculateUnit = medicineClient.getCalculationUnitById(prescriptionDetail.getCalculationId()).getData().getName();
-
-                                            return MedicinePrescriptionResponse.builder()
-                                                    .name(medicine)
-                                                    .calculateUnit(calculateUnit)
-                                                    .quantity(prescriptionDetail.getQuantity())
-                                                    .build();
-                                        }).collect(toSet()))
-                                        .build();
-                            }
-                    ).collect(toSet()));
-
-            return prescriptionResponse;
-        }).collect(Collectors.toList());
+        return prescriptionResponseList;
     }
 
     /**
@@ -105,10 +78,7 @@ public class PrescriptionService {
         Prescription prescriptions = PrescriptionRepository.findById(prescriptionId)
                 .orElseThrow(() -> new APIException(ErrorCode.PRESCRIPTION_NOT_FOUND));
 
-        PrescriptionResponse prescriptionResponse = prescriptionMapper.toResponse(prescriptions);
-
-        prescriptionResponse.setAppointmentResponse(appointmentClient
-                .getAppointmentById(prescriptions.getAppointmentId()).getData());
+        PrescriptionResponse prescriptionResponse = toPrescriptionResponse(prescriptions);
 
         log.info("Get prescription successful");
 
@@ -149,5 +119,45 @@ public class PrescriptionService {
         });
 
         return prescriptionMapper.toResponse(newPrescription);
+    }
+
+
+    private PrescriptionResponse toPrescriptionResponse(Prescription prescription) {
+        PrescriptionResponse prescriptionResponse = prescriptionMapper.toResponse(prescription);
+
+        CompletableFuture<AppointmentResponse> appointmentFuture = CompletableFuture.supplyAsync(() ->
+                appointmentClient.getAppointmentById(prescription.getAppointmentId()).getData());
+
+        Set<PetPrescriptionResponse> petPrescriptionResponses = petPrescriptionRepository.findAllByPrescriptionId(prescription.getId()).stream().map(
+                petPrescription -> {
+
+                    CompletableFuture<PetResponse> petFuture = CompletableFuture.supplyAsync(() ->  appointmentClient.getPetById(petPrescription.getPetId()).getData());
+
+                    Set<MedicinePrescriptionResponse> medicinePrescriptionResponses = petPrescription.getMedicines().stream().map(prescriptionDetail -> {
+                        CompletableFuture<String> medicineFuture = CompletableFuture.supplyAsync(() -> medicineClient.getMedicineById(prescriptionDetail.getMedicineId()).getData().getName());
+
+                        CompletableFuture<String> calculateFuture = CompletableFuture.supplyAsync(() -> medicineClient.getCalculationUnitById(prescriptionDetail.getCalculationId()).getData().getName());
+
+                        return CompletableFuture.allOf(medicineFuture, calculateFuture).thenApply(v -> MedicinePrescriptionResponse.builder()
+                                .name(medicineFuture.join())
+                                .calculateUnit(calculateFuture.join())
+                                .quantity(prescriptionDetail.getQuantity())
+                                .build()).join();
+
+                    }).collect(Collectors.toSet());
+
+                    return petFuture.thenApply(pet -> PetPrescriptionResponse.builder()
+                            .pet(pet)
+                            .note(petPrescription.getNote())
+                            .medicines(medicinePrescriptionResponses)
+                            .build()).join();
+                }
+        ).collect(toSet());
+
+        prescriptionResponse.setAppointmentResponse(appointmentFuture.join());
+
+        prescriptionResponse.setDetails(petPrescriptionResponses);
+
+        return prescriptionResponse;
     }
 }
