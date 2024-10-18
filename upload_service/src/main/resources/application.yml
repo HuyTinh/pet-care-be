@@ -9,5 +9,3 @@ cloudinary:
 
 server:
   port: 8089
-  servlet:
-    context-path: /api/v1/upload-service
