@@ -37,7 +37,7 @@ public class Medicine {
     Set<CalculationUnit> calculationUnits;
 
     @ManyToOne()
-    @JoinColumn(name ="manufacture_id")
+    @JoinColumn(name = "manufacture_id")
     Manufacture manufacture;
 
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.PERSIST})
