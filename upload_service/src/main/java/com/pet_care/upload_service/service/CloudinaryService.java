@@ -40,6 +40,7 @@ public class CloudinaryService {
      */
     @NotNull Mono<String> uploadImage(@NotNull MultipartFile file) {
         return Mono.fromCallable(() -> {
+            // Tải file lên Cloudinary thông qua API upload
             Map<?, ?> uploadResult = cloudinary.uploader().upload(file, ObjectUtils.emptyMap());
             return (String) uploadResult.get("url");
         }).subscribeOn(Schedulers.boundedElastic());
@@ -62,7 +63,6 @@ public class CloudinaryService {
                         .next()  // Lấy buffer đầu tiên của FilePart
                         .flatMap(bytes -> Mono.fromCallable(() -> {
                             // Upload ảnh lên Cloudinary
-
                             Map<?, ?> uploadResult = cloudinary.uploader().upload(bytes, ObjectUtils.emptyMap());
                             return (String) uploadResult.get("url");
                         }))
@@ -70,23 +70,4 @@ public class CloudinaryService {
                 .collectList();  // Thu thập các URL thành List
     }
 
-
-    private ByteArrayInputStream compressImage(BufferedImage image) throws IOException {
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-
-        // Chọn Writer cho định dạng PNG
-        ImageWriter writer = ImageIO.getImageWritersByFormatName("webp").next();
-        ImageWriteParam param = writer.getDefaultWriteParam();
-
-        // Thiết lập chế độ nén không mất dữ liệu
-        param.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
-        param.setCompressionQuality(1.0f); // 1.0 cho chất lượng tốt nhất (lossless)
-
-        try (ImageOutputStream ios = ImageIO.createImageOutputStream(outputStream)) {
-            writer.setOutput(ios);
-            writer.write(null, new IIOImage(image, null, null), param);
-        }
-
-        return new ByteArrayInputStream(outputStream.toByteArray());
-    }
 }

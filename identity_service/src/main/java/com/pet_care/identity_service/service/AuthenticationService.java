@@ -301,7 +301,6 @@ public class AuthenticationService {
 
             return authenticationResponse(account);
         } catch (Exception e) {
-            System.out.println(e);
             throw new APIException(ErrorCode.UNAUTHENTICATED);
         }
     }

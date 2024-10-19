@@ -118,7 +118,7 @@ public class PrescriptionService {
             prescriptionDetailRepository.saveAll(val.getMedicines()); // Sử dụng saveAll cho hiệu suất tốt hơn
         });
 
-        return prescriptionMapper.toResponse(newPrescription);
+        return toPrescriptionResponse(newPrescription);
     }
 
 
@@ -131,7 +131,7 @@ public class PrescriptionService {
         Set<PetPrescriptionResponse> petPrescriptionResponses = petPrescriptionRepository.findAllByPrescriptionId(prescription.getId()).stream().map(
                 petPrescription -> {
 
-                    CompletableFuture<PetResponse> petFuture = CompletableFuture.supplyAsync(() ->  appointmentClient.getPetById(petPrescription.getPetId()).getData());
+                    CompletableFuture<PetResponse> petFuture = CompletableFuture.supplyAsync(() -> appointmentClient.getPetById(petPrescription.getPetId()).getData());
 
                     Set<MedicinePrescriptionResponse> medicinePrescriptionResponses = petPrescription.getMedicines().stream().map(prescriptionDetail -> {
                         CompletableFuture<String> medicineFuture = CompletableFuture.supplyAsync(() -> medicineClient.getMedicineById(prescriptionDetail.getMedicineId()).getData().getName());
