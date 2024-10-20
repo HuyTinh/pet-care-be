@@ -126,6 +126,10 @@ public class PrescriptionService {
     }
 
 
+    /**
+     * @param prescription
+     * @return
+     */
     private PrescriptionResponse toPrescriptionResponse(Prescription prescription) {
         CompletableFuture<AppointmentResponse> appointmentFuture = CompletableFuture.supplyAsync(() ->  appointmentClient.getAppointmentById(prescription.getAppointmentId()).getData());
 
@@ -159,6 +163,7 @@ public class PrescriptionService {
                     return PetPrescriptionResponse.builder()
                             .pet(petFuture.join())
                             .note(petPrescription.getNote())
+                            .diagnosis(petPrescription.getDiagnosis())
                             .medicines(medicinePrescriptionResponses.join())
                             .build();
                 }

@@ -281,12 +281,16 @@ public class AppointmentService {
 
         List<Appointment> appointmentsBetweenDate = appointmentRepository.findByAppointmentDateBetween(sDate, eDate);
 
-        List<AppointmentResponse> appointmentResponses = appointmentsBetweenDate.stream().map(appointmentMapper::toDto).toList();
+        List<AppointmentResponse> appointmentResponses = appointmentsBetweenDate.stream().map(appointment -> {
+            var appointmentResponse = appointmentMapper.toDto(appointment);
+            appointmentResponse.setServices(appointment.getServices().stream().map(HospitalServiceEntity::getName).collect(toSet()));
+
+            return appointmentResponse;
+        }).toList();
 
 
         if (statues != null) {
-            appointmentResponses = appointmentsBetweenDate.stream()
-                    .map(appointmentMapper::toDto)
+            appointmentResponses = appointmentResponses.stream()
                     .filter(appointment -> statues.stream()
                             .anyMatch(s -> s.equals(appointment.getStatus().name()))).toList();
         }
@@ -298,7 +302,8 @@ public class AppointmentService {
                 .collect(toSet()))).toList();
 
 
-        System.out.println(appointmentResponses);
+
+        System.out.println(appointmentsBetweenDate.get(1).getServices());
 
         log.info("Appointment Service: Filter appointments successful");
 
