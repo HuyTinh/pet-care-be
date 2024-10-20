@@ -57,10 +57,10 @@ public class MedicineService {
     @NotNull
     @Transactional(readOnly = true)
     public Medicine getMedicineById(@NotNull Long id) {
-        Medicine medicineList = medicineRepository.findById(id)
+        Medicine medicine = medicineRepository.findById(id)
                 .orElseThrow(() -> new APIException(ErrorCode.MEDICINE_NOT_FOUND));
-        log.info("Find medicine by id: {}", medicineList.getId());
-        return medicineList;
+        log.info("Find medicine by id: {}", medicine.getId());
+        return medicine;
     }
 
     /**
