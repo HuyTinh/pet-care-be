@@ -28,6 +28,6 @@ public class PetPrescription {
 
     String diagnosis;
 
-    @OneToMany(mappedBy = "petPrescription")
+    @OneToMany(mappedBy = "petPrescription", fetch = FetchType.EAGER)
     Set<PrescriptionDetail> medicines;
 }
