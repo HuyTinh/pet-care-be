@@ -31,5 +31,8 @@ public interface MedicineClient {
 
     @GetMapping("/calculation-unit/{calculationUnitId}")
     APIResponse<CalculationUnitResponse> getCalculationUnitById(@PathVariable("calculationUnitId") Long calculationUnitId);
+
+    @GetMapping("/calculation-unit/in/{calculationUnitIds}")
+    APIResponse<List<CalculationUnitResponse>> getCalculationUnitByIds(@PathVariable("calculationUnitIds") Set<Long> calculationUnitIds);
 }
 
