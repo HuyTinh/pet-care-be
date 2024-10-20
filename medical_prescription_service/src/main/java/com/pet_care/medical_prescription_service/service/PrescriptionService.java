@@ -61,7 +61,12 @@ public class PrescriptionService {
     @Transactional(readOnly = true)
     public List<PrescriptionResponse> getAllPrescriptions() {
 
-        List<PrescriptionResponse> prescriptionResponseList = prescriptionRepository.findAll().stream().map(this::toPrescriptionResponse).collect(Collectors.toList());
+        List<PrescriptionResponse> prescriptionResponseList = prescriptionRepository.findAllCustom().parallelStream().map(prescription ->
+        {
+            CompletableFuture<PrescriptionResponse> responseCompletableFuture = CompletableFuture.supplyAsync(() -> toPrescriptionResponse(prescription));
+
+            return responseCompletableFuture.thenApply(response -> response).join();
+        }).collect(Collectors.toList());
 
         log.info("Get all prescriptions");
 
@@ -128,12 +133,12 @@ public class PrescriptionService {
         CompletableFuture<AppointmentResponse> appointmentFuture = CompletableFuture.supplyAsync(() ->
                 appointmentClient.getAppointmentById(prescription.getAppointmentId()).getData());
 
-        Set<PetPrescriptionResponse> petPrescriptionResponses = petPrescriptionRepository.findAllByPrescriptionId(prescription.getId()).stream().map(
+        Set<PetPrescriptionResponse> petPrescriptionResponses = petPrescriptionRepository.findAllByPrescriptionId(prescription.getId()).parallelStream().map(
                 petPrescription -> {
 
                     CompletableFuture<PetResponse> petFuture = CompletableFuture.supplyAsync(() -> appointmentClient.getPetById(petPrescription.getPetId()).getData());
 
-                    Set<MedicinePrescriptionResponse> medicinePrescriptionResponses = petPrescription.getMedicines().stream().map(prescriptionDetail -> {
+                    Set<MedicinePrescriptionResponse> medicinePrescriptionResponses = petPrescription.getMedicines().parallelStream().map(prescriptionDetail -> {
                         CompletableFuture<String> medicineFuture = CompletableFuture.supplyAsync(() -> medicineClient.getMedicineById(prescriptionDetail.getMedicineId()).getData().getName());
 
                         CompletableFuture<String> calculateFuture = CompletableFuture.supplyAsync(() -> medicineClient.getCalculationUnitById(prescriptionDetail.getCalculationId()).getData().getName());
