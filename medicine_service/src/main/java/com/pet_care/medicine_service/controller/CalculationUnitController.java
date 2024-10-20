@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping("calculation-unit")
@@ -39,6 +40,14 @@ public class CalculationUnitController {
     public APIResponse<CalculationUnitResponse> getCalculationUnitById(@PathVariable("calculationUnitId") Long calculationUnitId) {
         return APIResponse.<CalculationUnitResponse>builder()
                 .data(calculationUnitService.getCalculationUnitById(calculationUnitId))
+                .build();
+    }
+
+
+    @GetMapping("/in/{calculationUnitIds}")
+    public APIResponse<List<CalculationUnitResponse>> getCalculationUnitByIds(@PathVariable("calculationUnitIds") Set<Long> calculationUnitIds) {
+        return APIResponse.<List<CalculationUnitResponse>>builder()
+                .data(calculationUnitService.getCalculationUnitsInIds(calculationUnitIds))
                 .build();
     }
 }
