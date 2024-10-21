@@ -122,9 +122,12 @@ public class PrescriptionService {
             prescriptionDetailRepository.saveAll(val.getMedicines()); // Sử dụng saveAll cho hiệu suất tốt hơn
         });
 
-        return toPrescriptionResponse(newPrescription);
-    }
+        PrescriptionResponse prescriptionResponse = toPrescriptionResponse(newPrescription);
 
+        prescriptionResponse.setAppointmentResponse(appointmentClient.updateAppointmentService(prescriptionCreateRequest.getAppointmentId(), prescriptionCreateRequest.getServices()).getData());
+
+        return prescriptionResponse;
+    }
 
     /**
      * @param prescription
@@ -133,8 +136,7 @@ public class PrescriptionService {
     private PrescriptionResponse toPrescriptionResponse(Prescription prescription) {
         CompletableFuture<AppointmentResponse> appointmentFuture = CompletableFuture.supplyAsync(() ->  appointmentClient.getAppointmentById(prescription.getAppointmentId()).getData());
 
-
-        CompletableFuture<Set<PetPrescriptionResponse>> petPrescriptionResponses = CompletableFuture.supplyAsync(()-> new HashSet<>(petPrescriptionRepository.findAllByPrescriptionId(prescription.getId())).parallelStream().map(
+        CompletableFuture<Set<PetPrescriptionResponse>> petPrescriptionResponses = CompletableFuture.supplyAsync(()-> petPrescriptionRepository.findAllByPrescriptionId(prescription.getId()).parallelStream().map(
                 petPrescription -> {
 
                     List<PrescriptionDetail> prescriptionDetails = new ArrayList<>(petPrescription.getMedicines());
@@ -151,12 +153,12 @@ public class PrescriptionService {
 
                         CompletableFuture<String> calculateNameFuture = CompletableFuture.supplyAsync(() -> calculateFuture.join().parallelStream().filter(calculationUnitResponse -> Objects.equals(calculationUnitResponse.getId(), prescriptionDetail.getCalculationId())).findFirst().get().getName());
 
-                        return CompletableFuture.allOf(medicineNameFuture, calculateNameFuture).thenApply(v -> MedicinePrescriptionResponse.builder()
+                        return MedicinePrescriptionResponse.builder()
                                 .id(prescriptionDetail.getMedicineId())
                                 .name(medicineNameFuture.join())
                                 .calculateUnit(calculateNameFuture.join())
                                 .quantity(prescriptionDetail.getQuantity())
-                                .build()).join();
+                                .build();
 
                     }).collect(Collectors.toSet()));
 

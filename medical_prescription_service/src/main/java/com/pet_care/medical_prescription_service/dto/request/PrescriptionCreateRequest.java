@@ -15,6 +15,7 @@ import java.util.Set;
 public class PrescriptionCreateRequest {
     @JsonProperty("appointment_id")
     Long appointmentId;
+    Set<String> services;
     Set<PetPrescriptionCreateRequest> details;
     @JsonProperty("total_money")
     Double totalMoney;
