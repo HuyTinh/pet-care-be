@@ -23,7 +23,10 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
@@ -100,6 +103,8 @@ public class PrescriptionService {
 
         Prescription savePrescription = prescriptionRepository.save(newPrescription);
 
+        appointmentClient.approvedAppointment(prescriptionCreateRequest.getAppointmentId());
+
         List<PetPrescription> newPetPrescriptionList = prescriptionCreateRequest.getDetails().stream().map(petPrescriptionCreateRequest ->
                 {
                     PetPrescription petPrescription = petPrescriptionMapper.toEntity(petPrescriptionCreateRequest);
@@ -134,9 +139,9 @@ public class PrescriptionService {
      * @return
      */
     private PrescriptionResponse toPrescriptionResponse(Prescription prescription) {
-        CompletableFuture<AppointmentResponse> appointmentFuture = CompletableFuture.supplyAsync(() ->  appointmentClient.getAppointmentById(prescription.getAppointmentId()).getData());
+        CompletableFuture<AppointmentResponse> appointmentFuture = CompletableFuture.supplyAsync(() -> appointmentClient.getAppointmentById(prescription.getAppointmentId()).getData());
 
-        CompletableFuture<Set<PetPrescriptionResponse>> petPrescriptionResponses = CompletableFuture.supplyAsync(()-> petPrescriptionRepository.findAllByPrescriptionId(prescription.getId()).parallelStream().map(
+        CompletableFuture<Set<PetPrescriptionResponse>> petPrescriptionResponses = CompletableFuture.supplyAsync(() -> petPrescriptionRepository.findAllByPrescriptionId(prescription.getId()).parallelStream().map(
                 petPrescription -> {
 
                     List<PrescriptionDetail> prescriptionDetails = new ArrayList<>(petPrescription.getMedicines());
@@ -171,13 +176,13 @@ public class PrescriptionService {
                 }
         ).collect(toSet()));
 
-        return CompletableFuture.allOf(appointmentFuture,petPrescriptionResponses).thenApply(v -> {
+        return CompletableFuture.allOf(appointmentFuture, petPrescriptionResponses).thenApply(v -> {
             CompletableFuture<PrescriptionResponse> prescriptionResponseFuture = CompletableFuture.supplyAsync(() -> prescriptionMapper.toResponse(prescription));
 
             return prescriptionResponseFuture.thenApply(prescriptionResponse -> {
                 prescriptionResponse.setAppointmentResponse(appointmentFuture.join());
                 prescriptionResponse.setDetails(petPrescriptionResponses.join());
-                return  prescriptionResponse;
+                return prescriptionResponse;
             }).join();
         }).join();
     }
