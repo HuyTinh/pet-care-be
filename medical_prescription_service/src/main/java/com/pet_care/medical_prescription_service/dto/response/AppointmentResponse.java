@@ -1,10 +1,7 @@
 package com.pet_care.medical_prescription_service.dto.response;
 
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.*;
 import com.pet_care.medical_prescription_service.enums.AppointmentStatus;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -49,6 +46,7 @@ public class AppointmentResponse {
     @JsonFormat(shape = JsonFormat.Shape.STRING, timezone = "GMT+08:00", pattern = "HH:mm")
     Date appointmentTime;
 
+    @JsonIgnore
     AppointmentStatus status;
 
     Set<String> services;

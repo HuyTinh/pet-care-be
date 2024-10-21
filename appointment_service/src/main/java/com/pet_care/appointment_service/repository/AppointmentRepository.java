@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.List;
@@ -20,17 +21,25 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
      * @return
      */
     @Modifying
+    @Transactional
     @Query(value = "UPDATE appointments set status = 'CHECKED_IN' Where id = :id")
     int checkInAppointment(@Param("id") Long id);
-
 
     /**
      * @param id
      * @return
      */
+
     @Modifying
-    @Query(value = "UPDATE appointments set status = 'CANCELLED' Where id = ?1")
-    int cancelledAppointment(Long id);
+    @Transactional
+    @Query(value = "UPDATE appointments set status = 'CANCELLED' Where id = :id")
+    int cancelledAppointment(@Param("id") Long id);
+
+
+    @Modifying
+    @Transactional
+    @Query(value = "UPDATE appointments set status = 'APPROVED' Where id = :id")
+    int approvedAppointment(@Param("id") Long id);
 
     /**
      * @param status

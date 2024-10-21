@@ -32,6 +32,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
@@ -185,6 +186,15 @@ public class AppointmentService {
         return cancel;
     }
 
+    public int approvedAppointment(Long appointmentId) {
+        int cancel = appointmentRepository
+                .approvedAppointment(appointmentId);
+
+        log.info("Appointment Service: Approved appointment successful");
+
+        return cancel;
+    }
+
     /**
      * @param status
      * @return
@@ -301,10 +311,6 @@ public class AppointmentService {
                 .map(petMapper::toDto)
                 .collect(toSet()))).toList();
 
-
-
-        System.out.println(appointmentsBetweenDate.get(1).getServices());
-
         log.info("Appointment Service: Filter appointments successful");
 
         return appointmentResponses;
@@ -373,5 +379,31 @@ public class AppointmentService {
         }
 
         return appointmentResponse;
+    }
+
+    /**
+     * @param appointmentId
+     * @param services
+     * @return
+     * @throws JsonProcessingException
+     */
+    @Transactional
+    public AppointmentResponse updateAppointmentServices(Long appointmentId, Set<String> services) throws JsonProcessingException {
+        Appointment appointment = appointmentRepository.findById(appointmentId).orElseThrow(()-> new APIException(ErrorCode.APPOINTMENT_NOT_FOUND));
+
+        CompletableFuture<List<HospitalServiceEntity>> hospitalServiceEntityCompletableFuture = CompletableFuture.supplyAsync(() -> hospitalServiceRepository.findAllById(services));
+
+
+        return hospitalServiceEntityCompletableFuture.thenApply(hospitalServiceEntities -> {
+            appointment.setServices(new HashSet<>(hospitalServiceEntities));
+
+            AppointmentResponse appointmentResponse =appointmentMapper.toDto(appointmentRepository.save(appointment));
+
+            appointmentResponse.setPets(petRepository.findByAppointment_Id(appointmentId).stream().map(petMapper::toDto).collect(toSet()));
+
+            appointmentResponse.setServices(appointment.getServices().stream().map(HospitalServiceEntity::getName).collect(toSet()));
+
+            return appointmentResponse;
+        }).join();
     }
 }
