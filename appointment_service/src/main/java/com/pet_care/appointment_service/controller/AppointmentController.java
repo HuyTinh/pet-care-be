@@ -113,7 +113,7 @@ public class AppointmentController {
      * @param appointmentId
      * @return
      */
-    @PostMapping("/approved/{appointmentId}")
+    @PostMapping("/check-in/{appointmentId}")
     public APIResponse<Integer> checkInAppointment(@PathVariable("appointmentId") Long appointmentId) {
 
         return APIResponse.<Integer>builder()
@@ -131,6 +131,18 @@ public class AppointmentController {
                 .data(appointmentService.cancelAppointment(appointmentId))
                 .build();
     }
+
+    /**
+     * @param appointmentId
+     * @return
+     */
+    @PostMapping("/approved/{appointmentId}")
+    public APIResponse<Integer> approvedAppointment(@PathVariable Long appointmentId) {
+        return APIResponse.<Integer>builder()
+                .data(appointmentService.approvedAppointment(appointmentId))
+                .build();
+    }
+
 
     /**
      * @param accountId
@@ -153,6 +165,19 @@ public class AppointmentController {
     public APIResponse<List<AppointmentResponse>> getByStatus(@PathVariable("status") String status) {
         return APIResponse.<List<AppointmentResponse>>builder()
                 .data(appointmentService.getByStatus(status))
+                .build();
+    }
+
+    /**
+     * @param appointmentId
+     * @param services
+     * @return
+     * @throws JsonProcessingException
+     */
+    @PutMapping("/{appointmentId}/service")
+    public APIResponse<AppointmentResponse> updateAppointmentService(@PathVariable("appointmentId") Long appointmentId, @RequestBody Set<String> services) throws JsonProcessingException {
+        return APIResponse.<AppointmentResponse>builder()
+                .data(appointmentService.updateAppointmentServices(appointmentId, services))
                 .build();
     }
 
