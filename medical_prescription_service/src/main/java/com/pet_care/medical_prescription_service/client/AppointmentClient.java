@@ -1,16 +1,12 @@
 package com.pet_care.medical_prescription_service.client;
 
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.pet_care.medical_prescription_service.dto.response.APIResponse;
 import com.pet_care.medical_prescription_service.dto.response.AppointmentResponse;
 import com.pet_care.medical_prescription_service.dto.response.PetResponse;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Set;
 
@@ -38,4 +34,12 @@ public interface AppointmentClient {
      */
     @GetMapping("/pet/{petId}")
     APIResponse<PetResponse> getPetById(@PathVariable("petId") Long petId);
+
+
+    /**
+     * @param appointmentId
+     * @return
+     */
+    @PostMapping("/appointment/approved/{appointmentId}")
+    APIResponse<Integer> approvedAppointment(@PathVariable Long appointmentId);
 }

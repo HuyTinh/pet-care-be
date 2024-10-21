@@ -389,7 +389,7 @@ public class AppointmentService {
      */
     @Transactional
     public AppointmentResponse updateAppointmentServices(Long appointmentId, Set<String> services) throws JsonProcessingException {
-        Appointment appointment = appointmentRepository.findById(appointmentId).orElseThrow(()-> new APIException(ErrorCode.APPOINTMENT_NOT_FOUND));
+        Appointment appointment = appointmentRepository.findById(appointmentId).orElseThrow(() -> new APIException(ErrorCode.APPOINTMENT_NOT_FOUND));
 
         CompletableFuture<List<HospitalServiceEntity>> hospitalServiceEntityCompletableFuture = CompletableFuture.supplyAsync(() -> hospitalServiceRepository.findAllById(services));
 
@@ -397,7 +397,7 @@ public class AppointmentService {
         return hospitalServiceEntityCompletableFuture.thenApply(hospitalServiceEntities -> {
             appointment.setServices(new HashSet<>(hospitalServiceEntities));
 
-            AppointmentResponse appointmentResponse =appointmentMapper.toDto(appointmentRepository.save(appointment));
+            AppointmentResponse appointmentResponse = appointmentMapper.toDto(appointmentRepository.save(appointment));
 
             appointmentResponse.setPets(petRepository.findByAppointment_Id(appointmentId).stream().map(petMapper::toDto).collect(toSet()));
 
