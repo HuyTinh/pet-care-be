@@ -91,4 +91,33 @@ public class MedicineController {
                 .build();
     }
 
+    /**
+     * Search medicines based on criteria and sort results
+     *
+     * @param searchQuery (Optional) part of medicine name or exact quantity
+     * @param manufacturingDate (Optional) filter by manufacturing date
+     * @param expiryDate (Optional) filter by expiry date
+     * @param status (Optional) filter by medicine status (ACTIVE, INACTIVE, etc.)
+     * @param minPrice (Optional) minimum price filter
+     * @param maxPrice (Optional) maximum price filter
+     * @param sortBy (Optional) field to sort by (name, price, quantity)
+     * @param sortOrder (Optional) order to sort (asc, desc)
+     * @return APIResponse with list of filtered and sorted medicines
+     */
+    @GetMapping("/search")
+    public APIResponse<List<MedicineResponse>> searchMedicines(
+            @RequestParam(value = "searchQuery", required = false) String searchQuery,
+            @RequestParam(value = "manufacturingDate", required = false) Date manufacturingDate,
+            @RequestParam(value = "expiryDate", required = false) Date expiryDate,
+            @RequestParam(value = "status", required = false) MedicineStatus status,
+            @RequestParam(value = "minPrice", required = false) Double minPrice,
+            @RequestParam(value = "maxPrice", required = false) Double maxPrice,
+            @RequestParam(value = "sortBy", required = false, defaultValue = "name") String sortBy,
+            @RequestParam(value = "sortOrder", required = false, defaultValue = "asc") String sortOrder
+    ) {
+        return APIResponse.<List<MedicineResponse>>builder()
+                .data(medicineService.searchMedicines(manufacturingDate, expiryDate, status, minPrice, maxPrice, searchQuery, sortBy, sortOrder))
+                .build();
+    }
+
 }

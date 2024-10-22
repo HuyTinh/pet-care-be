@@ -134,4 +134,52 @@ public class MedicineService {
         medicineRepository.deleteById(medicineId);
         log.info("Delete medicine successful");
     }
+
+    /**
+     * Search medicines based on criteria and sort result
+     *
+     * @param manufacturingDate
+     * @param expiryDate
+     * @param status
+     * @param minPrice
+     * @param maxPrice
+     * @param searchQuery
+     * @param sortBy
+     * @param sortOrder
+     * @return list of filtered and sorted medicines
+     */
+    @NotNull
+    @Transactional(readOnly = true)
+    public List<MedicineResponse> searchMedicines(
+            Date manufacturingDate,
+            Date expiryDate,
+            MedicineStatus status,
+            Double minPrice,
+            Double maxPrice,
+            String searchQuery,
+            String sortBy,
+            String sortOrder
+    ) {
+        // Validate sort order and construct Sort object
+        Sort sort = Sort.by(Sort.Direction.fromString(sortOrder), sortBy);
+
+        // Perform the query using repository method
+        List<Medicine> medicines = medicineRepository.findByCriteria(
+                manufacturingDate,
+                expiryDate,
+                status,
+                minPrice,
+                maxPrice,
+                searchQuery,
+                sort
+        );
+
+        log.info("Search medicines with query: {}, sorting by: {} {}", searchQuery, sortBy, sortOrder);
+
+        // Convert entity list to DTO response
+        return medicines.stream()
+                .map(medicineMapper::toDto)
+                .collect(Collectors.toList());
+    }
+
 }
