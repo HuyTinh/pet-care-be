@@ -4,6 +4,7 @@ import com.pet_care.medical_prescription_service.dto.request.PrescriptionCreateR
 import com.pet_care.medical_prescription_service.dto.request.PrescriptionUpdateRequest;
 import com.pet_care.medical_prescription_service.dto.response.APIResponse;
 import com.pet_care.medical_prescription_service.dto.response.PrescriptionResponse;
+import com.pet_care.medical_prescription_service.model.Prescription;
 import com.pet_care.medical_prescription_service.repository.PrescriptionRepository;
 import com.pet_care.medical_prescription_service.service.PrescriptionService;
 import lombok.AccessLevel;
@@ -19,8 +20,10 @@ import java.util.List;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class PrescriptionController {
+
     @NotNull PrescriptionService prescriptionService;
-    private final PrescriptionRepository prescriptionRepository;
+
+    @NotNull PrescriptionRepository prescriptionRepository;
 
     /**
      * @return
@@ -43,6 +46,17 @@ public class PrescriptionController {
                 .build();
     }
 
+
+    /**
+     * @param appointmentId
+     * @return
+     */
+    @GetMapping("/{appointmentId}/appointment")
+    public @NotNull APIResponse<PrescriptionResponse> getPrescriptionByAppointmentId(@NotNull @PathVariable("appointmentId") Long appointmentId) {
+        return APIResponse.<PrescriptionResponse>builder()
+                .data(prescriptionService.getPrescriptionByAppointmentId(appointmentId))
+                .build();
+    }
     /**
      * @param prescriptionCreateRequest
      * @return

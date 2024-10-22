@@ -1,5 +1,6 @@
 package com.pet_care.medical_prescription_service.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -13,5 +14,6 @@ public class MedicinePrescriptionResponse {
     Long id;
     String name;
     Long quantity;
+    @JsonProperty("calculate_unit")
     String calculateUnit;
 }

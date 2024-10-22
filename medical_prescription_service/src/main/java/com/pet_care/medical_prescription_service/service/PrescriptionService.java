@@ -135,6 +135,17 @@ public class PrescriptionService {
     }
 
     /**
+     * @param appointmentId
+     * @return
+     */
+    @Transactional(readOnly = true)
+    public PrescriptionResponse getPrescriptionByAppointmentId(@NotNull Long appointmentId) {
+        Prescription existingPrescription = prescriptionRepository.findByAppointmentId(appointmentId);
+
+        return toPrescriptionResponse(existingPrescription);
+    }
+
+    /**
      * @param prescription
      * @return
      */
