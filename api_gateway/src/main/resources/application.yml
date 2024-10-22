@@ -7,7 +7,7 @@ spring:
       mvc:
         routes:
           - id: identity_service
-            uri: http://localhost:8081
+            uri: http://localhost:8091
             predicates:
               - Path=/api/v1/identity-service/**
 

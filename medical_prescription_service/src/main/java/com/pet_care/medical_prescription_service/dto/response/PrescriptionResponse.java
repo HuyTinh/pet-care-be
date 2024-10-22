@@ -27,5 +27,6 @@ public class PrescriptionResponse {
     @Enumerated(EnumType.STRING)
     PrescriptionStatus status;
 
+    @JsonProperty("total_money")
     Double totalMoney;
 }
