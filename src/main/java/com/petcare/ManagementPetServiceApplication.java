@@ -1,4 +1,4 @@
-package com.percare;
+package com.petcare;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -6,8 +6,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class ManagementPetServiceApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(ManagementPetServiceApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(ManagementPetServiceApplication.class, args);
+    }
 
 }

@@ -1,0 +1,13 @@
+services:
+  mysql:
+    image: "mysql:latest"
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_PASSWORD: root
+      MYSQL_USERNAME: root
+      MYSQL_DATABASE: management_pet_service
+    ports:
+      - "3307:3306"
+    volumes:
+      - ./database/mysql:/var/lib/mysql
+      - ./database/mysqld:/var/run/mysqld
