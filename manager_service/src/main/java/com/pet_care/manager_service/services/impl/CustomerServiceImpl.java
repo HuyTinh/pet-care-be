@@ -9,15 +9,12 @@ import com.pet_care.manager_service.mapper.PetMapper;
 import com.pet_care.manager_service.mapper.PrescriptionMapper;
 import com.pet_care.manager_service.mapper.ServiceMapper;
 import com.pet_care.manager_service.repositories.*;
-import com.pet_care.manager_service.services.AppointmentService;
 import com.pet_care.manager_service.services.CustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.time.LocalDate;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -74,6 +71,7 @@ public class CustomerServiceImpl implements CustomerService {
     public List<CustomerPetAndServiceResponse> getAllCustomers() {
 
         List<Object[]> listCustomers = customerRepository.getAllCustomer();
+        System.out.println("Check list Customer : " + listCustomers);
         if (listCustomers.isEmpty()) {
             throw new AppException(ErrorCode.ACCOUNT_NOTFOUND);
         }
@@ -85,6 +83,8 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     public List<CustomerPetAndServiceResponse> getAllCustomersTrue() {
         List<Object[]> listCustomers = customerRepository.getAllCustomerByStatusTrue();
+        System.out.println("Check list Customer : " + listCustomers);
+
         if (listCustomers.isEmpty()) {
             throw new AppException(ErrorCode.ACCOUNT_NOTFOUND);
         }
@@ -96,6 +96,7 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     public CustomerPetAndServiceResponse deleteCustomer(Long id) {
         Customer customer = customerRepository.findById(id).get();
+        System.out.println("Check customer : " + customer.getId());
         customer.setStatus(false);
         customerRepository.save(customer);
         return customerMapper.toCustomerResponse(customer);
@@ -114,53 +115,67 @@ public class CustomerServiceImpl implements CustomerService {
                 .id(pet.getId())
                 .weight(pet.getWeight())
                 .age(pet.getAge())
-                .species(convertToSpeciesResponse(pet))
-                .prescription(convertPrescriptionByPetId(pet.getId()))
+                .speciesResponse(convertToSpeciesResponse(pet))
+                .prescriptionResponses(convertPrescriptionByPetId(pet.getId()))
                 .build();
     }
 
-    public PrescriptionResponse convertPrescriptionByPetId(Long id){
-        Object[] pres = prescriptionRepository.getPrescriptionByPetId(id);
+    public Set<PrescriptionResponse> convertPrescriptionByPetId(Long id){
+
+        List<Object[]> pres = prescriptionRepository.getPrescriptionByPetId(id);
         if(pres == null){
             throw new AppException(ErrorCode.PRESCRIPTION_NOTFOUND);
         }
-        Prescription prescription = prescriptionRepository.findById((Long) pres[0]).get();
-        List<Prescription_Details> prescription_details = prescriptionDetailRepository.findByPrescription(prescription);
+        Set<PrescriptionDetailResponse> presriptionDetailResponses;
+        Set<PrescriptionResponse> prescriptionResponses = new HashSet<>();
+        for(Object[] obj : pres){
+            Prescription prescription = prescriptionRepository.findById((Long) obj[0]).get();
+            List<Prescription_Details> prescription_details = prescriptionDetailRepository.findByPrescription(prescription);
+            System.out.println("Check prescription_details : " + prescription_details.size());
+//
+            presriptionDetailResponses = prescription_details.stream()
+                    .map(this::convertToPrescriptionDetailResponse)
+                    .collect(Collectors.toSet());
 
-        Set<PresriptionDetailResponse> presriptionDetailResponses = prescription_details.stream()
-                .map(this::convertToPrescriptionDetailResponse)
-                .collect(Collectors.toSet());
+            prescriptionResponses.add(PrescriptionResponse.builder()
+                    .id((Long) obj[0])
+                    .create_date((LocalDate) obj[1])
+                    .note((String) obj[2])
+                    .prescriptionDetailResponse(presriptionDetailResponses)
+                    .build()
+            );
+        }
 
-//        for (Prescription_Details prescription_detail : prescription_details) {
-//            convertToPrescriptionDetailResponse(prescription_detail);
-//        }
-        return PrescriptionResponse.builder()
-                .id( (Long) pres[0])
-                .create_date( (Date) pres[1])
-                .note((String) pres[2])
-                .presriptionDetailResponse(presriptionDetailResponses)
-                .build();
+        return prescriptionResponses;
     }
 
     public CustomerPetAndServiceResponse convertCustomerResponse(Object[] row){
         List<Object[]> listPet = petRepository.getPetByCustomerId((Long) row[0]);
+        System.out.println("Check listPet : " + listPet.size());
         if(listPet.isEmpty()){
             throw new AppException(ErrorCode.PET_NOTFOUND);
         }
 //      Lấy pet
         Set<PetResponse> petResponses = new HashSet<>();
+
         for(Object[] obj : listPet) {
-            Pet pet = petRepository.findById((Long) obj[0]).get();
+            System.out.println("Check object : " + obj[0]);
+            Long petId = ((Number) obj[0]).longValue();
+            Pet pet = petRepository.findById(petId).get();
+            System.out.println("Check pets : " + pet);
             PetResponse petResponse = PetResponse.builder()
                     .id(pet.getId())
                     .name(pet.getName())
                     .weight(pet.getWeight())
                     .age(pet.getAge())
-                    .prescription(convertPrescriptionByPetId(pet.getId())) // get Prescription
-                    .species(convertToSpeciesResponse(pet)) // get Species
+                    .prescriptionResponses(convertPrescriptionByPetId(pet.getId())) // get Prescription
+                    .speciesResponse(convertToSpeciesResponse(pet)) // get Species
                     .build();
+            System.out.println("Check pet Detail : " + petResponse);
             petResponses.add(petResponse);
         }
+        System.out.println("Check list Pet Response: " + petResponses);
+
         Set<ServiceResponse> service_set = new HashSet<>();
         List<Object[]> listServices = servicesRepository.findServicesByCustomerId( (Long) row[0]);
         if(listServices.isEmpty()){
@@ -169,12 +184,15 @@ public class CustomerServiceImpl implements CustomerService {
 //        Lấy service
         for(Object[] obj : listServices){
             Services services = servicesRepository.findServicesByName((String) obj[0]).get();
+            System.out.println("Check services : " + services);
             service_set.add(ServiceResponse.builder()
                         .id(services.getId())
                         .name(services.getName())
                         .price(services.getPrice())
                         .build());
         }
+        System.out.println("Check customer : " + row[0]);
+
         return CustomerPetAndServiceResponse.builder()
                 .id( (Long) row[0])
                 .last_name((String) row[1])
@@ -186,23 +204,40 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     public SpeciesResponse convertToSpeciesResponse(Pet pet){
-        Object[] species = speciesRepository.findByPetId(pet.getId());
-        return SpeciesResponse.builder()
-                .id( (Long) species[0])
-                .name((String) species[1])
+        Optional<Object[]> species = speciesRepository.findSpeciesByPetId(pet.getId());
+        System.out.println("Check Species : " + species.get()[0]);
+        System.out.println("Check Species : " + species.get());
+        if (species.isPresent()) {
+            Object[] speciesArray = (Object[]) species.get()[0];
+
+            Long speciesId = (Long) speciesArray[0]; // Chuyển đổi ID
+            String speciesName = (String) speciesArray[1]; // Chuyển đổi tên
+
+            System.out.println("Species ID: " + speciesId);
+            System.out.println("Species Name: " + speciesName);
+        } else {
+            System.out.println("No species found for pet ID: " + pet.getId());
+        }
+
+        SpeciesResponse build = SpeciesResponse.builder()
+                .id((Long) ((Object[]) species.get()[0])[0])
+                .name((String) ((Object[]) species.get()[0])[1])
                 .build();
+        return build;
     }
 
     public MedicineResponse convertToMedicineResponse(Medicine medicine){
+        System.out.println("Check Medicine convert : " + medicine);
         return MedicineResponse.builder()
                 .id( medicine.getId())
                 .name(medicine.getName())
                 .build();
     }
-    public PresriptionDetailResponse convertToPrescriptionDetailResponse(Prescription_Details prescription_details){
+    public PrescriptionDetailResponse convertToPrescriptionDetailResponse(Prescription_Details prescription_details){
         Medicine medicine = medicineRepository.findById(prescription_details.getMedicine().getId()).get();
         MedicineResponse medicineResponse = convertToMedicineResponse(medicine);
-        return PresriptionDetailResponse.builder()
+        System.out.println("Check Medicine Pres : " + medicineResponse);
+        return PrescriptionDetailResponse.builder()
                 .id(prescription_details.getId())
                 .quantity(prescription_details.getQuantity())
                 .medicineResponse(medicineResponse)

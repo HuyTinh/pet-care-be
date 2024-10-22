@@ -33,7 +33,6 @@ public class OpenApiConfig {
         return GroupedOpenApi.builder()
                 .group("api-service-account")
                 .pathsToMatch("/management/account/**") // dựa theo url của controller
-//                .packagesToScan("com.pet_care.manager_service.controllers.accountController")
                 .build()
                 ;
     }
@@ -63,7 +62,6 @@ public class OpenApiConfig {
         return GroupedOpenApi.builder()
                 .group("api-service-service")
                 .pathsToMatch("/management/service/**") // dựa theo url của controller
-//                .packagesToScan("com.pet_care.manager_service.controllers.serviceController")
                 .build()
                 ;
     }
@@ -73,6 +71,15 @@ public class OpenApiConfig {
         return GroupedOpenApi.builder()
                 .group("api-service-role")
                 .pathsToMatch("/management/role/**") // dựa theo url của controller
+                .build()
+                ;
+    }
+
+    @Bean
+    public GroupedOpenApi groupedOpenApiDashBoard(){
+        return GroupedOpenApi.builder()
+                .group("api-service-dashboard")
+                .pathsToMatch("/management/dashboard/**") // dựa theo url của controller
                 .build()
                 ;
     }

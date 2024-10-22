@@ -7,7 +7,8 @@ import lombok.experimental.FieldDefaults;
 
 import java.util.Set;
 
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
@@ -33,7 +34,7 @@ public class Profile {
     String phone_number;
 
     @Column(name = "gender", nullable = true)
-    boolean gender = true;
+    Boolean gender = true;
 
     @Column(name = "address", nullable = true)
     String address;

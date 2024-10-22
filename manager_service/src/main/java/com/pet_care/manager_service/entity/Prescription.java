@@ -4,9 +4,11 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.time.LocalDate;
 import java.util.Date;
 
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
@@ -19,7 +21,7 @@ public class Prescription {
     Long id;
 
     @Column(name = "create_date", nullable = false)
-    Date create_date;
+    LocalDate create_date;
 
     @Column(name = "disease_name", nullable = true)
     String disease_name;

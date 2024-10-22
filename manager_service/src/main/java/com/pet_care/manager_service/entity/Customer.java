@@ -8,7 +8,8 @@ import lombok.experimental.FieldDefaults;
 import java.util.Set;
 
 
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
@@ -27,7 +28,7 @@ public class Customer {
     @Column(name = "first_name", nullable = false)
     String first_name;
 
-    @Column(name = "phone_numer", nullable = false)
+    @Column(name = "phone_number", nullable = false)
     String phone_number;
 
     @Column(name = "status", nullable = false)
@@ -43,5 +44,5 @@ public class Customer {
 
     @OneToMany(mappedBy = "customer")
     @JsonIgnore
-    Set<Pet> pet;
+    Set<Pet> pets;
 }

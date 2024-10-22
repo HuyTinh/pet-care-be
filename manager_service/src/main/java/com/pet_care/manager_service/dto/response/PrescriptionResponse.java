@@ -1,10 +1,9 @@
 package com.pet_care.manager_service.dto.response;
 
-import com.pet_care.manager_service.entity.Pet;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.Set;
 
 @Data
@@ -14,7 +13,7 @@ import java.util.Set;
 @FieldDefaults(level =  AccessLevel.PRIVATE)
 public class PrescriptionResponse {
     Long id;
-    Date create_date;
+    LocalDate create_date;
     String note;
-    Set<PresriptionDetailResponse> presriptionDetailResponse;
+    Set<PrescriptionDetailResponse> prescriptionDetailResponse;
 }

@@ -8,7 +8,7 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @Builder
 @FieldDefaults(level =  AccessLevel.PRIVATE)
-public class PresriptionDetailResponse {
+public class PrescriptionDetailResponse {
     Long id;
     MedicineResponse medicineResponse;
     String description;

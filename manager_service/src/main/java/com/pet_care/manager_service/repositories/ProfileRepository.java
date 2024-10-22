@@ -5,5 +5,5 @@ import com.pet_care.manager_service.entity.Profile;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface ProfileRepository extends JpaRepository<Profile, Long> {
-    public Profile findByAccount(Account account);
+    Profile findByAccount(Account account);
 }

@@ -13,13 +13,14 @@ public interface ServicesRepository extends JpaRepository<Services, Long> {
     Optional<Services> findServicesByName(String name);
 
     @Query(value = "SELECT s.name as service_name " +
-            " FROM Customer  ctm " +
-            " JOIN ctm.pet p " +
-            " JOIN p.species sc " +
-            " JOIN p.prescription prs " +
-            " JOIN ctm.appointments ap " +
-            " JOIN ap.appointment_service aps " +
-            " JOIN aps.services s " +
-            " WHERE ctm.id = :id ")
+            "             FROM customers ctm " +
+            "             JOIN pets p on ctm.id = p.customer_id " +
+            "             JOIN species sc on p.species_id = sc.id " +
+            "             JOIN prescriptions prs on p.id = prs.pet_id " +
+            "             JOIN appointments ap on ctm.id = ap.customer_id " +
+            "             JOIN appointment_services aps on ap.id = aps.appointment_id " +
+            "             JOIN services s on aps.services_id = s.id " +
+            "             WHERE ctm.id = :id " +
+            "             GROUP BY s.name " , nativeQuery = true)
     List<Object[]> findServicesByCustomerId(@Param("id") Long id);
 }

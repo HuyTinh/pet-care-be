@@ -9,7 +9,8 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Set;
 
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
@@ -24,8 +25,8 @@ public class Appointment {
     @Column(name = "appointment_date", columnDefinition = "date", nullable = false)
     LocalDate appointment_date;
 
-    @Column(name = "appointment_time", columnDefinition = "time", nullable = false)
-    LocalTime appointment_time;
+    @Column(name = "appointment_hour", columnDefinition = "time", nullable = false)
+    LocalTime appointment_hour;
 
     @Column(name = "status", nullable = false)
     boolean status;
@@ -39,6 +40,6 @@ public class Appointment {
 
     @OneToMany(mappedBy = "appointment")
     @JsonIgnore
-    Set<Appointment_Service> appointment_service;
+    Set<Appointment_Service> appointment_services;
 
 }

@@ -8,7 +8,8 @@ import org.springframework.data.redis.core.RedisHash;
 
 import java.util.Set;
 
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity

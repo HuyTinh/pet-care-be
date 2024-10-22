@@ -110,6 +110,15 @@ CREATE TABLE payments (
                           name varchar(255) NOT NULL,
                           status bit NOT NULL
 );
+-- bảng
+CREATE TABLE appointment_services(
+                                     id bigint PRIMARY KEY AUTO_INCREMENT,
+                                     appointment_id bigint NOT NULL,
+                                     services_id bigint NOT NULL,
+                                     price double NOT NULL,
+                                     FOREIGN KEY (appointment_id) REFERENCES appointments(id) ON DELETE CASCADE ON UPDATE CASCADE,
+                                     FOREIGN KEY (services_id) REFERENCES services(id) ON DELETE CASCADE ON UPDATE CASCADE
+);
 -- bảng 17
 CREATE TABLE invoices(
                          id bigint PRIMARY KEY AUTO_INCREMENT,
@@ -125,14 +134,14 @@ CREATE TABLE invoices(
 );
 -- bảng 18
 CREATE TABLE invoice_service_details(
-                                        id bigint PRIMARY KEY AUTO_INCREMENT,
-                                        discount double NULL,
-                                        price double NOT NULL,
-                                        service_id bigint NOT NULL,
-                                        invoice_id bigint NOT NULL,
-                                        note text NULL,
-                                        FOREIGN KEY (service_id) REFERENCES services(id) ON DELETE CASCADE ON UPDATE CASCADE,
-                                        FOREIGN KEY (invoice_id) REFERENCES invoices(id) ON DELETE CASCADE ON UPDATE CASCADE
+  id bigint PRIMARY KEY AUTO_INCREMENT,
+  discount double NULL,
+  price double NOT NULL,
+  appointment_service_id bigint NOT NULL,
+  invoice_id bigint NOT NULL,
+  note text NULL,
+  FOREIGN KEY (appointment_service_id) REFERENCES appointment_services(id) ON DELETE CASCADE ON UPDATE CASCADE,
+  FOREIGN KEY (invoice_id) REFERENCES invoices(id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 -- bảng 19
 CREATE TABLE invoice_medicine_details(
@@ -144,12 +153,4 @@ CREATE TABLE invoice_medicine_details(
                                          note text NULL,
                                          FOREIGN KEY (medicine_id) REFERENCES medicines(id) ON DELETE CASCADE ON UPDATE CASCADE,
                                          FOREIGN KEY (invoice_id) REFERENCES invoices(id) ON DELETE CASCADE ON UPDATE CASCADE
-);
--- bảng 20
-CREATE TABLE appointment_services(
-                                     id bigint PRIMARY KEY AUTO_INCREMENT,
-                                     appointment_id bigint NOT NULL,
-                                     services_id bigint NOT NULL,
-                                     FOREIGN KEY (appointment_id) REFERENCES appointments(id) ON DELETE CASCADE ON UPDATE CASCADE,
-                                     FOREIGN KEY (services_id) REFERENCES services(id) ON DELETE CASCADE ON UPDATE CASCADE
 );

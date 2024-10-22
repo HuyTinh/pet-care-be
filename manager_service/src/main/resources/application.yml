@@ -1,14 +1,3 @@
-#spring:
-#  application:
-#    name: petcare
-#  datasource:
-#    url: "jdbc:mysql://localhost:2501/petcare"
-#    username: root
-#    password: 00000000
-#  jpa:
-#    show-sql: false
-#    hibernate:
-#      ddl-auto: update
 
 spring:
 #  datasource:
@@ -17,9 +6,9 @@ spring:
 #    password: root
 
   datasource:
-    url: jdbc:mysql://junction.proxy.rlwy.net:19557/manager_service
+    url: jdbc:mysql://localhost:2501/pet_care_manager
     username: root
-    password: UdiScGBGvUSGxtztmMzWmaIbfIqvndvn
+    password: root
 
   jpa:
     hibernate:

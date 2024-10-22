@@ -13,7 +13,7 @@ public interface SpeciesRepository extends JpaRepository<Species, Long> {
 
     @Query(value = " SELECT sp.id, sp.name " +
             " FROM Species sp " +
-            " JOIN sp.pet p " +
+            " JOIN sp.pets p " +
             " WHERE p.id = :id ")
-    Object[] findByPetId(@Param("id") Long id);
+    Optional<Object[]> findSpeciesByPetId(@Param("id") Long id);
 }

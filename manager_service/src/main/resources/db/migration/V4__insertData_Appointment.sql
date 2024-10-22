@@ -16,11 +16,15 @@ INSERT INTO appointments (appointment_date, appointment_hour, customer_id, statu
 ('2024-10-01', '10:00:00', 1, 1, 'Pending'),
 ('2024-10-02', '11:30:00', 2, 1, 'Accepted'),
 ('2024-10-03', '09:00:00', 3, 1, 'Rejected'),
-                                                                                                      ('2024-10-04', '14:00:00', 1, 1, 'Pending'),
-                                                                                                      ('2024-10-05', '15:30:00', 4, 1, 'Accepted');
-INSERT INTO appointment_services (appointment_id, services_id) VALUES
-                                                                   (1, 1),  -- Full Grooming for Appointment 1
-                                                                   (2, 2),  -- Vaccination - Dog for Appointment 2
-                                                                   (3, 3)  -- Vaccination - Cat for Appointment 3
+('2024-10-20', '09:00:00', 4, 1, 'Rejected'),
+('2024-10-21', '09:00:00', 5, 1, 'Rejected'),
+('2024-10-21', '09:00:00', 3, 1, 'Rejected');
+INSERT INTO appointment_services (appointment_id, services_id,price) VALUES
+       (1, 1, 50.0),  -- Full Grooming for Appointment 1
+       (2, 2, 25.0),  -- Vaccination - Dog for Appointment 2
+       (3, 3, 25.0), -- Vaccination - Cat for Appointment 3
+       (4, 2, 30.0),
+       (5, 1, 40.0),
+       (6, 5, 20.0);
 
 

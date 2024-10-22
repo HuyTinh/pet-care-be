@@ -7,7 +7,8 @@ import lombok.experimental.FieldDefaults;
 
 import java.util.Set;
 
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
@@ -26,7 +27,8 @@ public class Payment {
     boolean status;
 
     @OneToMany(mappedBy = "payment")
-    Set<Invoice> invoice;
+    @JsonIgnore
+    Set<Invoice> invoices;
 
 
 }

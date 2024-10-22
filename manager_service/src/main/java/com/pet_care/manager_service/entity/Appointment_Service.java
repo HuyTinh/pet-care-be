@@ -1,10 +1,14 @@
 package com.pet_care.manager_service.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-@Data
+import java.util.Set;
+
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
@@ -21,6 +25,13 @@ public class Appointment_Service {
     Appointment appointment;
 
     @ManyToOne
-    @JoinColumn(name = "service_id", nullable = false)
+    @JoinColumn(name = "services_id", nullable = false)
     Services services;
+
+    @Column(name = "price", nullable = false)
+    double price;
+
+    @OneToOne(mappedBy = "appointment_service")
+    @JsonIgnore
+    Invoice_Service_Detail invoiceServiceDetails;
 }

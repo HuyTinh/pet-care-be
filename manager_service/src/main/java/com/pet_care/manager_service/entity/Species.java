@@ -7,7 +7,8 @@ import lombok.experimental.FieldDefaults;
 
 import java.util.Set;
 
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
@@ -24,5 +25,5 @@ public class Species {
 
     @OneToMany(mappedBy = "species")
     @JsonIgnore
-    Set<Pet> pet;
+    Set<Pet> pets;
 }
