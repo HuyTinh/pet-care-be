@@ -49,7 +49,7 @@ public class AppointmentResponse {
     @JsonIgnore
     AppointmentStatus status;
 
-    Set<String> services;
+    Set<HospitalServiceResponse> services;
 
     Set<PetResponse> pets;
 }

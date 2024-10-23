@@ -186,6 +186,10 @@ public class AppointmentService {
         return cancel;
     }
 
+    /**
+     * @param appointmentId
+     * @return
+     */
     public int approvedAppointment(Long appointmentId) {
         int cancel = appointmentRepository
                 .approvedAppointment(appointmentId);
@@ -205,16 +209,7 @@ public class AppointmentService {
         List<AppointmentResponse> appointmentResponses = appointmentRepository
                 .findAppointmentByStatus(AppointmentStatus
                         .valueOf(status)).stream()
-                .map(appointment -> {
-                    AppointmentResponse appointmentResponse = appointmentMapper.toDto(appointment);
-                    appointmentResponse.setServices(appointment.getServices().stream().map(hospitalServiceMapper::toDto).collect(toSet()));
-                    appointmentResponse
-                            .setPets(new HashSet<>(petRepository
-                                    .findByAppointment_Id(appointment.getId()))
-                                    .stream().map(petMapper::toDto)
-                                    .collect(toSet()));
-                    return appointmentResponse;
-                })
+                .map(this::toAppointmentResponse)
                 .collect(toList());
 
         log.info("Appointment Service: Get appointment by status successful");
@@ -236,18 +231,7 @@ public class AppointmentService {
                     .findAppointmentByStatusAndAccountId(AppointmentStatus
                             .valueOf(status), accountId, sort)
                     .stream()
-                    .map(appointment -> {
-                        AppointmentResponse appointmentResponse = appointmentMapper.toDto(appointment);
-
-                        appointmentResponse.setServices(appointment.getServices().stream().map(hospitalServiceMapper::toDto).collect(toSet()));
-
-                        appointmentResponse
-                                .setPets(new HashSet<>(petRepository
-                                        .findByAppointment_Id(appointment.getId()))
-                                        .stream().map(petMapper::toDto)
-                                        .collect(toSet()));
-                        return appointmentResponse;
-                    }).collect(toList());
+                    .map(this::toAppointmentResponse).collect(toList());
         } catch (Exception e) {
             throw new APIException(ErrorCode.CUSTOMER_NOT_FOUND);
         }
@@ -262,14 +246,7 @@ public class AppointmentService {
     public List<AppointmentResponse> getAllAppointmentByAppointmentDate(Date appointmentDate) {
         List<AppointmentResponse> appointmentResponses = appointmentRepository
                 .findAppointmentByAppointmentDate(appointmentDate).stream()
-                .map(appointment -> {
-                    AppointmentResponse appointmentResponse = appointmentMapper.toDto(appointment);
-                    appointmentResponse.setPets(new HashSet<>(petRepository
-                            .findByAppointment_Id(appointment.getId())).stream()
-                            .map(petMapper::toDto)
-                            .collect(toSet()));
-                    return appointmentResponse;
-                }).collect(toList());
+                .map(this::toAppointmentResponse).collect(toList());
 
         log.info("Appointment Service: Get appointment by appointment date and status in successful");
 
@@ -289,27 +266,15 @@ public class AppointmentService {
         Date sDate = Date.from(startDate.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant());
         Date eDate = Date.from(endDate.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant());
 
-        List<Appointment> appointmentsBetweenDate = appointmentRepository.findByAppointmentDateBetween(sDate, eDate);
+        CompletableFuture<List<Appointment>> appointmentsBetweenDateFuture = CompletableFuture.supplyAsync(() -> appointmentRepository.findByAppointmentDateBetween(sDate, eDate));
 
-        List<AppointmentResponse> appointmentResponses = appointmentsBetweenDate.stream().map(appointment -> {
-            var appointmentResponse = appointmentMapper.toDto(appointment);
-            appointmentResponse.setServices(appointment.getServices().stream().map(hospitalServiceMapper::toDto).collect(toSet()));
-
-            return appointmentResponse;
-        }).toList();
-
+        List<AppointmentResponse> appointmentResponses = appointmentsBetweenDateFuture.thenApply(appointments -> appointments.parallelStream().map(this::toAppointmentResponse).toList()).join();
 
         if (statues != null) {
-            appointmentResponses = appointmentResponses.stream()
-                    .filter(appointment -> statues.stream()
+            appointmentResponses = appointmentResponses.parallelStream()
+                    .filter(appointment -> statues.parallelStream()
                             .anyMatch(s -> s.equals(appointment.getStatus().name()))).toList();
         }
-
-
-        appointmentResponses = appointmentResponses.stream().peek(appointmentResponse -> appointmentResponse.setPets(new HashSet<>(petRepository
-                .findByAppointment_Id(appointmentResponse.getId())).stream()
-                .map(petMapper::toDto)
-                .collect(toSet()))).toList();
 
         log.info("Appointment Service: Filter appointments successful");
 
@@ -407,7 +372,21 @@ public class AppointmentService {
         }).join();
     }
 
-//    private AppointmentResponse toAppointmentResponse() {
-//
-//    }
+    /**
+     * @param appointment
+     * @return
+     */
+    @NotNull
+    private AppointmentResponse toAppointmentResponse(Appointment appointment) {
+        AppointmentResponse appointmentResponse = appointmentMapper.toDto(appointment);
+
+        appointmentResponse.setServices(appointment.getServices().parallelStream().map(hospitalServiceMapper::toDto).collect(toSet()));
+
+        appointmentResponse
+                .setPets(new HashSet<>(petRepository
+                        .findByAppointment_Id(appointment.getId()))
+                        .parallelStream().map(petMapper::toDto)
+                        .collect(toSet()));
+        return appointmentResponse;
+    }
 }

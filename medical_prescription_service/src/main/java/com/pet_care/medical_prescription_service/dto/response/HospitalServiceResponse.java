@@ -1,13 +1,13 @@
-package com.pet_care.appointment_service.dto.response;
+package com.pet_care.medical_prescription_service.dto.response;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 @Getter
 @Setter
-@Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class HospitalServiceResponse {
     String name;
@@ -15,5 +15,4 @@ public class HospitalServiceResponse {
     String description;
 
     Double price;
-
 }
