@@ -174,6 +174,7 @@ public class PrescriptionService {
                                 .name(medicineNameFuture.join())
                                 .calculateUnit(calculateNameFuture.join())
                                 .quantity(prescriptionDetail.getQuantity())
+                                .totalMoney(prescriptionDetail.getTotalMoney())
                                 .build();
 
                     }).collect(Collectors.toSet()));

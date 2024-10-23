@@ -16,4 +16,7 @@ public class MedicinePrescriptionResponse {
     Long quantity;
     @JsonProperty("calculate_unit")
     String calculateUnit;
+
+    @JsonProperty("total_money")
+    Double totalMoney;
 }
