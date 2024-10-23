@@ -48,7 +48,7 @@ public class Appointment {
     @Temporal(TemporalType.TIME)
     Date appointmentTime;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     Set<HospitalServiceEntity> services;
 
     @Enumerated(EnumType.STRING)
