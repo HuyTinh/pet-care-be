@@ -129,7 +129,7 @@ public class AppointmentService {
                 .map(petMapper::toDto)
                 .collect(toSet()));
 
-        appointmentResponse.setServices(existingAppointment.getServices().stream().map(HospitalServiceEntity::getName).collect(toSet()));
+        appointmentResponse.setServices(existingAppointment.getServices().stream().map(hospitalServiceMapper::toDto).collect(toSet()));
 
         log.info("Appointment Service: Get appointment by id successful");
 
@@ -207,7 +207,7 @@ public class AppointmentService {
                         .valueOf(status)).stream()
                 .map(appointment -> {
                     AppointmentResponse appointmentResponse = appointmentMapper.toDto(appointment);
-                    appointmentResponse.setServices(appointment.getServices().stream().map(HospitalServiceEntity::getName).collect(toSet()));
+                    appointmentResponse.setServices(appointment.getServices().stream().map(hospitalServiceMapper::toDto).collect(toSet()));
                     appointmentResponse
                             .setPets(new HashSet<>(petRepository
                                     .findByAppointment_Id(appointment.getId()))
@@ -239,7 +239,7 @@ public class AppointmentService {
                     .map(appointment -> {
                         AppointmentResponse appointmentResponse = appointmentMapper.toDto(appointment);
 
-                        appointmentResponse.setServices(appointment.getServices().stream().map(HospitalServiceEntity::getName).collect(toSet()));
+                        appointmentResponse.setServices(appointment.getServices().stream().map(hospitalServiceMapper::toDto).collect(toSet()));
 
                         appointmentResponse
                                 .setPets(new HashSet<>(petRepository
@@ -293,7 +293,7 @@ public class AppointmentService {
 
         List<AppointmentResponse> appointmentResponses = appointmentsBetweenDate.stream().map(appointment -> {
             var appointmentResponse = appointmentMapper.toDto(appointment);
-            appointmentResponse.setServices(appointment.getServices().stream().map(HospitalServiceEntity::getName).collect(toSet()));
+            appointmentResponse.setServices(appointment.getServices().stream().map(hospitalServiceMapper::toDto).collect(toSet()));
 
             return appointmentResponse;
         }).toList();
@@ -372,7 +372,7 @@ public class AppointmentService {
         }
 
         appointmentResponse.setPets(pets.stream().map(petMapper::toDto).collect(toSet()));
-        appointmentResponse.setServices(bookingService.stream().map(HospitalServiceEntity::getName).collect(toSet()));
+        appointmentResponse.setServices(bookingService.stream().map(hospitalServiceMapper::toDto).collect(toSet()));
 
         if (appointmentCreateRequest.getAccountId() == null) {
             appointmentResponse.setAccount("GUEST");
@@ -401,9 +401,13 @@ public class AppointmentService {
 
             appointmentResponse.setPets(petRepository.findByAppointment_Id(appointmentId).stream().map(petMapper::toDto).collect(toSet()));
 
-            appointmentResponse.setServices(appointment.getServices().stream().map(HospitalServiceEntity::getName).collect(toSet()));
+            appointmentResponse.setServices(appointment.getServices().stream().map(hospitalServiceMapper::toDto).collect(toSet()));
 
             return appointmentResponse;
         }).join();
     }
+
+//    private AppointmentResponse toAppointmentResponse() {
+//
+//    }
 }
