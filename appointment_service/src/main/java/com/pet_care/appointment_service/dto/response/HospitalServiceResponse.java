@@ -10,7 +10,12 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class HospitalServiceResponse {
+    Long id;
+
     String name;
 
     String description;
+
+    Double price;
+
 }

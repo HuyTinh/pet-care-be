@@ -24,4 +24,6 @@ public class HospitalServiceEntity {
     @Enumerated(EnumType.STRING)
     @Builder.Default
     HospitalServiceStatus status = HospitalServiceStatus.ACTIVE;
+
+    Double price;
 }
