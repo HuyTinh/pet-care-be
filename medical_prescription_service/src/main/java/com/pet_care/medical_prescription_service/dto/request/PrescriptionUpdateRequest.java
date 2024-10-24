@@ -9,14 +9,12 @@ import java.util.Set;
 @Getter
 @Setter
 @Builder
+@ToString
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class PrescriptionUpdateRequest {
     Long id;
-
-    @JsonProperty("appointment_id")
-    Long appointmentId;
 
     Set<String> services;
 
