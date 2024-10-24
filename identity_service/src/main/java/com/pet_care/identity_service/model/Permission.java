@@ -3,10 +3,16 @@ package com.pet_care.identity_service.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+import org.jetbrains.annotations.NotNull;
 
 import java.time.LocalDate;
+import java.util.Date;
 
 @Getter
 @Setter
@@ -19,8 +25,14 @@ public class Permission {
     @Id
     String name;
     String description;
-    @JsonIgnore
-    LocalDate createdAt;
-    @JsonIgnore
-    LocalDate updatedAt;
+
+    @NotNull
+    @Temporal(TemporalType.TIMESTAMP)
+    @CreationTimestamp
+    Date createdAt;
+
+    @NotNull
+    @Temporal(TemporalType.TIMESTAMP)
+    @UpdateTimestamp
+    Date updatedAt;
 }

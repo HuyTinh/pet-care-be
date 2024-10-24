@@ -5,8 +5,12 @@ import com.pet_care.identity_service.enums.Provide;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+import org.jetbrains.annotations.NotNull;
 
 import java.time.LocalDate;
+import java.util.Date;
 import java.util.Set;
 
 @Getter
@@ -29,8 +33,13 @@ public class Account {
     @Enumerated(EnumType.STRING)
     Provide provide;
 
-    @JsonIgnore
-    LocalDate createdAt;
-    @JsonIgnore
-    LocalDate updatedAt;
+    @NotNull
+    @Temporal(TemporalType.TIMESTAMP)
+    @CreationTimestamp
+    Date createdAt;
+
+    @NotNull
+    @Temporal(TemporalType.TIMESTAMP)
+    @UpdateTimestamp
+    Date updatedAt;
 }

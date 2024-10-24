@@ -3,6 +3,11 @@ package com.pet_care.appointment_service.model;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.Date;
 
 @Getter
 @Setter
@@ -27,4 +32,14 @@ public class Pet {
     @ManyToOne
     @JoinColumn(name = "appointment_id")
     Appointment appointment;
+
+    @NotNull
+    @CreationTimestamp
+    @Temporal(TemporalType.TIMESTAMP)
+    Date createdAt;
+
+    @NotNull
+    @UpdateTimestamp
+    @Temporal(TemporalType.TIMESTAMP)
+    Date updatedAt;
 }

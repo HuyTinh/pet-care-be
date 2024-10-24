@@ -1,13 +1,15 @@
 package com.pet_care.identity_service.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToMany;
+import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+import org.jetbrains.annotations.NotNull;
 
 import java.time.LocalDate;
+import java.util.Date;
 import java.util.Set;
 
 @Getter
@@ -26,8 +28,13 @@ public class Role {
     @ManyToMany
     Set<Permission> permissions;
 
-    @JsonIgnore
-    LocalDate createdAt;
-    @JsonIgnore
-    LocalDate updatedAt;
+    @NotNull
+    @Temporal(TemporalType.TIMESTAMP)
+    @CreationTimestamp
+    Date createdAt;
+
+    @NotNull
+    @Temporal(TemporalType.TIMESTAMP)
+    @UpdateTimestamp
+    Date updatedAt;
 }

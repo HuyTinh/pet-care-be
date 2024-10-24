@@ -5,6 +5,9 @@ import com.pet_care.customer_service.enums.Gender;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Date;
 
@@ -24,7 +27,6 @@ public class Customer {
 
     String lastName;
 
-    @JsonProperty("phone_number")
     String phoneNumber;
 
     String address;
@@ -40,4 +42,15 @@ public class Customer {
     Date birthDate;
 
     Long accountId;
+
+    @NotNull
+    @Temporal(TemporalType.TIMESTAMP)
+    @CreationTimestamp
+    Date createdAt;
+
+    @NotNull
+    @Temporal(TemporalType.TIMESTAMP)
+    @UpdateTimestamp
+    Date updatedAt;
+
 }

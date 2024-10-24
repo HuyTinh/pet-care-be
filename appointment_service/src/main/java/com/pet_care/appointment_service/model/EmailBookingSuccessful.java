@@ -1,10 +1,16 @@
 package com.pet_care.appointment_service.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.SuperBuilder;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.Date;
 
 @Getter
 @Setter
@@ -29,6 +35,16 @@ public class EmailBookingSuccessful extends SendTo {
 
     @JsonProperty("appointment_time")
     String appointmentTime;
+
+    @NotNull
+    @CreationTimestamp
+    @Temporal(TemporalType.TIMESTAMP)
+    Date createdAt;
+
+    @NotNull
+    @UpdateTimestamp
+    @Temporal(TemporalType.TIMESTAMP)
+    Date updatedAt;
 
     @NotNull
     public String getContent() {
