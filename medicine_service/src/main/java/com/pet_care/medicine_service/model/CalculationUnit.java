@@ -1,10 +1,12 @@
 package com.pet_care.medicine_service.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.Date;
 
 @Getter
 @Setter
@@ -20,4 +22,14 @@ public class CalculationUnit {
     String name;
 
     Boolean status;
+
+    @NotNull
+    @Temporal(TemporalType.TIMESTAMP)
+    @CreationTimestamp
+    Date createdAt;
+
+    @NotNull
+    @Temporal(TemporalType.TIMESTAMP)
+    @UpdateTimestamp
+    Date updatedAt;
 }

@@ -5,6 +5,9 @@ import com.pet_care.medicine_service.enums.MedicineStatus;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Date;
 import java.util.Set;
@@ -47,4 +50,14 @@ public class Medicine {
 
     @Builder.Default
     MedicineStatus status = MedicineStatus.ACTIVE;
+
+    @NotNull
+    @Temporal(TemporalType.TIMESTAMP)
+    @CreationTimestamp
+    Date createdAt;
+
+    @NotNull
+    @Temporal(TemporalType.TIMESTAMP)
+    @UpdateTimestamp
+    Date updatedAt;
 }

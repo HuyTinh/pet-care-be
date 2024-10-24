@@ -19,5 +19,4 @@ public class PrescriptionCreateRequest {
     Set<PetPrescriptionCreateRequest> details;
     @JsonProperty("total_money")
     Double totalMoney;
-
 }

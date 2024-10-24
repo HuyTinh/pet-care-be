@@ -5,6 +5,9 @@ import com.pet_care.bill_service.enums.PaymentMethod;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Date;
 
@@ -32,20 +35,13 @@ public class Invoice {
 
     InvoiceStatus status;
 
-    @Temporal(TemporalType.DATE)
+    @NotNull
+    @CreationTimestamp
+    @Temporal(TemporalType.TIMESTAMP)
     Date createdAt;
 
-    @Temporal(TemporalType.DATE)
+    @NotNull
+    @UpdateTimestamp
+    @Temporal(TemporalType.TIMESTAMP)
     Date updatedAt;
-
-    @PrePersist
-    protected void onCreate() {
-        createdAt = new Date();
-        updatedAt = new Date();
-    }
-
-    @PreUpdate
-    protected void onUpdate() {
-        updatedAt = new Date();
-    }
 }

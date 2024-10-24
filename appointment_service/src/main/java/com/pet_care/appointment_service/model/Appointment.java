@@ -6,6 +6,8 @@ import com.pet_care.appointment_service.enums.AppointmentStatus;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Date;
@@ -55,10 +57,12 @@ public class Appointment {
     AppointmentStatus status;
 
     @NotNull
-    @Builder.Default
-    Date createdAt = new Date();
+    @CreationTimestamp
+    @Temporal(TemporalType.TIMESTAMP)
+    Date createdAt;
 
     @NotNull
-    @Builder.Default
-    Date updatedAt = new Date();
+    @UpdateTimestamp
+    @Temporal(TemporalType.TIMESTAMP)
+    Date updatedAt;
 }

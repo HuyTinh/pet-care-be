@@ -4,6 +4,11 @@ import com.pet_care.medical_prescription_service.enums.PrescriptionStatus;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.Date;
 
 @Getter
 @Setter
@@ -24,4 +29,14 @@ public class Prescription {
     PrescriptionStatus status = PrescriptionStatus.APPROVED;
 
     Double totalMoney;
+
+    @NotNull
+    @Temporal(TemporalType.TIMESTAMP)
+    @CreationTimestamp
+    Date createdAt;
+
+    @NotNull
+    @Temporal(TemporalType.TIMESTAMP)
+    @UpdateTimestamp
+    Date updatedAt;
 }
