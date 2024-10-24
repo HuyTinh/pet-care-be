@@ -1,5 +1,9 @@
 package com.pet_care.medicine_service.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -22,6 +26,9 @@ public class Manufacture {
 
     Boolean status;
 
-    @OneToMany(mappedBy = "manufacture")
-    Set<Medicine> medicines;
+
+
+    @OneToMany(mappedBy = "manufacture", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    private Set<Medicine> medicines ;
 }

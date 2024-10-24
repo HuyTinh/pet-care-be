@@ -4,17 +4,26 @@ import com.pet_care.medicine_service.dto.request.MedicineCreateRequest;
 import com.pet_care.medicine_service.dto.request.MedicineUpdateRequest;
 import com.pet_care.medicine_service.dto.response.APIResponse;
 import com.pet_care.medicine_service.dto.response.MedicineResponse;
+import com.pet_care.medicine_service.enums.MedicineStatus;
 import com.pet_care.medicine_service.model.Medicine;
 import com.pet_care.medicine_service.service.MedicineService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
+@CrossOrigin("*")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("medicine")
@@ -22,7 +31,6 @@ import java.util.Set;
 public class MedicineController {
 
     @NotNull MedicineService medicineService;
-
     /**
      * @return
      */
@@ -59,10 +67,10 @@ public class MedicineController {
      * @param medicineCreateRequest
      * @return
      */
-    @PostMapping
-    public APIResponse<Medicine> createMedicine(@NotNull @RequestBody MedicineCreateRequest medicineCreateRequest) {
-        return APIResponse.<Medicine>builder()
-                .data(medicineService.createMedicine(medicineCreateRequest))
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public APIResponse<?> createMedicine(@NotNull @ModelAttribute MedicineCreateRequest medicineCreateRequest,@RequestPart("image_url") MultipartFile imageFile) throws IOException {
+        return APIResponse.builder()
+                .data(medicineService.createMedicine(medicineCreateRequest, imageFile))
                 .build();
     }
 
@@ -71,10 +79,10 @@ public class MedicineController {
      * @param medicineUpdateRequest
      * @return
      */
-    @PutMapping("/{medicineId}")
-    public APIResponse<Medicine> updateMedicine(@NotNull @PathVariable("medicineId") Long medicineId, @NotNull @RequestBody MedicineUpdateRequest medicineUpdateRequest) {
+    @PutMapping(value = "/{medicineId}",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public APIResponse<Medicine> updateMedicine(@NotNull @PathVariable("medicineId") Long medicineId, @NotNull @ModelAttribute MedicineUpdateRequest medicineUpdateRequest,@RequestPart(value = "image_url", required = false) MultipartFile imageFile) throws IOException {
         return APIResponse.<Medicine>builder()
-                .data(medicineService.updateMedicine(medicineId, medicineUpdateRequest))
+                .data(medicineService.updateMedicine(medicineId, medicineUpdateRequest,imageFile))
                 .build();
     }
 
@@ -91,33 +99,6 @@ public class MedicineController {
                 .build();
     }
 
-    /**
-     * Search medicines based on criteria and sort results
-     *
-     * @param searchQuery (Optional) part of medicine name or exact quantity
-     * @param manufacturingDate (Optional) filter by manufacturing date
-     * @param expiryDate (Optional) filter by expiry date
-     * @param status (Optional) filter by medicine status (ACTIVE, INACTIVE, etc.)
-     * @param minPrice (Optional) minimum price filter
-     * @param maxPrice (Optional) maximum price filter
-     * @param sortBy (Optional) field to sort by (name, price, quantity)
-     * @param sortOrder (Optional) order to sort (asc, desc)
-     * @return APIResponse with list of filtered and sorted medicines
-     */
-    @GetMapping("/search")
-    public APIResponse<List<MedicineResponse>> searchMedicines(
-            @RequestParam(value = "searchQuery", required = false) String searchQuery,
-            @RequestParam(value = "manufacturingDate", required = false) Date manufacturingDate,
-            @RequestParam(value = "expiryDate", required = false) Date expiryDate,
-            @RequestParam(value = "status", required = false) MedicineStatus status,
-            @RequestParam(value = "minPrice", required = false) Double minPrice,
-            @RequestParam(value = "maxPrice", required = false) Double maxPrice,
-            @RequestParam(value = "sortBy", required = false, defaultValue = "name") String sortBy,
-            @RequestParam(value = "sortOrder", required = false, defaultValue = "asc") String sortOrder
-    ) {
-        return APIResponse.<List<MedicineResponse>>builder()
-                .data(medicineService.searchMedicines(manufacturingDate, expiryDate, status, minPrice, maxPrice, searchQuery, sortBy, sortOrder))
-                .build();
-    }
+
 
 }

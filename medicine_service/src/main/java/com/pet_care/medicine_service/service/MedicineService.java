@@ -3,22 +3,31 @@ package com.pet_care.medicine_service.service;
 import com.pet_care.medicine_service.dto.request.MedicineCreateRequest;
 import com.pet_care.medicine_service.dto.request.MedicineUpdateRequest;
 import com.pet_care.medicine_service.dto.response.MedicineResponse;
+import com.pet_care.medicine_service.enums.MedicineStatus;
 import com.pet_care.medicine_service.exception.APIException;
 import com.pet_care.medicine_service.exception.ErrorCode;
 import com.pet_care.medicine_service.mapper.MedicineMapper;
+import com.pet_care.medicine_service.model.Manufacture;
 import com.pet_care.medicine_service.model.Medicine;
 import com.pet_care.medicine_service.repository.CalculationUnitRepository;
 import com.pet_care.medicine_service.repository.LocationRepository;
 import com.pet_care.medicine_service.repository.ManufactureRepository;
 import com.pet_care.medicine_service.repository.MedicineRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -39,6 +48,7 @@ public class MedicineService {
 
     @NotNull MedicineMapper medicineMapper;
 
+    @NotNull ImageUploadService imageUploadService;
     /**
      * @return
      */
@@ -81,8 +91,15 @@ public class MedicineService {
      */
     @NotNull
     @Transactional
-    public Medicine createMedicine(@NotNull MedicineCreateRequest medicineCreateRequest) {
+    public Medicine createMedicine(@NotNull MedicineCreateRequest medicineCreateRequest, MultipartFile imageFile) throws IOException {
         Medicine newMedicine = medicineMapper.toEntity(medicineCreateRequest);
+        if (imageFile != null && !imageFile.isEmpty()) {
+            String imageUrl = imageUploadService.uploadImage(imageFile);
+            newMedicine.setImage_url(imageUrl);
+        }
+        Manufacture manufacture = manufactureRepository.findById(medicineCreateRequest.getManufacture_id())
+                .orElseThrow(() -> new EntityNotFoundException("Manufacture not found"));
+        newMedicine.setManufacture(manufacture);
 
         newMedicine.setCalculationUnits(
                 new HashSet<>(calculationUnitRepository
@@ -106,17 +123,25 @@ public class MedicineService {
      */
     @NotNull
     @Transactional
-    public Medicine updateMedicine(@NotNull Long medicineId, @NotNull MedicineUpdateRequest medicineUpdateRequest) {
-        Medicine existingMedicine = medicineRepository.findById(medicineId).orElseThrow(() -> new APIException(ErrorCode.MEDICINE_NOT_FOUND));
+    public Medicine updateMedicine(@NotNull Long medicineId, @NotNull MedicineUpdateRequest medicineUpdateRequest, MultipartFile imageFile) throws IOException {
+        Medicine existingMedicine = medicineRepository.findById(medicineId)
+                .orElseThrow(() -> new APIException(ErrorCode.MEDICINE_NOT_FOUND));
 
+        // Check if the user uploaded a new image
+        if (imageFile != null && !imageFile.isEmpty()) {
+            // Upload the new image and update the existing medicine's image URL
+            String imageUrl = imageUploadService.uploadImage(imageFile);
+            existingMedicine.setImage_url(imageUrl);
+        }
+
+        // Update calculation units and locations
         existingMedicine.setCalculationUnits(
-                new HashSet<>(calculationUnitRepository
-                        .findAllById(medicineUpdateRequest.getCalculationUnits())));
+                new HashSet<>(calculationUnitRepository.findAllById(medicineUpdateRequest.getCalculationUnits())));
 
         existingMedicine.setLocations(
-                new HashSet<>(locationRepository
-                        .findAllById(medicineUpdateRequest.getLocations())));
+                new HashSet<>(locationRepository.findAllById(medicineUpdateRequest.getLocations())));
 
+        // Update the rest of the medicine fields
         medicineMapper.partialUpdate(medicineUpdateRequest, existingMedicine);
 
         Medicine updatedMedicine = medicineRepository.save(existingMedicine);
@@ -125,6 +150,7 @@ public class MedicineService {
 
         return updatedMedicine;
     }
+
 
     /**
      * @param medicineId
@@ -135,51 +161,6 @@ public class MedicineService {
         log.info("Delete medicine successful");
     }
 
-    /**
-     * Search medicines based on criteria and sort result
-     *
-     * @param manufacturingDate
-     * @param expiryDate
-     * @param status
-     * @param minPrice
-     * @param maxPrice
-     * @param searchQuery
-     * @param sortBy
-     * @param sortOrder
-     * @return list of filtered and sorted medicines
-     */
-    @NotNull
-    @Transactional(readOnly = true)
-    public List<MedicineResponse> searchMedicines(
-            Date manufacturingDate,
-            Date expiryDate,
-            MedicineStatus status,
-            Double minPrice,
-            Double maxPrice,
-            String searchQuery,
-            String sortBy,
-            String sortOrder
-    ) {
-        // Validate sort order and construct Sort object
-        Sort sort = Sort.by(Sort.Direction.fromString(sortOrder), sortBy);
 
-        // Perform the query using repository method
-        List<Medicine> medicines = medicineRepository.findByCriteria(
-                manufacturingDate,
-                expiryDate,
-                status,
-                minPrice,
-                maxPrice,
-                searchQuery,
-                sort
-        );
-
-        log.info("Search medicines with query: {}, sorting by: {} {}", searchQuery, sortBy, sortOrder);
-
-        // Convert entity list to DTO response
-        return medicines.stream()
-                .map(medicineMapper::toDto)
-                .collect(Collectors.toList());
-    }
 
 }

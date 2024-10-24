@@ -23,3 +23,8 @@ server:
   port: 8085
   servlet:
     context-path: /api/v1/medicine-service
+
+cloudinary:
+  cloud-name: dxowhxfwj
+  api-key: 493466681247413
+  api-secret: QXjt9-bbjJK_TDjpZsoLJsAQ2Rk
