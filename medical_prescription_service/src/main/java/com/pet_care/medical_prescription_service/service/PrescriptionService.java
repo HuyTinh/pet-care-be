@@ -36,15 +36,20 @@ import static java.util.stream.Collectors.toSet;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class PrescriptionService {
-    private final PetPrescriptionMapper petPrescriptionMapper;
+    @NotNull
+    PetPrescriptionMapper petPrescriptionMapper;
+
     @NotNull
     PrescriptionDetailMapper prescriptionDetailMapper;
 
-    @NotNull PrescriptionRepository PrescriptionRepository;
+    @NotNull
+    PrescriptionRepository PrescriptionRepository;
 
-    @NotNull PrescriptionMapper prescriptionMapper;
+    @NotNull
+    PrescriptionMapper prescriptionMapper;
 
-    @NotNull AppointmentClient appointmentClient;
+    @NotNull
+    AppointmentClient appointmentClient;
 
     @NotNull
     PrescriptionRepository prescriptionRepository;
@@ -144,18 +149,42 @@ public class PrescriptionService {
         Prescription existingPrescription = PrescriptionRepository.findById(prescriptionUpdateRequest.getId())
                 .orElseThrow(() -> new APIException(ErrorCode.PRESCRIPTION_NOT_FOUND));
 
-        petPrescriptionRepository.saveAll(prescriptionUpdateRequest.getDetails().stream().map(petPrescriptionUpdateRequest -> {
-            PetPrescription updatePetPrescription = PetPrescription.builder().build();
+        CompletableFuture<Void> prescriptionFuture = CompletableFuture.runAsync(() -> {
+            petPrescriptionRepository.saveAll(prescriptionUpdateRequest.getDetails().parallelStream().map(petPrescriptionUpdateRequest -> {
+                PetPrescription updatePetPrescription = petPrescriptionMapper.partialUpdate(petPrescriptionUpdateRequest, PetPrescription.builder().build());
 
-            if(petPrescriptionUpdateRequest.getId() != null){
-                PetPrescription existingPetPrescription = petPrescriptionRepository.findById(petPrescriptionUpdateRequest.getId()).orElseThrow(() -> new APIException(ErrorCode.PRESCRIPTION_NOT_FOUND));
+                if(petPrescriptionUpdateRequest.getId() != null){
+                    PetPrescription existingPetPrescription = petPrescriptionRepository.findById(petPrescriptionUpdateRequest.getId()).orElseThrow(() -> new APIException(ErrorCode.PRESCRIPTION_NOT_FOUND));
 
-                updatePetPrescription = petPrescriptionMapper.partialUpdate(petPrescriptionUpdateRequest, existingPetPrescription);
+                    updatePetPrescription = petPrescriptionMapper.partialUpdate(petPrescriptionUpdateRequest, existingPetPrescription);
+
+                    PetPrescription finalUpdatePetPrescription = updatePetPrescription;
+
+                    Set<PrescriptionDetail> updatePrescriptionDetails = petPrescriptionUpdateRequest.getMedicines().parallelStream().map(prescriptionDetailUpdateRequest -> {
+
+                        PrescriptionDetail prescriptionDetail = prescriptionDetailMapper.partialUpdate(prescriptionDetailUpdateRequest, PrescriptionDetail.builder().build());
+
+                        if(prescriptionDetailUpdateRequest.getId() != null){
+                            PrescriptionDetail existingPrescriptionDetail = prescriptionDetailRepository.findById(prescriptionDetailUpdateRequest.getId()).orElseThrow(() -> new APIException(ErrorCode.PRESCRIPTION_NOT_FOUND));
+
+                            prescriptionDetail = prescriptionDetailMapper.partialUpdate(prescriptionDetailUpdateRequest, existingPrescriptionDetail);
+                        }
+
+                        prescriptionDetail.setPetPrescription(finalUpdatePetPrescription);
+
+                        return prescriptionDetail;
+                    }).collect(toSet());
+
+                    updatePetPrescription.getMedicines().clear();
+
+                    updatePetPrescription.getMedicines().addAll(updatePrescriptionDetails);
                 }
-            return updatePetPrescription;
-        }).collect(toSet()));
 
-        return PrescriptionResponse.builder().build();
+                return updatePetPrescription;
+            }).collect(toSet()));
+        });
+
+        return prescriptionFuture.thenApply(v -> toPrescriptionResponse(prescriptionRepository.save(existingPrescription))).join();
     }
     /**
      * @param appointmentId
