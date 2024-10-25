@@ -12,7 +12,7 @@ import java.util.List;
 
 public interface PrescriptionRepository extends JpaRepository<Prescription, Long> {
 
-    @Query(value = "SELECT pr.id, pr.create_date, pr.note" +
+    @Query(value = "SELECT pr.id, pr.create_date, pr.note, pr.disease_name " +
             " FROM Prescription pr " +
             " JOIN pr.pet p " +
             " WHERE p.id = :id ")

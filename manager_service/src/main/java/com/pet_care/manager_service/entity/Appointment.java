@@ -1,6 +1,7 @@
 package com.pet_care.manager_service.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.pet_care.manager_service.enums.AppointmentStatus;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -31,8 +32,9 @@ public class Appointment {
     @Column(name = "status", nullable = false)
     boolean status;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "status_accept", nullable = false)
-    String status_accept;
+    AppointmentStatus status_accept;
 
     @ManyToOne
     @JoinColumn(name = "customer_id", nullable = false)

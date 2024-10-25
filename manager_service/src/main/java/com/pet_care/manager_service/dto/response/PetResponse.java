@@ -13,7 +13,6 @@ import java.util.Set;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class PetResponse {
-
     Long id;
     String name;
     String age;

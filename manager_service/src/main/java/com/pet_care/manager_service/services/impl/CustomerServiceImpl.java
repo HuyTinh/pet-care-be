@@ -102,24 +102,6 @@ public class CustomerServiceImpl implements CustomerService {
         return customerMapper.toCustomerResponse(customer);
     }
 
-    public ServiceResponse findServiceById(Long id) {
-        Services service = servicesRepository.findById(id)
-                .orElseThrow( () -> new AppException(ErrorCode.SERVICE_NOTFOUND));
-        return serviceMapper.toServiceResponse(service);
-    }
-
-    public PetResponse toPetResponseById(Long id) {
-        Pet pet = petRepository.findById(id)
-                .orElseThrow( () -> new AppException(ErrorCode.PET_NOTFOUND));
-        return PetResponse.builder()
-                .id(pet.getId())
-                .weight(pet.getWeight())
-                .age(pet.getAge())
-                .speciesResponse(convertToSpeciesResponse(pet))
-                .prescriptionResponses(convertPrescriptionByPetId(pet.getId()))
-                .build();
-    }
-
     public Set<PrescriptionResponse> convertPrescriptionByPetId(Long id){
 
         List<Object[]> pres = prescriptionRepository.getPrescriptionByPetId(id);
@@ -141,6 +123,7 @@ public class CustomerServiceImpl implements CustomerService {
                     .id((Long) obj[0])
                     .create_date((LocalDate) obj[1])
                     .note((String) obj[2])
+                    .disease_name((String) obj[3])
                     .prescriptionDetailResponse(presriptionDetailResponses)
                     .build()
             );

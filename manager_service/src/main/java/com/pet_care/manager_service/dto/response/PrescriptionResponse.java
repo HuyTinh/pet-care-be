@@ -14,6 +14,7 @@ import java.util.Set;
 public class PrescriptionResponse {
     Long id;
     LocalDate create_date;
+    String disease_name;
     String note;
     Set<PrescriptionDetailResponse> prescriptionDetailResponse;
 }
