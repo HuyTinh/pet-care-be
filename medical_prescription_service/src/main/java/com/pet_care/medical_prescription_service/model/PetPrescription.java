@@ -8,6 +8,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Set;
 
 @Getter
@@ -32,8 +33,8 @@ public class PetPrescription {
 
     String diagnosis;
 
-    @OneToMany(mappedBy = "petPrescription", fetch = FetchType.EAGER)
-    Set<PrescriptionDetail> medicines;
+    @OneToMany(mappedBy = "petPrescription", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+    Set<PrescriptionDetail> medicines = new HashSet<>();
 
     @Temporal(TemporalType.TIMESTAMP)
     @CreationTimestamp
