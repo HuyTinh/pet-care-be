@@ -18,7 +18,7 @@ public class PrescriptionUpdateRequest {
 
     Set<String> services;
 
-    Set<PetPrescriptionCreateRequest> details;
+    Set<PetPrescriptionUpdateRequest> details;
 
     @JsonProperty("total_money")
     Double totalMoney;
