@@ -27,10 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -141,9 +138,13 @@ public class MedicineService {
         existingMedicine.setLocations(
                 new HashSet<>(locationRepository.findAllById(medicineUpdateRequest.getLocations())));
 
+        if (medicineUpdateRequest.getManufacture_id() != null) {
+            Manufacture manufacture = manufactureRepository.findById(medicineUpdateRequest.getManufacture_id())
+                    .orElseThrow(() -> new APIException(ErrorCode.MANUFACTURE_NOT_FOUND));
+            existingMedicine.setManufacture(manufacture);
+        }
         // Update the rest of the medicine fields
         medicineMapper.partialUpdate(medicineUpdateRequest, existingMedicine);
-
         Medicine updatedMedicine = medicineRepository.save(existingMedicine);
 
         log.info("Update medicine: {}", updatedMedicine);
