@@ -97,7 +97,7 @@ public class PrescriptionService {
      * @param prescriptionCreateRequest
      * @return
      */
-    @Transactional(readOnly = true)
+    @Transactional
     public PrescriptionResponse createPrescription(@NotNull PrescriptionCreateRequest prescriptionCreateRequest) {
         Prescription newPrescription = prescriptionMapper
                 .toEntity(prescriptionCreateRequest);
@@ -139,32 +139,23 @@ public class PrescriptionService {
      * @param prescriptionUpdateRequest
      * @return
      */
-    @Transactional(readOnly = true)
+    @Transactional
     public PrescriptionResponse updatePrescription(@NotNull PrescriptionUpdateRequest prescriptionUpdateRequest) {
         Prescription existingPrescription = PrescriptionRepository.findById(prescriptionUpdateRequest.getId())
                 .orElseThrow(() -> new APIException(ErrorCode.PRESCRIPTION_NOT_FOUND));
 
-        CompletableFuture.supplyAsync(() -> appointmentClient.updateAppointmentService(existingPrescription.getAppointmentId(), prescriptionUpdateRequest.getServices()));
+        petPrescriptionRepository.saveAll(prescriptionUpdateRequest.getDetails().stream().map(petPrescriptionUpdateRequest -> {
+            PetPrescription updatePetPrescription = PetPrescription.builder().build();
 
-        List<PetPrescription> existingPetPrescription = petPrescriptionRepository.findAllByPrescriptionId(prescriptionUpdateRequest.getId());
+            if(petPrescriptionUpdateRequest.getId() != null){
+                PetPrescription existingPetPrescription = petPrescriptionRepository.findById(petPrescriptionUpdateRequest.getId()).orElseThrow(() -> new APIException(ErrorCode.PRESCRIPTION_NOT_FOUND));
 
-        CompletableFuture<Void> prescriptionDetailFuture = CompletableFuture.runAsync(() -> {
-            prescriptionDetailRepository.deleteAllByPetPrescriptionIdIn(Set.of(1L));
+                updatePetPrescription = petPrescriptionMapper.partialUpdate(petPrescriptionUpdateRequest, existingPetPrescription);
+                }
+            return updatePetPrescription;
+        }).collect(toSet()));
 
-            prescriptionUpdateRequest.getDetails().parallelStream().peek(petPrescriptionCreateRequest -> {
-                prescriptionDetailRepository.saveAll(petPrescriptionCreateRequest.getMedicines().parallelStream().map(prescriptionDetailMapper::toEntity).collect(toSet()));
-            });
-        });
-
-        CompletableFuture<Void> petPrescriptionFuture = CompletableFuture.runAsync(() -> {
-            petPrescriptionRepository.deleteByPetIdIn(prescriptionUpdateRequest.getDetails().stream().map(PetPrescriptionCreateRequest::getPetId).collect(toSet()));
-
-            petPrescriptionRepository.saveAll(prescriptionUpdateRequest.getDetails().parallelStream().map(petPrescriptionMapper::toEntity).collect(toSet()));
-        });
-
-        return CompletableFuture.allOf(prescriptionDetailFuture, petPrescriptionFuture).thenApply(v -> {
-            return toPrescriptionResponse(existingPrescription);
-        }).join();
+        return PrescriptionResponse.builder().build();
     }
     /**
      * @param appointmentId
@@ -212,6 +203,7 @@ public class PrescriptionService {
                     }).collect(Collectors.toSet()));
 
                     return PetPrescriptionResponse.builder()
+                            .id(petPrescription.getId())
                             .pet(petFuture.join())
                             .note(petPrescription.getNote())
                             .diagnosis(petPrescription.getDiagnosis())

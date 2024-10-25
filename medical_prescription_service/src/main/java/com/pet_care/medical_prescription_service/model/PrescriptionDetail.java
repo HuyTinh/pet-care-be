@@ -37,12 +37,10 @@ public class PrescriptionDetail {
     @JoinColumn(name = "pet_prescriptions_id")
     PetPrescription petPrescription;
 
-    @NotNull
     @Temporal(TemporalType.TIMESTAMP)
     @CreationTimestamp
     Date createdAt;
 
-    @NotNull
     @Temporal(TemporalType.TIMESTAMP)
     @UpdateTimestamp
     Date updatedAt;

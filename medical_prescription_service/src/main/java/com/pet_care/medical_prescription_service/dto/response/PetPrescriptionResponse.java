@@ -12,6 +12,7 @@ import java.util.Set;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class PetPrescriptionResponse {
+    Long id;
     PetResponse pet;
     String note;
     String diagnosis;

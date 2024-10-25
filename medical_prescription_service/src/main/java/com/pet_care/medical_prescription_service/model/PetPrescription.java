@@ -35,12 +35,10 @@ public class PetPrescription {
     @OneToMany(mappedBy = "petPrescription", fetch = FetchType.EAGER)
     Set<PrescriptionDetail> medicines;
 
-    @NotNull
     @Temporal(TemporalType.TIMESTAMP)
     @CreationTimestamp
     Date createdAt;
 
-    @NotNull
     @Temporal(TemporalType.TIMESTAMP)
     @UpdateTimestamp
     Date updatedAt;
