@@ -13,7 +13,6 @@ public interface MedicineMapper {
      * @return
      */
     @Mapping(target = "calculationUnits", ignore = true)
-    @Mapping(target = "manufacture", ignore = true)
     @Mapping(target = "locations", ignore = true)
     Medicine toEntity(MedicineCreateRequest medicineCreateRequest);
 
@@ -21,6 +20,7 @@ public interface MedicineMapper {
      * @param medicine
      * @return
      */
+    @Mapping(target = "manufacture", source = "manufacture")
     MedicineResponse toDto(Medicine medicine);
 
     /**
