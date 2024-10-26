@@ -19,8 +19,8 @@ public class AppointmentHomeDashboardTableResponse {
     LocalDate appointmentDate;
     LocalTime appointmentTime;
     CustomerPrescriptionResponse customerPrescriptionResponse;
-    Set<PetPrescriptionResponse> petPrescriptionResponses;
+    Set<PetResponse> petResponses;
     ProfilesDoctorResponse profilesDoctorResponse;
     AppointmentStatus appointmentStatus;
-    Set<PrescriptionResponse> prescriptionResponses;
+//    Set<PrescriptionResponse> prescriptionResponses;
 }

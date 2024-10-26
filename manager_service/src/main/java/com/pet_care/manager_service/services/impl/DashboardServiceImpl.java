@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -162,6 +163,7 @@ public class DashboardServiceImpl implements DashboardService {
                 .build();
     }
 
+    @Override
     public Set<AppointmentHomeDashboardTableResponse> listAppointmentHomeDashboard(){
         LocalDate now = LocalDate.now();
         List<Appointment> listApp = appointmentRepository.getAllAppointmentToDay(now);
@@ -178,18 +180,17 @@ public class DashboardServiceImpl implements DashboardService {
                 .appointmentId(appointment.getId())
                 .appointmentDate(appointment.getAppointment_date())
                 .appointmentTime(appointment.getAppointment_hour())
-                .petPrescriptionResponses(petPrescriptionResponses(appointment))
+                .petResponses(petResponses(appointment))
                 .customerPrescriptionResponse(customerPrescriptionResponse(appointment))
                 .profilesDoctorResponse(profilesDoctorResponse(appointment))
                 .appointmentStatus(appointment.getStatus_accept())
-                .prescriptionResponses(prescriptionResponse(appointment))
                 .build();
     }
 
-    public Set<PetPrescriptionResponse> petPrescriptionResponses(Appointment appointment){
+    public Set<PetResponse> petResponses(Appointment appointment){
         Customer customer = appointment.getCustomer();
         Set<Pet> pets = customer.getPets();
-        Set<PetPrescriptionResponse> petPrescriptionResponses = new HashSet<>();
+        Set<PetResponse> petResponses = new HashSet<>();
         for(Pet pet : pets){
 //            Pet p = petRepository.findById(pet.getId()).get();
             Species species = pet.getSpecies();
@@ -197,17 +198,18 @@ public class DashboardServiceImpl implements DashboardService {
                     .id(pet.getId())
                     .name(species.getName())
                     .build();
-            petPrescriptionResponses.add(
-                    PetPrescriptionResponse.builder()
+            petResponses.add(
+                    PetResponse.builder()
                         .id(pet.getId())
                         .name(pet.getName())
                         .weight(pet.getWeight())
                         .age(pet.getAge())
                         .speciesResponse(speciesResponse)
+                        .prescriptionResponses(prescriptionByPetId(pet.getId()))
                         .build()
             );
         }
-        return petPrescriptionResponses;
+        return petResponses;
     }
 
     public CustomerPrescriptionResponse customerPrescriptionResponse(Appointment appointment){
@@ -225,15 +227,26 @@ public class DashboardServiceImpl implements DashboardService {
         long profileId = 0;
         for(Pet pet : pets){
             Prescription prescription = pet.getPrescriptions();
+            if(prescription == null){
+                Profile profile = new Profile();
+                System.out.println("Check profiles 1: " + profile);
+                continue;
+            }
             Profile profile = prescription.getProfile();
             profileId = profile.getId();
-            break;
+            System.out.println("Check profiles 2: " + profile);
         }
-        Profile profile = profileRepository.findById(profileId).get();
+        Profile prf = new Profile();
+        Optional<Profile> profile = profileRepository.findById(profileId);
+        if (profile.isPresent())
+        {
+            prf = profile.get();
+        }
+        System.out.println("Check profiles 3: " + profile);
         return ProfilesDoctorResponse.builder()
-                .id(profile.getId())
-                .first_name(profile.getFirst_name())
-                .last_name(profile.getLast_name())
+                .id(prf.getId())
+                .first_name(prf.getFirst_name())
+                .last_name(prf.getLast_name())
                 .build();
     }
 
@@ -280,5 +293,34 @@ public class DashboardServiceImpl implements DashboardService {
                 .quantity(prescription_details.getQuantity())
                 .medicineResponse(medicineResponse)
                 .build();
+    }
+
+    public Set<PrescriptionResponse> prescriptionByPetId(Long id) {
+
+        List<Object[]> pres = prescriptionRepository.getPrescriptionByPetId(id);
+        if (pres == null) {
+            throw new AppException(ErrorCode.PRESCRIPTION_NOTFOUND);
+        }
+        Set<PrescriptionDetailResponse> presriptionDetailResponses;
+        Set<PrescriptionResponse> prescriptionResponses = new HashSet<>();
+        for (Object[] obj : pres) {
+            Prescription prescription = prescriptionRepository.findById((Long) obj[0]).get();
+            List<Prescription_Details> prescription_details = prescriptionDetailRepository.findByPrescription(prescription);
+            System.out.println("Check prescription_details : " + prescription_details.size());
+//
+            presriptionDetailResponses = prescription_details.stream()
+                    .map(this::convertToPrescriptionDetailResponse)
+                    .collect(Collectors.toSet());
+
+            prescriptionResponses.add(PrescriptionResponse.builder()
+                    .id((Long) obj[0])
+                    .create_date((LocalDate) obj[1])
+                    .note((String) obj[2])
+                    .disease_name((String) obj[3])
+                    .prescriptionDetailResponse(presriptionDetailResponses)
+                    .build()
+            );
+        }
+        return prescriptionResponses;
     }
 }

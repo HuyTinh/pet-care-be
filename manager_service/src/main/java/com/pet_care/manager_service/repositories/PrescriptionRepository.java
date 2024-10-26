@@ -27,6 +27,7 @@ public interface PrescriptionRepository extends JpaRepository<Prescription, Long
             "        JOIN pets pe on pr.pet_id = pe.id " +
             "        JOIN species sp on pe.species_id = sp.id " +
             "        JOIN customers cts on pe.customer_id = cts.id " +
-            "    WHERE pr.create_date = :date AND pr.status = true ", nativeQuery = true)
+            "    WHERE pr.create_date = :date AND pr.status = true " +
+            "    ORDER BY pr.id DESC ", nativeQuery = true)
     List<Object[]> getPrescriptionToday(@Param("date")LocalDate date);
 }

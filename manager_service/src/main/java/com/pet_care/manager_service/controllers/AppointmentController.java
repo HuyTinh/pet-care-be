@@ -1,5 +1,7 @@
 package com.pet_care.manager_service.controllers;
 
+import com.pet_care.manager_service.dto.response.ApiResponse;
+import com.pet_care.manager_service.dto.response.AppointmentHomeDashboardTableResponse;
 import com.pet_care.manager_service.entity.Appointment;
 import com.pet_care.manager_service.services.impl.AppointmentServiceImpl;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -7,7 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping("management/appointment")
@@ -16,28 +20,19 @@ public class AppointmentController {
     @Autowired
     AppointmentServiceImpl appointmentService;
 
-    @GetMapping
-    public ResponseEntity<List<Appointment>> getAllAppointment(){
-        return ResponseEntity.ok(appointmentService.getAllAppointment());
-    }
-
-    @GetMapping("/{appointmentId}")
-    public ResponseEntity<Appointment> getById(@PathVariable("appointmentId") int appointmentId){
-        return ResponseEntity.ok(new Appointment());
-    }
-
-    @PostMapping
-    public ResponseEntity<Appointment> create(@RequestBody Appointment appointment){
-        return ResponseEntity.ok(appointmentService.save(appointment));
-    }
-
-    @PutMapping("{id}")
-    public ResponseEntity<Appointment> update(@PathVariable int id,@RequestBody Appointment appointment){
-        return ResponseEntity.ok(new Appointment());
-    }
-
-    @DeleteMapping("{id}")
-    public ResponseEntity<Appointment> delete(@PathVariable int id){
-        return ResponseEntity.ok(new Appointment());
+    @GetMapping("/search")
+    public ResponseEntity<ApiResponse<Set<AppointmentHomeDashboardTableResponse>>> searchAppointment(
+            @RequestParam(required = false) LocalDate create_date,
+            @RequestParam(required = false) Boolean status,
+            @RequestParam(required = false) String status_accept,
+            @RequestParam(required = false) LocalDate from_date,
+            @RequestParam(required = false) LocalDate to_date,
+            @RequestParam(required = false) String search_query
+    ) {
+        Set<AppointmentHomeDashboardTableResponse> responses = appointmentService.searchAppointment(create_date, status, status_accept, from_date, to_date, search_query);
+        if(responses.isEmpty()){
+            return ResponseEntity.ok(new ApiResponse<>(2000, "No have Appointment", responses));
+        }
+        return ResponseEntity.ok(new ApiResponse<>(2000, "Find get Appointment", responses));
     }
 }
