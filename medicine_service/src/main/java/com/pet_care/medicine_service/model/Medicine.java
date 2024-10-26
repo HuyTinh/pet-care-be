@@ -1,5 +1,8 @@
 package com.pet_care.medicine_service.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.pet_care.medicine_service.enums.MedicineStatus;
 import jakarta.persistence.*;
@@ -18,6 +21,7 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity(name = "medicines")
+@ToString
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Medicine {
     @Id
@@ -31,6 +35,11 @@ public class Medicine {
 
     @JsonProperty("expiry_date")
     Date expiryDate;
+
+    @JsonProperty("date_import")
+    Date dateImport;
+
+    String image_url;
 
     Integer quantity;
 
