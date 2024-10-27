@@ -1,6 +1,5 @@
 package com.pet_care.identity_service.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Temporal;
@@ -11,7 +10,6 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.jetbrains.annotations.NotNull;
 
-import java.time.LocalDate;
 import java.util.Date;
 
 @Getter

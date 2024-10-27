@@ -1,6 +1,5 @@
 package com.pet_care.identity_service.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.pet_care.identity_service.enums.Provide;
 import jakarta.persistence.*;
 import lombok.*;
@@ -9,7 +8,6 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.jetbrains.annotations.NotNull;
 
-import java.time.LocalDate;
 import java.util.Date;
 import java.util.Set;
 

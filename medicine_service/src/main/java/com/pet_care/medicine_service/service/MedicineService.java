@@ -4,7 +4,6 @@ import com.pet_care.medicine_service.client.UploadImageClient;
 import com.pet_care.medicine_service.dto.request.MedicineCreateRequest;
 import com.pet_care.medicine_service.dto.request.MedicineUpdateRequest;
 import com.pet_care.medicine_service.dto.response.MedicineResponse;
-import com.pet_care.medicine_service.enums.MedicineStatus;
 import com.pet_care.medicine_service.exception.APIException;
 import com.pet_care.medicine_service.exception.ErrorCode;
 import com.pet_care.medicine_service.mapper.MedicineMapper;
@@ -16,21 +15,19 @@ import com.pet_care.medicine_service.repository.CalculationUnitRepository;
 import com.pet_care.medicine_service.repository.LocationRepository;
 import com.pet_care.medicine_service.repository.ManufactureRepository;
 import com.pet_care.medicine_service.repository.MedicineRepository;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -49,6 +46,7 @@ public class MedicineService {
     @NotNull MedicineMapper medicineMapper;
 
     @NotNull UploadImageClient uploadImageClient;
+
     /**
      * @return
      */
@@ -151,13 +149,16 @@ public class MedicineService {
 
 
     private void findAndSetManufactureById(Long manufactureId, Medicine medicine) {
-        Manufacture manufacture = manufactureRepository.findById(manufactureId).orElseThrow(() -> new APIException(ErrorCode.MANUFACTURE_NOT_FOUND));
+        Manufacture manufacture = manufactureRepository
+                .findById(manufactureId)
+                .orElseThrow(() -> new APIException(ErrorCode.MANUFACTURE_NOT_FOUND));
 
         medicine.setManufacture(manufacture);
     }
 
     private void findAllAndSetLocationByIdIn(Set<Long> locationIds, Medicine medicine) {
-        Set<Location> locations = new HashSet<>(locationRepository.findAllById(locationIds));
+        Set<Location> locations = new HashSet<>
+                (locationRepository.findAllById(locationIds));
 
         medicine.setLocations(locations);
     }
