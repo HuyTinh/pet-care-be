@@ -17,7 +17,6 @@ import java.util.Set;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class MedicineUpdateRequest {
 
@@ -45,7 +44,8 @@ public class MedicineUpdateRequest {
     @JsonProperty("calculation_units")
     Set<Long> calculationUnits;
 
-    Long manufacture_id;
+    @JsonProperty("manufacture_id")
+    Long manufactureId;
 
     @JsonProperty("locations")
     Set<Long> locations;

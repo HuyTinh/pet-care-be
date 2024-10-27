@@ -130,12 +130,13 @@ public class PrescriptionService {
             val.getMedicines().forEach(medicine -> {
                 medicine.setPetPrescription(val);
             });
-            prescriptionDetailRepository.saveAll(val.getMedicines()); // Sử dụng saveAll cho hiệu suất tốt hơn
+            prescriptionDetailRepository.saveAll(val.getMedicines());
         });
 
         PrescriptionResponse prescriptionResponse = toPrescriptionResponse(newPrescription);
 
-        prescriptionResponse.setAppointmentResponse(appointmentClient.updateAppointmentService(prescriptionCreateRequest.getAppointmentId(), prescriptionCreateRequest.getServices()).getData());
+        prescriptionResponse.setAppointmentResponse(appointmentClient
+                .updateAppointmentService(prescriptionCreateRequest.getAppointmentId(), prescriptionCreateRequest.getServices()).getData());
 
         return prescriptionResponse;
     }
@@ -146,23 +147,37 @@ public class PrescriptionService {
      */
     @Transactional
     public PrescriptionResponse updatePrescription(@NotNull PrescriptionUpdateRequest prescriptionUpdateRequest) {
-        Prescription existingPrescription = PrescriptionRepository.findById(prescriptionUpdateRequest.getId())
+        Prescription existingPrescription = PrescriptionRepository.findById
+                        (prescriptionUpdateRequest.getId())
                 .orElseThrow(() -> new APIException(ErrorCode.PRESCRIPTION_NOT_FOUND));
 
+        appointmentClient.updateAppointmentService
+                (prescriptionUpdateRequest.getId(), prescriptionUpdateRequest.getServices());
+
         CompletableFuture<Void> prescriptionFuture = CompletableFuture.runAsync(() -> {
-            petPrescriptionRepository.saveAll(prescriptionUpdateRequest.getDetails().parallelStream().map(petPrescriptionUpdateRequest -> {
-                PetPrescription updatePetPrescription = petPrescriptionMapper.partialUpdate(petPrescriptionUpdateRequest, PetPrescription.builder().build());
+            petPrescriptionRepository.saveAll(prescriptionUpdateRequest.getDetails()
+                    .parallelStream().map(petPrescriptionUpdateRequest -> {
+                PetPrescription updatePetPrescription = petPrescriptionMapper
+                        .partialUpdate
+                                (petPrescriptionUpdateRequest, PetPrescription.builder().build());
 
                 if(petPrescriptionUpdateRequest.getId() != null){
-                    PetPrescription existingPetPrescription = petPrescriptionRepository.findById(petPrescriptionUpdateRequest.getId()).orElseThrow(() -> new APIException(ErrorCode.PRESCRIPTION_NOT_FOUND));
+                    PetPrescription existingPetPrescription = petPrescriptionRepository
+                            .findById(petPrescriptionUpdateRequest.getId())
+                            .orElseThrow(() -> new APIException(ErrorCode.PRESCRIPTION_NOT_FOUND));
 
-                    updatePetPrescription = petPrescriptionMapper.partialUpdate(petPrescriptionUpdateRequest, existingPetPrescription);
+                    updatePetPrescription = petPrescriptionMapper
+                            .partialUpdate(petPrescriptionUpdateRequest, existingPetPrescription);
 
                     PetPrescription finalUpdatePetPrescription = updatePetPrescription;
 
-                    Set<PrescriptionDetail> updatePrescriptionDetails = petPrescriptionUpdateRequest.getMedicines().parallelStream().map(prescriptionDetailUpdateRequest -> {
+                    Set<PrescriptionDetail> updatePrescriptionDetails = petPrescriptionUpdateRequest
+                            .getMedicines().parallelStream()
+                            .map(prescriptionDetailUpdateRequest -> {
 
-                        PrescriptionDetail prescriptionDetail = prescriptionDetailMapper.partialUpdate(prescriptionDetailUpdateRequest, PrescriptionDetail.builder().build());
+                        PrescriptionDetail prescriptionDetail = prescriptionDetailMapper
+                                .partialUpdate
+                                        (prescriptionDetailUpdateRequest, PrescriptionDetail.builder().build());
 
                         if(prescriptionDetailUpdateRequest.getId() != null){
                             PrescriptionDetail existingPrescriptionDetail = prescriptionDetailRepository.findById(prescriptionDetailUpdateRequest.getId()).orElseThrow(() -> new APIException(ErrorCode.PRESCRIPTION_NOT_FOUND));
@@ -184,7 +199,8 @@ public class PrescriptionService {
             }).collect(toSet()));
         });
 
-        return prescriptionFuture.thenApply(v -> toPrescriptionResponse(prescriptionRepository.save(existingPrescription))).join();
+        return prescriptionFuture.thenApply(v ->
+                toPrescriptionResponse(prescriptionRepository.save(existingPrescription))).join();
     }
     /**
      * @param appointmentId
@@ -192,7 +208,8 @@ public class PrescriptionService {
      */
     @Transactional(readOnly = true)
     public PrescriptionResponse getPrescriptionByAppointmentId(@NotNull Long appointmentId) {
-        Prescription existingPrescription = prescriptionRepository.findByAppointmentId(appointmentId);
+        Prescription existingPrescription = prescriptionRepository
+                .findByAppointmentId(appointmentId);
 
         return toPrescriptionResponse(existingPrescription);
     }
@@ -202,53 +219,68 @@ public class PrescriptionService {
      * @return
      */
     private PrescriptionResponse toPrescriptionResponse(Prescription prescription) {
-        CompletableFuture<AppointmentResponse> appointmentFuture = CompletableFuture.supplyAsync(() -> appointmentClient.getAppointmentById(prescription.getAppointmentId()).getData());
+        CompletableFuture<AppointmentResponse> appointmentFuture =
+                CompletableFuture.supplyAsync(() -> appointmentClient.getAppointmentById(prescription.getAppointmentId()).getData());
 
-        CompletableFuture<Set<PetPrescriptionResponse>> petPrescriptionResponses = CompletableFuture.supplyAsync(() -> petPrescriptionRepository.findAllByPrescriptionId(prescription.getId()).parallelStream().map(
-                petPrescription -> {
+        CompletableFuture<Set<PetPrescriptionResponse>> petPrescriptionResponsesFuture =
+                CompletableFuture.supplyAsync(() -> petPrescriptionRepository.findAllByPrescriptionId(prescription.getId()).parallelStream()
+                        .map(petPrescription -> {
 
-                    List<PrescriptionDetail> prescriptionDetails = new ArrayList<>(petPrescription.getMedicines());
+                            CompletableFuture<List<PrescriptionDetail>> prescriptionDetailsFuture =
+                                    CompletableFuture.supplyAsync(() -> new ArrayList<>(petPrescription.getMedicines()));
 
-                    CompletableFuture<PetResponse> petFuture = CompletableFuture.supplyAsync(() -> appointmentClient.getPetById(petPrescription.getPetId()).getData());
+                            CompletableFuture<PetResponse> petFuture =
+                                    CompletableFuture.supplyAsync(() -> appointmentClient
+                                            .getPetById(petPrescription.getPetId()).getData());
 
-                    CompletableFuture<List<MedicineResponse>> medicinesFuture = CompletableFuture.supplyAsync(() -> medicineClient.getMedicineInIds(prescriptionDetails.parallelStream().map(PrescriptionDetail::getMedicineId).collect(toSet())).getData());
+                            CompletableFuture<List<MedicineResponse>> medicinesFuture = prescriptionDetailsFuture.thenApply(prescriptionDetails ->
+                                    medicineClient.getMedicineInIds(prescriptionDetails.parallelStream().map(PrescriptionDetail::getMedicineId).collect(Collectors.toSet())).getData()
+                            );
 
-                    CompletableFuture<List<CalculationUnitResponse>> calculateFuture = CompletableFuture.supplyAsync(() -> medicineClient.getCalculationUnitByIds(prescriptionDetails.parallelStream().map(PrescriptionDetail::getCalculationId).collect(toSet())).getData());
+                            CompletableFuture<List<CalculationUnitResponse>> calculateFuture = prescriptionDetailsFuture.thenApply(prescriptionDetails ->
+                                    medicineClient.getCalculationUnitByIds(prescriptionDetails.parallelStream().map(PrescriptionDetail::getCalculationId).collect(Collectors.toSet())).getData()
+                            );
 
-                    CompletableFuture<Set<MedicinePrescriptionResponse>> medicinePrescriptionResponses = CompletableFuture.supplyAsync(() -> prescriptionDetails.parallelStream().map(prescriptionDetail -> {
+                            CompletableFuture<Set<MedicinePrescriptionResponse>> medicinePrescriptionResponsesFuture = prescriptionDetailsFuture.thenCompose(prescriptionDetails ->
+                                    CompletableFuture.allOf(medicinesFuture, calculateFuture).thenApply(v ->
+                                            prescriptionDetails.parallelStream().map(prescriptionDetail -> {
+                                                String medicineName = medicinesFuture.join().stream()
+                                                        .filter(medicineResponse -> Objects.equals(medicineResponse.getId(), prescriptionDetail.getMedicineId()))
+                                                        .findFirst()
+                                                        .map(MedicineResponse::getName)
+                                                        .orElse("Unknown Medicine"); // Handle default case
 
-                        CompletableFuture<String> medicineNameFuture = CompletableFuture.supplyAsync(() -> medicinesFuture.join().parallelStream().filter(medicineResponse -> Objects.equals(medicineResponse.getId(), prescriptionDetail.getMedicineId())).findFirst().get().getName());
+                                                String calculateName = calculateFuture.join().stream()
+                                                        .filter(calculationUnitResponse -> Objects.equals(calculationUnitResponse.getId(), prescriptionDetail.getCalculationId()))
+                                                        .findFirst()
+                                                        .map(CalculationUnitResponse::getName)
+                                                        .orElse("Unknown Unit"); // Handle default case
 
-                        CompletableFuture<String> calculateNameFuture = CompletableFuture.supplyAsync(() -> calculateFuture.join().parallelStream().filter(calculationUnitResponse -> Objects.equals(calculationUnitResponse.getId(), prescriptionDetail.getCalculationId())).findFirst().get().getName());
+                                                return MedicinePrescriptionResponse.builder()
+                                                        .id(prescriptionDetail.getMedicineId())
+                                                        .name(medicineName)
+                                                        .calculateUnit(calculateName)
+                                                        .quantity(prescriptionDetail.getQuantity())
+                                                        .totalMoney(prescriptionDetail.getTotalMoney())
+                                                        .build();
+                                            }).collect(Collectors.toSet())
+                                    )
+                            );
 
-                        return MedicinePrescriptionResponse.builder()
-                                .id(prescriptionDetail.getMedicineId())
-                                .name(medicineNameFuture.join())
-                                .calculateUnit(calculateNameFuture.join())
-                                .quantity(prescriptionDetail.getQuantity())
-                                .totalMoney(prescriptionDetail.getTotalMoney())
-                                .build();
+                            return PetPrescriptionResponse.builder()
+                                    .id(petPrescription.getId())
+                                    .pet(petFuture.join())
+                                    .note(petPrescription.getNote())
+                                    .diagnosis(petPrescription.getDiagnosis())
+                                    .medicines(medicinePrescriptionResponsesFuture.join())
+                                    .build();
+                        }).collect(Collectors.toSet()));
 
-                    }).collect(Collectors.toSet()));
-
-                    return PetPrescriptionResponse.builder()
-                            .id(petPrescription.getId())
-                            .pet(petFuture.join())
-                            .note(petPrescription.getNote())
-                            .diagnosis(petPrescription.getDiagnosis())
-                            .medicines(medicinePrescriptionResponses.join())
-                            .build();
-                }
-        ).collect(toSet()));
-
-        return CompletableFuture.allOf(appointmentFuture, petPrescriptionResponses).thenApply(v -> {
-            CompletableFuture<PrescriptionResponse> prescriptionResponseFuture = CompletableFuture.supplyAsync(() -> prescriptionMapper.toResponse(prescription));
-
-            return prescriptionResponseFuture.thenApply(prescriptionResponse -> {
-                prescriptionResponse.setAppointmentResponse(appointmentFuture.join());
-                prescriptionResponse.setDetails(petPrescriptionResponses.join());
-                return prescriptionResponse;
-            }).join();
+        return CompletableFuture.allOf(appointmentFuture, petPrescriptionResponsesFuture).thenApply(v -> {
+            PrescriptionResponse prescriptionResponse = prescriptionMapper.toResponse(prescription);
+            prescriptionResponse.setAppointmentResponse(appointmentFuture.join());
+            prescriptionResponse.setDetails(petPrescriptionResponsesFuture.join());
+            return prescriptionResponse;
         }).join();
     }
 }
