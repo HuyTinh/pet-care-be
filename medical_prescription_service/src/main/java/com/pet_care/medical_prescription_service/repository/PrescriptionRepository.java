@@ -10,7 +10,7 @@ import java.util.List;
 
 @Repository
 public interface PrescriptionRepository extends JpaRepository<Prescription, Long> {
-    @Query(value = "select * from medical_prescription_service.prescriptions where id in (select  id from medical_prescription_service.prescriptions) LIMIT 1000000 OFFSET 0", nativeQuery = true)
+    @Query(value = "select * from medical_prescription_service.prescriptions ORDER BY id LIMIT 100000 OFFSET 0", nativeQuery = true)
     @NotNull
     List<Prescription> findAllCustom();
 
