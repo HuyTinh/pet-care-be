@@ -8,8 +8,6 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 public class APIConfig implements WebMvcConfigurer {
 
-
-
     @Override
     public void addCorsMappings(@NotNull CorsRegistry registry) {
         registry.addMapping("/**") // Áp dụng cho tất cả các endpoint

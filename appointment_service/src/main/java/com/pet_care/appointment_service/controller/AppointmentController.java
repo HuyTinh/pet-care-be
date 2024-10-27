@@ -28,13 +28,11 @@ public class AppointmentController {
     @NotNull AppointmentService appointmentService;
 
     /**
-     * @param startDate
-     * @param endDate
      * @return
      * @throws JsonProcessingException
      */
     @GetMapping
-    public APIResponse<List<AppointmentResponse>> getAllAppointment(@RequestParam(value = "startDate", required = false) String startDate, @RequestParam(value = "endDate", required = false) String endDate) throws JsonProcessingException {
+    public APIResponse<List<AppointmentResponse>> getAllAppointment() throws JsonProcessingException {
         return APIResponse.<List<AppointmentResponse>>builder()
                 .data(appointmentService.getAllAppointment())
                 .build();
