@@ -4,7 +4,6 @@ import com.pet_care.medical_prescription_service.dto.request.PrescriptionCreateR
 import com.pet_care.medical_prescription_service.dto.request.PrescriptionUpdateRequest;
 import com.pet_care.medical_prescription_service.dto.response.APIResponse;
 import com.pet_care.medical_prescription_service.dto.response.PrescriptionResponse;
-import com.pet_care.medical_prescription_service.model.Prescription;
 import com.pet_care.medical_prescription_service.repository.PrescriptionRepository;
 import com.pet_care.medical_prescription_service.service.PrescriptionService;
 import lombok.AccessLevel;
@@ -57,6 +56,7 @@ public class PrescriptionController {
                 .data(prescriptionService.getPrescriptionByAppointmentId(appointmentId))
                 .build();
     }
+
     /**
      * @param prescriptionCreateRequest
      * @return

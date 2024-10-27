@@ -1,8 +1,5 @@
 package com.pet_care.medicine_service.model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.pet_care.medicine_service.enums.MedicineStatus;
 import jakarta.persistence.*;

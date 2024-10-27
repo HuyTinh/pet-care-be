@@ -2,7 +2,6 @@ package com.pet_care.medical_prescription_service.service;
 
 import com.pet_care.medical_prescription_service.client.AppointmentClient;
 import com.pet_care.medical_prescription_service.client.MedicineClient;
-import com.pet_care.medical_prescription_service.dto.request.PetPrescriptionCreateRequest;
 import com.pet_care.medical_prescription_service.dto.request.PrescriptionCreateRequest;
 import com.pet_care.medical_prescription_service.dto.request.PrescriptionUpdateRequest;
 import com.pet_care.medical_prescription_service.dto.response.*;
@@ -25,7 +24,10 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
@@ -69,14 +71,17 @@ public class PrescriptionService {
     @NotNull
     @Transactional(readOnly = true)
     public List<PrescriptionResponse> getAllPrescriptions() {
-        List<PrescriptionResponse> prescriptionResponseList = prescriptionRepository.findAllCustom().parallelStream().map(prescription ->
-        {
-            CompletableFuture<PrescriptionResponse> responseCompletableFuture = CompletableFuture.supplyAsync(() -> toPrescriptionResponse(prescription));
+        log.info("Fetching all prescriptions");
 
-            return responseCompletableFuture.join();
-        }).collect(Collectors.toList());
+        List<PrescriptionResponse> prescriptionResponseList = prescriptionRepository.findAllCustom().parallelStream()
+                .map(this::toPrescriptionResponse)
+                .collect(Collectors.toList());
 
-        log.info("Get all prescriptions");
+        if (prescriptionResponseList.isEmpty()) {
+            log.warn("No prescriptions found");
+        } else {
+            log.info("Retrieved {} prescriptions", prescriptionResponseList.size());
+        }
 
         return prescriptionResponseList;
     }
@@ -88,14 +93,14 @@ public class PrescriptionService {
     @NotNull
     @Transactional(readOnly = true)
     public PrescriptionResponse getPrescriptionById(@NotNull Long prescriptionId) {
-        Prescription prescriptions = PrescriptionRepository.findById(prescriptionId)
-                .orElseThrow(() -> new APIException(ErrorCode.PRESCRIPTION_NOT_FOUND));
+        log.info("Fetching prescription with id {}", prescriptionId);
 
-        PrescriptionResponse prescriptionResponse = toPrescriptionResponse(prescriptions);
-
-        log.info("Get prescription successful");
-
-        return prescriptionResponse;
+        return PrescriptionRepository.findById(prescriptionId)
+                .map(this::toPrescriptionResponse)
+                .orElseThrow(() -> {
+                    log.error("Prescription with id {} not found", prescriptionId);
+                    return new APIException(ErrorCode.PRESCRIPTION_NOT_FOUND);
+                });
     }
 
     /**
@@ -126,12 +131,18 @@ public class PrescriptionService {
                 }).toList();
 
 
+        List<PrescriptionDetail> allMedicinesToSave = new ArrayList<>();
+
         newPetPrescriptionList.forEach(val -> {
             val.getMedicines().forEach(medicine -> {
                 medicine.setPetPrescription(val);
+                allMedicinesToSave.add(medicine);
             });
-            prescriptionDetailRepository.saveAll(val.getMedicines());
         });
+
+        if (!allMedicinesToSave.isEmpty()) {
+            prescriptionDetailRepository.saveAll(allMedicinesToSave);
+        }
 
         PrescriptionResponse prescriptionResponse = toPrescriptionResponse(newPrescription);
 
@@ -157,51 +168,52 @@ public class PrescriptionService {
         CompletableFuture<Void> prescriptionFuture = CompletableFuture.runAsync(() -> {
             petPrescriptionRepository.saveAll(prescriptionUpdateRequest.getDetails()
                     .parallelStream().map(petPrescriptionUpdateRequest -> {
-                PetPrescription updatePetPrescription = petPrescriptionMapper
-                        .partialUpdate
-                                (petPrescriptionUpdateRequest, PetPrescription.builder().build());
-
-                if(petPrescriptionUpdateRequest.getId() != null){
-                    PetPrescription existingPetPrescription = petPrescriptionRepository
-                            .findById(petPrescriptionUpdateRequest.getId())
-                            .orElseThrow(() -> new APIException(ErrorCode.PRESCRIPTION_NOT_FOUND));
-
-                    updatePetPrescription = petPrescriptionMapper
-                            .partialUpdate(petPrescriptionUpdateRequest, existingPetPrescription);
-
-                    PetPrescription finalUpdatePetPrescription = updatePetPrescription;
-
-                    Set<PrescriptionDetail> updatePrescriptionDetails = petPrescriptionUpdateRequest
-                            .getMedicines().parallelStream()
-                            .map(prescriptionDetailUpdateRequest -> {
-
-                        PrescriptionDetail prescriptionDetail = prescriptionDetailMapper
+                        PetPrescription updatePetPrescription = petPrescriptionMapper
                                 .partialUpdate
-                                        (prescriptionDetailUpdateRequest, PrescriptionDetail.builder().build());
+                                        (petPrescriptionUpdateRequest, PetPrescription.builder().build());
 
-                        if(prescriptionDetailUpdateRequest.getId() != null){
-                            PrescriptionDetail existingPrescriptionDetail = prescriptionDetailRepository.findById(prescriptionDetailUpdateRequest.getId()).orElseThrow(() -> new APIException(ErrorCode.PRESCRIPTION_NOT_FOUND));
+                        if (petPrescriptionUpdateRequest.getId() != null) {
+                            PetPrescription existingPetPrescription = petPrescriptionRepository
+                                    .findById(petPrescriptionUpdateRequest.getId())
+                                    .orElseThrow(() -> new APIException(ErrorCode.PRESCRIPTION_NOT_FOUND));
 
-                            prescriptionDetail = prescriptionDetailMapper.partialUpdate(prescriptionDetailUpdateRequest, existingPrescriptionDetail);
+                            updatePetPrescription = petPrescriptionMapper
+                                    .partialUpdate(petPrescriptionUpdateRequest, existingPetPrescription);
+
+                            PetPrescription finalUpdatePetPrescription = updatePetPrescription;
+
+                            Set<PrescriptionDetail> updatePrescriptionDetails = petPrescriptionUpdateRequest
+                                    .getMedicines().parallelStream()
+                                    .map(prescriptionDetailUpdateRequest -> {
+
+                                        PrescriptionDetail prescriptionDetail = prescriptionDetailMapper
+                                                .partialUpdate
+                                                        (prescriptionDetailUpdateRequest, PrescriptionDetail.builder().build());
+
+                                        if (prescriptionDetailUpdateRequest.getId() != null) {
+                                            PrescriptionDetail existingPrescriptionDetail = prescriptionDetailRepository.findById(prescriptionDetailUpdateRequest.getId()).orElseThrow(() -> new APIException(ErrorCode.PRESCRIPTION_NOT_FOUND));
+
+                                            prescriptionDetail = prescriptionDetailMapper.partialUpdate(prescriptionDetailUpdateRequest, existingPrescriptionDetail);
+                                        }
+
+                                        prescriptionDetail.setPetPrescription(finalUpdatePetPrescription);
+
+                                        return prescriptionDetail;
+                                    }).collect(toSet());
+
+                            updatePetPrescription.getMedicines().clear();
+
+                            updatePetPrescription.getMedicines().addAll(updatePrescriptionDetails);
                         }
 
-                        prescriptionDetail.setPetPrescription(finalUpdatePetPrescription);
-
-                        return prescriptionDetail;
-                    }).collect(toSet());
-
-                    updatePetPrescription.getMedicines().clear();
-
-                    updatePetPrescription.getMedicines().addAll(updatePrescriptionDetails);
-                }
-
-                return updatePetPrescription;
-            }).collect(toSet()));
+                        return updatePetPrescription;
+                    }).collect(toSet()));
         });
 
         return prescriptionFuture.thenApply(v ->
                 toPrescriptionResponse(prescriptionRepository.save(existingPrescription))).join();
     }
+
     /**
      * @param appointmentId
      * @return
