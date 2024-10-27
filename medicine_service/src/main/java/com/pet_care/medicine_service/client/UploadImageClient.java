@@ -1,4 +1,4 @@
-package com.pet_care.employee_service.client;
+package com.pet_care.medicine_service.client;
 
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.MediaType;

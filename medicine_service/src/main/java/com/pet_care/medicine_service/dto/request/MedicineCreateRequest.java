@@ -37,15 +37,13 @@ public class MedicineCreateRequest {
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     Date dateImport;
 
-//    @JsonProperty("image_url")
-//    String imageUrl;
-
     Double price;
 
     @JsonProperty("calculation_units")
     Set<Long> calculationUnits;
 
-    Long manufacture_id;
+    @JsonProperty("manufacture_id")
+    Long manufactureId;
 
     @JsonProperty("locations")
     Set<Long> locations;

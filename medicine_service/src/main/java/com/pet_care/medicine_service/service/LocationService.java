@@ -26,7 +26,8 @@ public class LocationService {
      * @return
      */
     public List<LocationResponse> getAllLocations() {
-        List<LocationResponse> locations = locationRepository.findAll().stream().map(locationMapper::toDto).toList();
+        List<LocationResponse> locations = locationRepository.findAll()
+                .stream().map(locationMapper::toDto).toList();
 
         log.info("Get all locations");
 
@@ -38,7 +39,9 @@ public class LocationService {
      * @return
      */
     public LocationResponse getLocationById(Long id) {
-        LocationResponse locationResponse = locationMapper.toDto(locationRepository.findById(id).orElseThrow(() -> new APIException(ErrorCode.LOCATION_NOT_FOUND)));
+        LocationResponse locationResponse = locationMapper
+                .toDto(locationRepository.findById(id)
+                        .orElseThrow(() -> new APIException(ErrorCode.LOCATION_NOT_FOUND)));
 
         log.info("Get location by id");
 
