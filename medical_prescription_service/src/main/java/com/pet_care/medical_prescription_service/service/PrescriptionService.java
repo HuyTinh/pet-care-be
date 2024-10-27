@@ -21,16 +21,20 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
+import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 
 @Slf4j
@@ -84,6 +88,28 @@ public class PrescriptionService {
         }
 
         return prescriptionResponseList;
+    }
+
+    @NotNull
+    @Transactional(readOnly = true)
+    public PageableResponse<PrescriptionResponse> filteredPrescription(
+            int page,
+            int size,
+            LocalDate startDate,
+            LocalDate endDate
+    ){
+        Date sDate = Date.from(startDate.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant());
+
+        Date eDate = Date.from(endDate.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant());
+
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
+
+        Page<Prescription> prescriptionPage = prescriptionRepository.findByCreatedAtBetween(sDate, eDate, pageable);
+
+        return PageableResponse.<PrescriptionResponse>builder()
+                .content(prescriptionPage.getContent().parallelStream().map(this::toPrescriptionResponse).collect(Collectors.toList()))
+                .pageable(prescriptionPage.getPageable())
+                .build();
     }
 
     /**
