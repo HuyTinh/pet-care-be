@@ -1,6 +1,8 @@
 package com.petcare.controller;
 
 import co.elastic.clients.elasticsearch.core.SearchResponse;
+import com.petcare.dto.DataResponse;
+import com.petcare.dto.PaginationResponse;
 import com.petcare.entity.AppointmentService;
 import com.petcare.entity.Location;
 import com.petcare.exception.APIException;
@@ -28,30 +30,71 @@ public class LocationController {
 
     @Autowired
     private ElasticSearchImpl elasticSearch;
+
     private static final String INDEXNAME = Location.class.getAnnotation(Document.class).indexName();
 
-    @GetMapping()
-    public ResponseEntity<?> matchAll() throws IOException {
-        SearchResponse<Map> searchResponse = elasticSearch.matchAllService(INDEXNAME);
-        List<Map> responses = SearchResponseMapper.mappSearchResponseToListMap(searchResponse);
+    @GetMapping("/getAll/{records}")
+    public ResponseEntity<?> matchAll(@PathVariable int records) throws IOException {
 
-        return ResponseEntity.ok(responses);
+        SearchResponse<Map> searchResponse = elasticSearch.matchAllService(INDEXNAME, records);
+        List<Map> listSearch = SearchResponseMapper.mappSearchResponseToListMap(searchResponse);
+
+        SearchResponse<Map> matchAllServiceGetPage = elasticSearch.matchAllServiceGetPage(INDEXNAME);
+        int totalPages = elasticSearch.matchTotalPages(matchAllServiceGetPage);
+
+        PaginationResponse paginationResponse = new PaginationResponse();
+        paginationResponse.setCurrentPage(records);
+        paginationResponse.setTotalPages(totalPages);
+        paginationResponse.setDataResponse(listSearch);
+
+        DataResponse response = new DataResponse();
+        response.setData(paginationResponse);
+
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/getAll")
+    public ResponseEntity<?> matchAllNoRecords() throws IOException {
+
+        SearchResponse<Map> searchResponse = elasticSearch.matchAllService(INDEXNAME, 1);
+        List<Map> listSearch = SearchResponseMapper.mappSearchResponseToListMap(searchResponse);
+
+        SearchResponse<Map> matchAllServiceGetPage = elasticSearch.matchAllServiceGetPage(INDEXNAME);
+        int totalPages = elasticSearch.matchTotalPages(matchAllServiceGetPage);
+
+        PaginationResponse paginationResponse = new PaginationResponse();
+        paginationResponse.setCurrentPage(1);
+        paginationResponse.setTotalPages(totalPages);
+        paginationResponse.setDataResponse(listSearch);
+
+        DataResponse response = new DataResponse();
+        response.setData(paginationResponse);
+
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<List<Map>> matchById(@PathVariable long id) throws IOException {
-        SearchResponse<Map> searchResponse = elasticSearch.matchById(INDEXNAME, id);
-        List<Map> responses = SearchResponseMapper.mappSearchResponseToListMap(searchResponse);
+    public ResponseEntity<?> matchById(@PathVariable long id) throws IOException {
 
-        return ResponseEntity.ok(responses);
+        SearchResponse<Map> searchResponse = elasticSearch.matchById(INDEXNAME, id);
+        List<Map> listSearchResponses = SearchResponseMapper.mappSearchResponseToListMap(searchResponse);
+
+        DataResponse response = new DataResponse();
+        response.setData(listSearchResponses);
+
+        return ResponseEntity.ok(response);
     }
 
-    @PostMapping("/getByAny")
-    public ResponseEntity<?> matchByAny(@RequestBody List<String> searchRequest) throws IOException {
-        SearchResponse<Map> searchResponse = elasticSearch.matchByAny(INDEXNAME, searchRequest);
-        List<Map> responses = SearchResponseMapper.mappSearchResponseToListMap(searchResponse);
+    @PostMapping("/getByAny/{records}")
+    public ResponseEntity<?> matchByAny(@PathVariable int records,
+                                        @RequestBody List<String> searchRequest) throws IOException {
+        SearchResponse<Map> searchResponse = elasticSearch.matchByAny(INDEXNAME, searchRequest, records);
+        List<Map> listSearchResponses = SearchResponseMapper.mappSearchResponseToListMap(searchResponse);
 
-        return ResponseEntity.ok(responses);
+        DataResponse response = new DataResponse();
+        response.setData(listSearchResponses);
+
+        return ResponseEntity.ok(response);
     }
 
 //    @GetMapping()

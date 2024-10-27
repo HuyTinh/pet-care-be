@@ -1,10 +1,12 @@
 package com.petcare.service.impl;
 
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
+import co.elastic.clients.elasticsearch._types.SortOrder;
 import co.elastic.clients.elasticsearch._types.query_dsl.Query;
 import co.elastic.clients.elasticsearch.core.SearchResponse;
 import com.petcare.request.SearchRequest;
 import com.petcare.utils.ElasticSearchUtils;
+import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 //import org.springframework.data.elasticsearch.core.query.Query;
 import org.springframework.stereotype.Service;
@@ -15,29 +17,55 @@ import java.util.Map;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
+@Getter
 @Service
 public class ElasticSearchImpl {
+
+    private static final int MAX_SIZE = 50;
 
     @Autowired
     private ElasticsearchClient elasticsearchClient;
 
-    public SearchResponse<Map> matchAllService(String indexName) throws IOException {
+    public int matchTotalPages(SearchResponse<Map> searchResponse){
+        long totalData = searchResponse.hits().total().value();
+        int totalPages = (int) Math.ceil(totalData / MAX_SIZE);
+        return totalPages;
+    }
 
+    public SearchResponse<Map> matchAllServiceGetPage(String indexName) throws IOException {
         Supplier<Query> supplier = ElasticSearchUtils.supplierAll();
         SearchResponse<Map> searchResponse = elasticsearchClient.search(s -> s
                 .index(indexName)
-                .size(10000)
+                .size(0)
                 .query(supplier.get()), Map.class);
 
         return searchResponse;
     }
 
-    public SearchResponse<Map> matchByAny(String indexName, List<String> fieldValue) throws IOException {
+    public SearchResponse<Map> matchAllService(String indexName, int records) throws IOException {
+
+        int from = records != 0 ? (records - 1) * MAX_SIZE : 0;
+        Supplier<Query> supplier = ElasticSearchUtils.supplierAll();
+        SearchResponse<Map> searchResponse = elasticsearchClient.search(s -> s
+                .index(indexName)
+                .size(MAX_SIZE)
+                .from(from)
+                .sort(sort -> sort.field(f -> f.field("id").order(SortOrder.Desc)))
+                .query(supplier.get()), Map.class);
+
+        return searchResponse;
+    }
+
+    public SearchResponse<Map> matchByAny(String indexName, List<String> fieldValue, int records) throws IOException {
+
+        int from = records != 0 ? (records - 1) * MAX_SIZE : 0;
 
         Supplier<Query> supplier = ElasticSearchUtils.supplierByAnyQuery(indexName, fieldValue);
         SearchResponse<Map> searchResponse = elasticsearchClient.search(s -> s
                 .index(indexName)
-                .size(1000)
+                .size(MAX_SIZE)
+                .from(from)
+                .sort(sort -> sort.field(f -> f.field("id").order(SortOrder.Desc)))
                 .query(supplier.get()), Map.class);
 
         return searchResponse;
