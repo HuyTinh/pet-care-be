@@ -10,6 +10,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
 import java.text.ParseException;
@@ -46,13 +47,15 @@ public class AppointmentController {
      * @throws JsonProcessingException
      */
     @GetMapping("/filter")
-    public APIResponse<List<AppointmentResponse>> getAllAppointmentByStartDateAndEndDate(
+    public APIResponse<Page<AppointmentResponse>> getAllAppointmentByStartDateAndEndDate(
+            @RequestParam(value = "page",required = false, defaultValue = "0") int page,
+            @RequestParam(value = "size", required = false, defaultValue = "50") int size,
             @NotNull @RequestParam(value = "startDate", required = false) LocalDate startDate,
             @NotNull @RequestParam(value = "endDate", required = false) LocalDate endDate,
             @RequestParam(value = "statues", required = false) Set<String> statues) throws JsonProcessingException {
 
-        return APIResponse.<List<AppointmentResponse>>builder()
-                .data(appointmentService.filterAppointments(startDate, endDate, statues))
+        return APIResponse.<Page<AppointmentResponse>>builder()
+                .data(appointmentService.filterAppointments(page, size,startDate, endDate, statues))
                 .build();
     }
 

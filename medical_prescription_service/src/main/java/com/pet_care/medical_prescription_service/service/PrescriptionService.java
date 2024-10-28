@@ -34,7 +34,6 @@ import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
-import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 
 @Slf4j
@@ -90,9 +89,16 @@ public class PrescriptionService {
         return prescriptionResponseList;
     }
 
+    /**
+     * @param page
+     * @param size
+     * @param startDate
+     * @param endDate
+     * @return
+     */
     @NotNull
     @Transactional(readOnly = true)
-    public PageableResponse<PrescriptionResponse> filteredPrescription(
+    public Page<PrescriptionResponse> filteredPrescription(
             int page,
             int size,
             LocalDate startDate,
@@ -106,10 +112,7 @@ public class PrescriptionService {
 
         Page<Prescription> prescriptionPage = prescriptionRepository.findByCreatedAtBetween(sDate, eDate, pageable);
 
-        return PageableResponse.<PrescriptionResponse>builder()
-                .content(prescriptionPage.getContent().parallelStream().map(this::toPrescriptionResponse).collect(Collectors.toList()))
-                .pageable(prescriptionPage.getPageable())
-                .build();
+        return prescriptionPage.map(this::toPrescriptionResponse);
     }
 
     /**
