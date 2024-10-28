@@ -3,7 +3,7 @@ package com.pet_care.medical_prescription_service.controller;
 import com.pet_care.medical_prescription_service.dto.request.PrescriptionCreateRequest;
 import com.pet_care.medical_prescription_service.dto.request.PrescriptionUpdateRequest;
 import com.pet_care.medical_prescription_service.dto.response.APIResponse;
-import com.pet_care.medical_prescription_service.dto.response.PageResponse;
+import com.pet_care.medical_prescription_service.dto.response.PageableResponse;
 import com.pet_care.medical_prescription_service.dto.response.PrescriptionResponse;
 import com.pet_care.medical_prescription_service.repository.PrescriptionRepository;
 import com.pet_care.medical_prescription_service.service.PrescriptionService;
@@ -39,14 +39,14 @@ public class PrescriptionController {
     }
 
     @GetMapping("/filter")
-    public @NotNull APIResponse<Page<PrescriptionResponse>> getFilteredPrescription(
+    public @NotNull APIResponse<PageableResponse<PrescriptionResponse>> getFilteredPrescription(
             @RequestParam(value = "page",required = false, defaultValue = "0") int page,
             @RequestParam(value = "size", required = false, defaultValue = "50") int size,
             @RequestParam(value = "startDate", required = false) LocalDate startDate,
             @RequestParam(value = "endDate", required = false) LocalDate endDate
     ) {
 
-        return APIResponse.<Page<PrescriptionResponse>>builder()
+        return APIResponse.<PageableResponse<PrescriptionResponse>>builder()
                 .data(prescriptionService
                         .filteredPrescription(
                                 page,

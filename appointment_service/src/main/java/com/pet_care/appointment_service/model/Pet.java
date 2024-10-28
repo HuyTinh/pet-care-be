@@ -33,12 +33,10 @@ public class Pet {
     @JoinColumn(name = "appointment_id")
     Appointment appointment;
 
-    @NotNull
     @CreationTimestamp
     @Temporal(TemporalType.TIMESTAMP)
     Date createdAt;
 
-    @NotNull
     @UpdateTimestamp
     @Temporal(TemporalType.TIMESTAMP)
     Date updatedAt;

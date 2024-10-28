@@ -5,6 +5,7 @@ import com.pet_care.appointment_service.dto.request.AppointmentCreateRequest;
 import com.pet_care.appointment_service.dto.request.AppointmentUpdateRequest;
 import com.pet_care.appointment_service.dto.response.APIResponse;
 import com.pet_care.appointment_service.dto.response.AppointmentResponse;
+import com.pet_care.appointment_service.dto.response.PageableResponse;
 import com.pet_care.appointment_service.service.AppointmentService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -47,14 +48,14 @@ public class AppointmentController {
      * @throws JsonProcessingException
      */
     @GetMapping("/filter")
-    public APIResponse<Page<AppointmentResponse>> getAllAppointmentByStartDateAndEndDate(
+    public APIResponse<PageableResponse<AppointmentResponse>> getAllAppointmentByStartDateAndEndDate(
             @RequestParam(value = "page",required = false, defaultValue = "0") int page,
             @RequestParam(value = "size", required = false, defaultValue = "50") int size,
             @NotNull @RequestParam(value = "startDate", required = false) LocalDate startDate,
             @NotNull @RequestParam(value = "endDate", required = false) LocalDate endDate,
             @RequestParam(value = "statues", required = false) Set<String> statues) throws JsonProcessingException {
 
-        return APIResponse.<Page<AppointmentResponse>>builder()
+        return APIResponse.<PageableResponse<AppointmentResponse>>builder()
                 .data(appointmentService.filterAppointments(page, size,startDate, endDate, statues))
                 .build();
     }
