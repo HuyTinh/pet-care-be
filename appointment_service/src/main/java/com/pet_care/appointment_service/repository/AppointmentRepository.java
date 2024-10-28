@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 @Repository
 public interface AppointmentRepository extends JpaRepository<Appointment, Long> {
@@ -61,7 +62,7 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
      * @param appointmentDate2
      * @return
      */
-    Page<Appointment> findByAppointmentDateBetween(Date appointmentDate, Date appointmentDate2, Pageable pageable);
+    Page<Appointment> findByAppointmentDateBetweenAndStatusIn(Date appointmentDate, Date appointmentDate2, Set<String> statues, Pageable pageable);
 
     /**
      * @param status

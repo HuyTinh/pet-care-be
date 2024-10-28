@@ -98,7 +98,7 @@ public class PrescriptionService {
      */
     @NotNull
     @Transactional(readOnly = true)
-    public Page<PrescriptionResponse> filteredPrescription(
+    public PageableResponse<PrescriptionResponse> filteredPrescription(
             int page,
             int size,
             LocalDate startDate,
@@ -110,9 +110,16 @@ public class PrescriptionService {
 
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
 
-        Page<Prescription> prescriptionPage = prescriptionRepository.findByCreatedAtBetween(sDate, eDate, pageable);
+        Page<PrescriptionResponse> prescriptionPage = prescriptionRepository
+                .findByCreatedAtBetween(sDate, eDate, pageable).map(this::toPrescriptionResponse);
 
-        return prescriptionPage.map(this::toPrescriptionResponse);
+        return PageableResponse.<PrescriptionResponse>builder()
+                .content(prescriptionPage.getContent())
+                .pageNumber(prescriptionPage.getPageable().getPageNumber())
+                .pageSize(prescriptionPage.getPageable().getPageSize())
+                .totalPages(prescriptionPage.getTotalPages())
+                .build();
+
     }
 
     /**
