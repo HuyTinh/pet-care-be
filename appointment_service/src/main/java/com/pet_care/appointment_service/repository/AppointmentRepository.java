@@ -2,6 +2,8 @@ package com.pet_care.appointment_service.repository;
 
 import com.pet_care.appointment_service.enums.AppointmentStatus;
 import com.pet_care.appointment_service.model.Appointment;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -59,7 +61,7 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
      * @param appointmentDate2
      * @return
      */
-    List<Appointment> findByAppointmentDateBetween(Date appointmentDate, Date appointmentDate2);
+    Page<Appointment> findByAppointmentDateBetween(Date appointmentDate, Date appointmentDate2, Pageable pageable);
 
     /**
      * @param status

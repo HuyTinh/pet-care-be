@@ -25,6 +25,9 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -261,19 +264,20 @@ public class AppointmentService {
      */
     @NotNull
     @Transactional(readOnly = true)
-    public List<AppointmentResponse> filterAppointments(@NotNull LocalDate startDate, @NotNull LocalDate endDate, @Nullable Set<String> statues) {
+    public Page<AppointmentResponse> filterAppointments(int page, int size,@NotNull LocalDate startDate, @NotNull LocalDate endDate, @Nullable Set<String> statues) {
 
         Date sDate = Date.from(startDate.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant());
+
         Date eDate = Date.from(endDate.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant());
 
-        CompletableFuture<List<Appointment>> appointmentsBetweenDateFuture = CompletableFuture.supplyAsync(() -> appointmentRepository.findByAppointmentDateBetween(sDate, eDate));
+        Pageable pageable = PageRequest.of(page, size, Sort.by("appointmentDate").descending());
 
-        List<AppointmentResponse> appointmentResponses = appointmentsBetweenDateFuture.thenApply(appointments -> appointments.parallelStream().map(this::toAppointmentResponse).toList()).join();
+        CompletableFuture<Page<Appointment>> appointmentsBetweenDateFuture = CompletableFuture.supplyAsync(() -> appointmentRepository.findByAppointmentDateBetween(sDate, eDate,pageable));
+
+        Page<AppointmentResponse> appointmentResponses = appointmentsBetweenDateFuture.thenApply(appointments -> appointments.map(this::toAppointmentResponse)).join();
 
         if (statues != null) {
-            appointmentResponses = appointmentResponses.parallelStream()
-                    .filter(appointment -> statues.parallelStream()
-                            .anyMatch(s -> s.equals(appointment.getStatus().name()))).toList();
+//            appointmentResponses = appointmentResponses.map(appointmentResponse -> appointmentResponse.);
         }
 
         log.info("Appointment Service: Filter appointments successful");
