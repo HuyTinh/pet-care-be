@@ -33,4 +33,7 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
             @Param("to_date") LocalDate to_date,
             @Param("searchQuery") String searchQuery
     );
+
+    @Query(value = "SELECT app FROM Appointment app WHERE app.appointment_date = :date and app.status = true ")
+    List<Appointment> findByAppointmentYesterday(LocalDate date);
 }

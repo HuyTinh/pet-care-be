@@ -35,4 +35,28 @@ public class AppointmentController {
         }
         return ResponseEntity.ok(new ApiResponse<>(2000, "Find get Appointment", responses));
     }
+    @GetMapping("/yesterday")
+    public ResponseEntity<ApiResponse<Set<AppointmentHomeDashboardTableResponse>>> searchAppointmentYesterday() {
+        Set<AppointmentHomeDashboardTableResponse> responses = appointmentService.searchAppointmentYesterday();
+        if(responses.isEmpty()){
+            return ResponseEntity.ok(new ApiResponse<>(2000, "No have Appointment", responses));
+        }
+        return ResponseEntity.ok(new ApiResponse<>(2000, "Find get Appointment", responses));
+    }
+    @GetMapping("{id}")
+    public ResponseEntity<ApiResponse<AppointmentHomeDashboardTableResponse>> getAppointmentByID(@PathVariable Long id) {
+        AppointmentHomeDashboardTableResponse appointment = appointmentService.getAppointmentById(id);
+        if(appointment == null){
+            return ResponseEntity.ok(new ApiResponse<>(2000, "No have Appointment", appointment));
+        }
+        return ResponseEntity.ok(new ApiResponse<>(2000, "Find get Appointment", appointment));
+    }
+    @DeleteMapping("{id}")
+    public ResponseEntity<ApiResponse<AppointmentHomeDashboardTableResponse>> deleteAppointment(@PathVariable Long id) {
+        AppointmentHomeDashboardTableResponse appointment = appointmentService.deleteAppointment(id);
+        if(appointment == null){
+            return ResponseEntity.ok(new ApiResponse<>(2000, "No have Appointment", appointment));
+        }
+        return ResponseEntity.ok(new ApiResponse<>(2000, "Delete Appointment Successful", null));
+    }
 }

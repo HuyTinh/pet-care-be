@@ -83,4 +83,13 @@ public class OpenApiConfig {
                 .build()
                 ;
     }
+
+    @Bean
+    public GroupedOpenApi groupedOpenApiReport(){
+        return GroupedOpenApi.builder()
+                .group("api-service-report")
+                .pathsToMatch("/management/report/**") // dựa theo url của controller
+                .build()
+                ;
+    }
 }

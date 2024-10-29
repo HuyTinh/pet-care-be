@@ -58,7 +58,8 @@ public class DashboardServiceImpl implements DashboardService {
     public AppointmentHomeDashboardResponse getCountAppointment(){
         LocalDate now = LocalDate.now();
 //      LocalDate now = LocalDate.parse("2024-10-01");
-        List<Object[]> listAppointment = invoiceRepository.getAllAppointmentToday(now);
+//        List<Object[]> listAppointment = invoiceRepository.getAllAppointmentToday(now);
+        List<Appointment> listAppointment = invoiceRepository.findByAppointmentDate(now);
         Long count = (long) listAppointment.size();
         System.out.println("Check list appointment: " + count);
         return AppointmentHomeDashboardResponse.builder()

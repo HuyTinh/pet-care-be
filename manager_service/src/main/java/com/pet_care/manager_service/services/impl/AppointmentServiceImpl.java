@@ -43,6 +43,17 @@ public class AppointmentServiceImpl implements AppointmentService {
     @Autowired
     PrescriptionDetailRepository prescriptionDetailRepository;
 
+    @Override
+    public Set<AppointmentHomeDashboardTableResponse> searchAppointmentYesterday(){
+        LocalDate yesterday = LocalDate.now().minusDays(1);
+        List<Appointment> appointments = appointmentRepository.findByAppointmentYesterday(yesterday);
+        Set<AppointmentHomeDashboardTableResponse> responses = new HashSet<>();
+        for (Appointment appointment: appointments) {
+            AppointmentHomeDashboardTableResponse response = appointmentHomeDashboardTableResponse(appointment);
+            responses.add(response);
+        }
+        return responses;
+    }
     public Set<AppointmentHomeDashboardTableResponse> searchAppointment(LocalDate create_date, Boolean status, String status_accept, LocalDate from_date, LocalDate to_date, String search_query ){
         List<Appointment> appointments = appointmentRepository.searchAppointmentDashboard(create_date, status,status_accept, from_date, to_date, search_query);
         Set<AppointmentHomeDashboardTableResponse> responses = new HashSet<>();
@@ -51,6 +62,33 @@ public class AppointmentServiceImpl implements AppointmentService {
             responses.add(response);
         }
         return responses;
+    }
+    @Override
+    public AppointmentHomeDashboardTableResponse getAppointmentById(Long id){
+        Appointment appointment = appointmentRepository.findById(id).orElse(null);
+
+        return AppointmentHomeDashboardTableResponse.builder().appointmentId(appointment.getId())
+                .appointmentDate(appointment.getAppointment_date())
+                .appointmentTime(appointment.getAppointment_hour())
+                .petResponses(petResponses(appointment))
+                .customerPrescriptionResponse(customerPrescriptionResponse(appointment))
+                .profilesDoctorResponse(profilesDoctorResponse(appointment))
+                .appointmentStatus(appointment.getStatus_accept())
+                .build();
+    }
+    @Override
+    public AppointmentHomeDashboardTableResponse deleteAppointment(Long id){
+        Appointment appointment = appointmentRepository.findById(id).orElse(null);
+        appointment.setStatus(false);
+        appointmentRepository.save(appointment);
+        return AppointmentHomeDashboardTableResponse.builder().appointmentId(appointment.getId())
+                .appointmentDate(appointment.getAppointment_date())
+                .appointmentTime(appointment.getAppointment_hour())
+                .petResponses(petResponses(appointment))
+                .customerPrescriptionResponse(customerPrescriptionResponse(appointment))
+                .profilesDoctorResponse(profilesDoctorResponse(appointment))
+                .appointmentStatus(appointment.getStatus_accept())
+                .build();
     }
 
     public AppointmentHomeDashboardTableResponse appointmentHomeDashboardTableResponse(Appointment appointment){

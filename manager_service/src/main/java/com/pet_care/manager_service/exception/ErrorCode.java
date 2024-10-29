@@ -19,7 +19,7 @@ public enum ErrorCode {
     SERVICE_NOTFOUND(2015, "Service Not Found"),
 
     PET_NOTFOUND(2030, "Pet Not Found"),
-
+    INVOICE_NOT_EXIST(2050, "Invoice Not Exist"),
     PRESCRIPTION_NOTFOUND(2040, "Prescription Not Found"),
     ;
     int code;
