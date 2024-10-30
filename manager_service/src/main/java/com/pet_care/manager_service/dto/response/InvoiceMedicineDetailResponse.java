@@ -1,5 +1,6 @@
 package com.pet_care.manager_service.dto.response;
 
+import com.pet_care.manager_service.entity.Medicine;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -9,8 +10,10 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class RoleResponse {
+public class InvoiceMedicineDetailResponse {
     Long id;
-    String name;
-    boolean status;
+    MedicineResponse medicineResponse;
+    Integer quantity;
+    Double price;
+    String note;
 }

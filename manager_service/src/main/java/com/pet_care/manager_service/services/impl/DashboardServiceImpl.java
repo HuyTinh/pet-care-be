@@ -10,10 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -151,7 +148,10 @@ public class DashboardServiceImpl implements DashboardService {
             Long predId = (Long) objects[0];
             prescriptionHomeDashboardResponseSet.add(prescriptionHomeDashboardResponse(predId));
         }
-        return prescriptionHomeDashboardResponseSet;
+        Set<PrescriptionHomeDashboardResponse> sortPrescriptionHomeDashboardResponseSet = prescriptionHomeDashboardResponseSet
+                .stream().sorted(Comparator.comparing(PrescriptionHomeDashboardResponse::getPrescriptionId).reversed())
+                .collect(Collectors.toCollection(LinkedHashSet::new));
+        return sortPrescriptionHomeDashboardResponseSet;
     }
 
     @Override
@@ -172,7 +172,10 @@ public class DashboardServiceImpl implements DashboardService {
         for(Appointment appointment : listApp){
             listAppointment.add(appointmentHomeDashboardTable(appointment));
         }
-        return listAppointment;
+        Set<AppointmentHomeDashboardTableResponse> sordAppointment = listAppointment.stream()
+                .sorted(Comparator.comparing(AppointmentHomeDashboardTableResponse::getAppointmentId).reversed())
+                .collect(Collectors.toCollection(LinkedHashSet::new));
+        return sordAppointment;
     }
 
     public AppointmentHomeDashboardTableResponse appointmentHomeDashboardTable(Appointment appointment) {
@@ -210,7 +213,10 @@ public class DashboardServiceImpl implements DashboardService {
                         .build()
             );
         }
-        return petResponses;
+        Set<PetResponse> sortPet = petResponses.stream()
+                .sorted(Comparator.comparing(PetResponse::getId).reversed())
+                .collect(Collectors.toCollection(LinkedHashSet::new));
+        return sortPet;
     }
 
     public CustomerPrescriptionResponse customerPrescriptionResponse(Appointment appointment){

@@ -9,8 +9,7 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class RoleResponse {
+public class InvoiceServiceDetailResponse {
     Long id;
-    String name;
-    boolean status;
+    AppointmentServiceResponse appointmentServiceResponse;
 }

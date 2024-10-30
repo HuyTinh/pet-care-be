@@ -21,6 +21,10 @@ public enum ErrorCode {
     PET_NOTFOUND(2030, "Pet Not Found"),
     INVOICE_NOT_EXIST(2050, "Invoice Not Exist"),
     PRESCRIPTION_NOTFOUND(2040, "Prescription Not Found"),
+    INVOICE_MEDICINE_DETAIL_NOT_EXIST(2060, "Invoice Medicine Detail Not Exist"),
+    INVOICE_SERVICE_DETAIL_NOT_EXIST(2070, "Invoice Service Detail Not Exist"),
+    APPOINTMENT_SERVICE_NOT_EXIST(2070, "Appointment Service Not Exist"),
+
     ;
     int code;
     String message;
