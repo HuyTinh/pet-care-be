@@ -16,10 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.text.ParseException;
 import java.time.LocalDate;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 @RestController
 @RequestMapping("appointment")
@@ -51,12 +48,12 @@ public class AppointmentController {
     public APIResponse<PageableResponse<AppointmentResponse>> getAllAppointmentByStartDateAndEndDate(
             @RequestParam(value = "page",required = false, defaultValue = "0") int page,
             @RequestParam(value = "size", required = false, defaultValue = "50") int size,
-            @NotNull @RequestParam(value = "startDate", required = false) LocalDate startDate,
-            @NotNull @RequestParam(value = "endDate", required = false) LocalDate endDate,
+            @RequestParam(value = "startDate", required = false) LocalDate startDate,
+            @RequestParam(value = "endDate", required = false) LocalDate endDate,
             @RequestParam(value = "statues", required = false) Set<String> statues) throws JsonProcessingException {
 
         return APIResponse.<PageableResponse<AppointmentResponse>>builder()
-                .data(appointmentService.filterAppointments(page, size,startDate, endDate, statues))
+                .data(appointmentService.filterAppointments(page, size, Objects.requireNonNullElse(startDate, LocalDate.now()), Objects.requireNonNullElse(endDate, LocalDate.now()), statues))
                 .build();
     }
 

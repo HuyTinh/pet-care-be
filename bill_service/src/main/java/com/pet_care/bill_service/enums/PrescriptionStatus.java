@@ -1,4 +1,4 @@
-package com.pet_care.medical_prescription_service.enums;
+package com.pet_care.bill_service.enums;
 
 public enum PrescriptionStatus {
     APPROVED,

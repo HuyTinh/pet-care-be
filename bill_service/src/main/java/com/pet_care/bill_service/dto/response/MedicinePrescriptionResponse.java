@@ -1,4 +1,4 @@
-package com.pet_care.medical_prescription_service.dto.response;
+package com.pet_care.bill_service.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;

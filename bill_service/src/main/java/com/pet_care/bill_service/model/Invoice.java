@@ -7,7 +7,6 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.Date;
 
@@ -24,23 +23,17 @@ public class Invoice {
 
     Long prescriptionId;
 
-    Long appointmentId;
-
-    Double prescriptionAmount;
-
-    Double appointmentAmount;
-
     @Enumerated(EnumType.STRING)
     PaymentMethod paymentMethod;
 
     InvoiceStatus status;
 
-    @NotNull
+    Double totalMoney;
+
     @CreationTimestamp
     @Temporal(TemporalType.TIMESTAMP)
     Date createdAt;
 
-    @NotNull
     @UpdateTimestamp
     @Temporal(TemporalType.TIMESTAMP)
     Date updatedAt;

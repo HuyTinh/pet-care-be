@@ -1,8 +1,8 @@
-package com.pet_care.medical_prescription_service.dto.response;
+package com.pet_care.bill_service.dto.response;
 
 
 import com.fasterxml.jackson.annotation.*;
-import com.pet_care.medical_prescription_service.enums.AppointmentStatus;
+import com.pet_care.bill_service.enums.AppointmentStatus;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
