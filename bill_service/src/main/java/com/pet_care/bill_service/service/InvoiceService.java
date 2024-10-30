@@ -1,6 +1,5 @@
 package com.pet_care.bill_service.service;
 
-import com.pet_care.bill_service.dto.response.APIResponse;
 import com.pet_care.bill_service.dto.response.InvoiceResponse;
 import com.pet_care.bill_service.exception.APIException;
 import com.pet_care.bill_service.exception.ErrorCode;
@@ -23,6 +22,9 @@ public class InvoiceService {
 
     InvoiceMapper invoiceMapper;
 
+    /**
+     * @return
+     */
     public List<InvoiceResponse> getAllInvoice() {
 
         List<InvoiceResponse> invoiceResponseList = invoiceRepository.findAll().stream().map(invoiceMapper::toDto).toList();
@@ -32,6 +34,10 @@ public class InvoiceService {
         return invoiceResponseList;
     }
 
+    /**
+     * @param id
+     * @return
+     */
     public InvoiceResponse getInvoiceById(Long id) {
         InvoiceResponse invoiceResponse = invoiceRepository.findById(id).map(invoiceMapper::toDto).orElseThrow(() -> new APIException(ErrorCode.INVOICE_NOT_FOUND));
 
