@@ -29,12 +29,10 @@ public class Manufacture {
     @OneToMany(mappedBy = "manufacture")
     Set<Medicine> medicines;
 
-    @NotNull
     @Temporal(TemporalType.TIMESTAMP)
     @CreationTimestamp
     Date createdAt;
 
-    @NotNull
     @Temporal(TemporalType.TIMESTAMP)
     @UpdateTimestamp
     Date updatedAt;

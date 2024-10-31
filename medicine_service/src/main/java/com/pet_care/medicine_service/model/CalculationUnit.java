@@ -23,12 +23,10 @@ public class CalculationUnit {
 
     Boolean status;
 
-    @NotNull
     @Temporal(TemporalType.TIMESTAMP)
     @CreationTimestamp
     Date createdAt;
 
-    @NotNull
     @Temporal(TemporalType.TIMESTAMP)
     @UpdateTimestamp
     Date updatedAt;

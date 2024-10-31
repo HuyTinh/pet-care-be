@@ -8,6 +8,8 @@ import com.pet_care.medicine_service.model.Location;
 import com.pet_care.medicine_service.model.Manufacture;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -34,6 +36,10 @@ public class MedicineResponse {
     Date expiryDate;
 
     Integer quantity;
+
+    @JsonProperty("date_import")
+    @Temporal(TemporalType.TIMESTAMP)
+    Date dateImport;
 
     Double price;
 

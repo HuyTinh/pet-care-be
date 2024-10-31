@@ -32,6 +32,9 @@ public class Medicine {
     @JsonProperty("expiry_date")
     Date expiryDate;
 
+    @Temporal(TemporalType.TIMESTAMP)
+    Date dateImport;
+
     Integer quantity;
 
     Double price;
@@ -51,12 +54,10 @@ public class Medicine {
     @Builder.Default
     MedicineStatus status = MedicineStatus.ACTIVE;
 
-    @NotNull
     @Temporal(TemporalType.TIMESTAMP)
     @CreationTimestamp
     Date createdAt;
 
-    @NotNull
     @Temporal(TemporalType.TIMESTAMP)
     @UpdateTimestamp
     Date updatedAt;
