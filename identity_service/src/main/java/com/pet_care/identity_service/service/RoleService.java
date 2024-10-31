@@ -26,20 +26,20 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class RoleService {
-    @NotNull RoleRepository roleRepository;
+     RoleRepository roleRepository;
 
-    @NotNull RoleMapper roleMapper;
+     RoleMapper roleMapper;
 
-    @NotNull PermissionMapper permissionMapper;
+     PermissionMapper permissionMapper;
 
-    @NotNull PermissionRepository permissionRepository;
+     PermissionRepository permissionRepository;
 
     /**
      * @param request
      * @return
      */
     @Transactional
-    public RoleResponse createRole(@NotNull RoleCreationRequest request) {
+    public RoleResponse createRole( RoleCreationRequest request) {
         var role = roleMapper.toEntity(request);
 
         var listPermission = permissionRepository.findAllById(request.getPermissions());
@@ -48,7 +48,7 @@ public class RoleService {
         return roleMapper.toDto(roleRepository.save(role));
     }
 
-    @NotNull
+    
     @Transactional(readOnly = true)
     public List<RoleResponse> getAllRole() {
         return roleRepository.findAll().stream().map(roleMapper::toDto).collect(Collectors.toList());
@@ -59,7 +59,7 @@ public class RoleService {
      * @return
      */
     @Transactional(readOnly = true)
-    public RoleResponse getById(@NotNull String role) {
+    public RoleResponse getById( String role) {
         return roleRepository.findById(role).map(roleMapper::toDto).orElseThrow(() -> new APIException(ErrorCode.ROLE_NOT_EXISTED));
     }
 
@@ -69,7 +69,7 @@ public class RoleService {
      * @return
      */
     @Transactional
-    public RoleResponse updateRole(@NotNull String role, @NotNull RoleUpdateRequest request) {
+    public RoleResponse updateRole( String role,  RoleUpdateRequest request) {
         var updatedRole = roleRepository.findById(role).orElseThrow(() -> new APIException(ErrorCode.ROLE_NOT_EXISTED));
 
         var listPermission = permissionRepository.findAllById(request.getPermissions());
@@ -82,7 +82,7 @@ public class RoleService {
      * @param role
      */
     @Transactional
-    public void deleteRole(@NotNull String role) {
+    public void deleteRole( String role) {
         roleRepository.deleteById(role);
     }
 }

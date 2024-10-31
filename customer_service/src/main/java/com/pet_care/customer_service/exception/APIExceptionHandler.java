@@ -15,9 +15,9 @@ public class APIExceptionHandler {
      * @param e
      * @return
      */
-    @NotNull
+    
     @ExceptionHandler(APIException.class)
-    public ResponseEntity<APIResponse<?>> HandlingCustomerException(@NotNull APIException e) {
+    public ResponseEntity<APIResponse<?>> HandlingCustomerException( APIException e) {
         ErrorCode errorCode = e.getErrorCode();
 
         return ResponseEntity.status(errorCode.getStatus()).body(APIResponse.<APIException>builder()
@@ -30,9 +30,9 @@ public class APIExceptionHandler {
      * @param e
      * @return
      */
-    @NotNull
+    
     @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<APIResponse<RuntimeException>> HandlingRuntimeException(@NotNull RuntimeException e) {
+    public ResponseEntity<APIResponse<RuntimeException>> HandlingRuntimeException( RuntimeException e) {
         log.error("RuntimeException", e);
         ErrorCode errorCode = ErrorCode.valueOf(e.getMessage());
 

@@ -25,15 +25,15 @@ import java.util.Map;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class WebsocketController {
 
-    @NotNull WebSocketService webSocketService;
+     WebSocketService webSocketService;
 
-    @NotNull SimpMessagingTemplate messagingTemplate;
+     SimpMessagingTemplate messagingTemplate;
 
-    @NotNull ObjectMapper objectMapper;
+     ObjectMapper objectMapper;
 
-    @NotNull AppointmentService appointmentService;
+     AppointmentService appointmentService;
 
-    @NotNull MessageService messageService;
+     MessageService messageService;
 
     /**
      * @param message
@@ -41,7 +41,7 @@ public class WebsocketController {
      */
     @Transactional
     @MessageMapping("/sendMessage")
-    public void sendMessage(@Payload @NotNull Map<String, String> message) throws Exception {
+    public void sendMessage(@Payload  Map<String, String> message) throws Exception {
         // Xử lý tin nhắn tại đây
 
         long appointmentId = Long.parseLong(message.get("appointmentId"));

@@ -20,7 +20,7 @@ import java.util.List;
 @RequestMapping("permission")
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class PermissionController {
-    @NotNull PermissionService permissionService;
+     PermissionService permissionService;
 
     /**
      * @return
@@ -51,7 +51,7 @@ public class PermissionController {
      * @return
      */
     @PutMapping("/{permission}")
-    APIResponse<PermissionResponse> updatePermission(@PathVariable("permission") @NotNull String permission, @NotNull @RequestBody PermissionRequest permissionRequest) {
+    APIResponse<PermissionResponse> updatePermission(@PathVariable("permission")  String permission,  @RequestBody PermissionRequest permissionRequest) {
         return APIResponse.<PermissionResponse>builder()
                 .data(permissionService.updatePermission(permission, permissionRequest))
                 .build();
@@ -63,7 +63,7 @@ public class PermissionController {
      */
     @DeleteMapping("/{permission}")
     @PreAuthorize("hasRole('HOSPITAL_ADMINISTRATOR')")
-    APIResponse<Void> deletePermission(@PathVariable("permission") @NotNull String permission) {
+    APIResponse<Void> deletePermission(@PathVariable("permission")  String permission) {
         permissionService.deletePermission(permission);
         return APIResponse.<Void>builder().build();
     }

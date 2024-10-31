@@ -18,7 +18,6 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity(name = "medicines")
-@ToString
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Medicine {
     @Id
@@ -57,12 +56,12 @@ public class Medicine {
     @Builder.Default
     MedicineStatus status = MedicineStatus.ACTIVE;
 
-//    @NotNull
+//    
     @Temporal(TemporalType.TIMESTAMP)
     @CreationTimestamp
     Date createdAt;
 
-//    @NotNull
+//    
     @Temporal(TemporalType.TIMESTAMP)
     @UpdateTimestamp
     Date updatedAt;

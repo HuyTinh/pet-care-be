@@ -50,17 +50,17 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class AuthenticationService {
-    @NotNull AccountRepository accountRepository;
+     AccountRepository accountRepository;
 
-    @NotNull InvalidatedTokenRepository invalidatedTokenRepository;
+     InvalidatedTokenRepository invalidatedTokenRepository;
 
     PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
 
-    @NotNull MessageService messageService;
+     MessageService messageService;
 
-    @NotNull ObjectMapper objectMapper;
+     ObjectMapper objectMapper;
 
-    @NotNull FacebookClient facebookClient;
+     FacebookClient facebookClient;
 
     @NonFinal
     @Value("${jwt.signerKey}")
@@ -73,7 +73,7 @@ public class AuthenticationService {
      * @throws ParseException
      */
     @Transactional(readOnly = true)
-    public IntrospectResponse introspect(@NotNull IntrospectRequest request) throws JOSEException, ParseException {
+    public IntrospectResponse introspect( IntrospectRequest request) throws JOSEException, ParseException {
         var token = request.getToken();
 
         boolean validToken = true;
@@ -95,7 +95,7 @@ public class AuthenticationService {
      * @return
      */
     @Transactional(readOnly = true)
-    public AuthenticationResponse authenticate(@NotNull AuthenticationRequest request) {
+    public AuthenticationResponse authenticate( AuthenticationRequest request) {
         var account = accountRepository.findByEmail(request.getEmail()).orElseThrow(() -> new APIException(ErrorCode.EMAIL_NOT_EXISTED));
 
         boolean authenticated = passwordEncoder.matches(request.getPassword(), account.getPassword());
@@ -116,7 +116,7 @@ public class AuthenticationService {
      * @param account
      * @return
      */
-    private String generateToken(@NotNull Account account) {
+    private String generateToken( Account account) {
         JWSHeader jwsHeader = new JWSHeader(JWSAlgorithm.HS512);
         JWTClaimsSet jwtClaimsSet = new JWTClaimsSet.Builder()
                 .subject(account.getEmail())
@@ -148,7 +148,7 @@ public class AuthenticationService {
      * @param account
      * @return
      */
-    private AuthenticationResponse authenticationResponse(@NotNull Account account) {
+    private AuthenticationResponse authenticationResponse( Account account) {
         var token = generateToken(account);
 
         return AuthenticationResponse.builder()
@@ -164,7 +164,7 @@ public class AuthenticationService {
      * @throws JOSEException
      */
     @Transactional(readOnly = true)
-    public AuthenticationResponse refreshToken(@NotNull RefreshRequest request) throws ParseException, JOSEException {
+    public AuthenticationResponse refreshToken( RefreshRequest request) throws ParseException, JOSEException {
         var signJWT = verifyToken(request.getToken());
 
         var jit = signJWT.getJWTClaimsSet().getJWTID();
@@ -192,7 +192,7 @@ public class AuthenticationService {
      * @throws ParseException
      * @throws JOSEException
      */
-    public void logout(@NotNull LogoutRequest request) throws ParseException, JOSEException {
+    public void logout( LogoutRequest request) throws ParseException, JOSEException {
         var signToken = verifyToken(request.getToken());
 
         String jit = signToken.getJWTClaimsSet().getJWTID();
@@ -216,8 +216,8 @@ public class AuthenticationService {
      * @throws JOSEException
      * @throws ParseException
      */
-    @NotNull
-    private SignedJWT verifyToken(@NotNull String token) throws JOSEException, ParseException {
+    
+    private SignedJWT verifyToken( String token) throws JOSEException, ParseException {
         JWSVerifier verifier = new MACVerifier(SIGNER_KEY);
 
         SignedJWT signedJWT = SignedJWT.parse(token);
@@ -241,7 +241,7 @@ public class AuthenticationService {
      * @param account
      * @return
      */
-    private String buildScope(@NotNull Account account) {
+    private String buildScope( Account account) {
         StringJoiner stringJoiner = new StringJoiner(" ");
         if (!CollectionUtils.isEmpty((account.getRoles()))) {
             account.getRoles().forEach(

@@ -24,7 +24,7 @@ public class InvoiceController {
      * @return
      */
     @GetMapping
-    public @NotNull APIResponse<List<InvoiceResponse>> getAllInvoice() {
+    public  APIResponse<List<InvoiceResponse>> getAllInvoice() {
 
         return APIResponse.<List<InvoiceResponse>>builder()
                 .data(invoiceService.getAllInvoice())
@@ -36,7 +36,7 @@ public class InvoiceController {
      * @return
      */
     @GetMapping("{invoiceId}")
-    public @NotNull APIResponse<InvoiceResponse> getInvoiceById(@PathVariable("invoiceId") Long invoiceId) {
+    public  APIResponse<InvoiceResponse> getInvoiceById(@PathVariable("invoiceId") Long invoiceId) {
         return APIResponse.<InvoiceResponse>builder()
                 .data(invoiceService.getInvoiceById(invoiceId))
                 .build();
@@ -47,7 +47,7 @@ public class InvoiceController {
      * @return
      */
     @PostMapping
-    public @NotNull APIResponse<InvoiceResponse> createInvoice(@RequestBody InvoiceCreateRequest invoiceCreateRequest){
+    public  APIResponse<InvoiceResponse> createInvoice(@RequestBody InvoiceCreateRequest invoiceCreateRequest){
         return APIResponse.<InvoiceResponse>builder()
                 .data(invoiceService.createInvoice(invoiceCreateRequest))
                 .build();

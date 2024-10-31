@@ -20,14 +20,14 @@ import static java.util.stream.Collectors.toList;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class PetService {
-    @NotNull PetRepository petRepository;
-    @NotNull PetMapper petMapper;
+     PetRepository petRepository;
+     PetMapper petMapper;
 
     /**
      * @return
      */
     @Transactional(readOnly = true)
-    public @NotNull List<PetResponse> getAllPet() {
+    public  List<PetResponse> getAllPet() {
         return petRepository.findAll().stream()
                 .map(petMapper::toDto).collect(toList());
     }
@@ -37,7 +37,7 @@ public class PetService {
      * @return
      */
     @Transactional(readOnly = true)
-    public PetResponse getPetById(@NotNull Long petId) {
+    public PetResponse getPetById( Long petId) {
         return petRepository.findById(petId).map(petMapper::toDto).orElseThrow(() -> new APIException(ErrorCode.PET_NOT_FOUND));
     }
 }

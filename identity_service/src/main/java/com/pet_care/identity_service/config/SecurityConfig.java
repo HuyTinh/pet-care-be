@@ -28,7 +28,7 @@ public class SecurityConfig {
     private CustomJwtDecoder customJwtDecoder;
 
     @Bean
-    public SecurityFilterChain filterChain(@NotNull HttpSecurity httpSecurity) throws Exception {
+    public SecurityFilterChain filterChain( HttpSecurity httpSecurity) throws Exception {
         httpSecurity.authorizeHttpRequests(request ->
                 request.requestMatchers(HttpMethod.POST, PUBLIC_ENDPOINTS).permitAll()
                         .anyRequest().authenticated());
@@ -44,7 +44,7 @@ public class SecurityConfig {
         return httpSecurity.build();
     }
 
-    @NotNull
+    
     @Bean
     JwtAuthenticationConverter jwtAuthenticationConverter() {
         JwtGrantedAuthoritiesConverter jwtGrantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
@@ -56,7 +56,7 @@ public class SecurityConfig {
         return jwtAuthenticationConverter;
     }
 
-    @NotNull
+    
     @Bean
     PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder(10);

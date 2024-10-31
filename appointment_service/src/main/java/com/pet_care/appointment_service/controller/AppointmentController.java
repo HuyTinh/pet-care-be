@@ -24,7 +24,7 @@ import java.util.*;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class AppointmentController {
 
-    @NotNull AppointmentService appointmentService;
+     AppointmentService appointmentService;
 
     /**
      * @return
@@ -63,7 +63,7 @@ public class AppointmentController {
      * @throws JsonProcessingException
      */
     @GetMapping("/{appointmentId}")
-    public APIResponse<AppointmentResponse> getAppointmentById(@NotNull @PathVariable("appointmentId") Long appointmentId) throws JsonProcessingException {
+    public APIResponse<AppointmentResponse> getAppointmentById( @PathVariable("appointmentId") Long appointmentId) throws JsonProcessingException {
         return APIResponse.<AppointmentResponse>builder()
                 .data(appointmentService.getAppointmentById(appointmentId))
                 .build();
@@ -88,7 +88,7 @@ public class AppointmentController {
      * @throws JsonProcessingException
      */
     @PostMapping
-    public APIResponse<AppointmentResponse> createAppointment(@NotNull @RequestBody AppointmentCreateRequest appointmentCreateRequest, @RequestParam(value = "emailNotification") boolean emailNotification) throws JsonProcessingException {
+    public APIResponse<AppointmentResponse> createAppointment( @RequestBody AppointmentCreateRequest appointmentCreateRequest, @RequestParam(value = "emailNotification") boolean emailNotification) throws JsonProcessingException {
         return APIResponse.<AppointmentResponse>builder()
                 .data(appointmentService.createAppointment(appointmentCreateRequest, emailNotification))
                 .build();
@@ -101,7 +101,7 @@ public class AppointmentController {
      * @throws JsonProcessingException
      */
     @PutMapping("/{appointmentId}")
-    public APIResponse<AppointmentResponse> updateAppointment(@NotNull @PathVariable("appointmentId") Long appointmentId, @NotNull @RequestBody AppointmentUpdateRequest appointmentUpdateRequest) throws JsonProcessingException {
+    public APIResponse<AppointmentResponse> updateAppointment( @PathVariable("appointmentId") Long appointmentId,  @RequestBody AppointmentUpdateRequest appointmentUpdateRequest) throws JsonProcessingException {
         System.out.println(appointmentUpdateRequest);
         return APIResponse.<AppointmentResponse>builder()
                 .data(appointmentService.updateAppointment(appointmentId, appointmentUpdateRequest))

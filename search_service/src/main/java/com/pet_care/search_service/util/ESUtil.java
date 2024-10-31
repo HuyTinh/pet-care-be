@@ -9,7 +9,7 @@ import java.util.function.Supplier;
 
 public class ESUtil {
 
-    @NotNull
+    
     public static Supplier<Query> createSupplierAutoSuggest(String partialPetName) {
 
         return () -> Query.of(q -> q.matchPhrasePrefix(createAutoSuggestMatchQuery(partialPetName)));

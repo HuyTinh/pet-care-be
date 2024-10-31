@@ -21,7 +21,7 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class EmployeeController {
 
-    @NotNull EmployeeService employeeService;
+     EmployeeService employeeService;
 
     /**
      * @return
@@ -37,7 +37,7 @@ public class EmployeeController {
      * @return
      */
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public APIResponse<EmployeeResponse> createEmployee(@NotNull @ModelAttribute EmployeeCreateRequest employeeCreateRequest, @RequestPart(name = "files", required = false) List<MultipartFile> files) {
+    public APIResponse<EmployeeResponse> createEmployee( @ModelAttribute EmployeeCreateRequest employeeCreateRequest, @RequestPart(name = "files", required = false) List<MultipartFile> files) {
         System.out.println(employeeCreateRequest);
         return APIResponse.<EmployeeResponse>builder()
                 .data(employeeService.createEmployee(employeeCreateRequest, files)).build();
@@ -50,8 +50,8 @@ public class EmployeeController {
      * @return
      */
     @PutMapping(value = "/{employeeId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public APIResponse<EmployeeResponse> updateEmployee(@PathVariable("employeeId") @NotNull Long employeeId,
-                                                        @ModelAttribute @NotNull EmployeeUpdateRequest employeeUpdateRequest,
+    public APIResponse<EmployeeResponse> updateEmployee(@PathVariable("employeeId")  Long employeeId,
+                                                        @ModelAttribute  EmployeeUpdateRequest employeeUpdateRequest,
                                                         @RequestPart(name = "files", required = false) List<MultipartFile> files) {
         return APIResponse.<EmployeeResponse>builder()
                 .data(employeeService.updateEmployee(employeeId, employeeUpdateRequest, files)).build();

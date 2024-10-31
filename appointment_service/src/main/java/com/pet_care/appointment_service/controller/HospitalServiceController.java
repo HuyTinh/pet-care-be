@@ -20,7 +20,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class HospitalServiceController {
-    @NotNull HospitalService hospitalService;
+     HospitalService hospitalService;
 
     /**
      * @param hospitalServiceRequest
@@ -47,7 +47,7 @@ public class HospitalServiceController {
      * @return
      */
     @GetMapping("{service}")
-    APIResponse<HospitalServiceResponse> getHospitalServiceById(@NotNull @PathVariable("service") String service) {
+    APIResponse<HospitalServiceResponse> getHospitalServiceById( @PathVariable("service") String service) {
         return APIResponse.<HospitalServiceResponse>builder().data(hospitalService.getHospitalServiceById(service)).build();
     }
 }

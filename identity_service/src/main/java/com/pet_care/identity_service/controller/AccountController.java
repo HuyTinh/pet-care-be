@@ -25,7 +25,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class AccountController {
-    @NotNull AccountService accountService;
+     AccountService accountService;
 
     /**
      * @return
@@ -41,7 +41,7 @@ public class AccountController {
      * @return
      */
     @GetMapping("/{id}")
-    APIResponse<AccountResponse> getUserById(@PathVariable("id") @NotNull Long id) {
+    APIResponse<AccountResponse> getUserById(@PathVariable("id")  Long id) {
         return APIResponse.<AccountResponse>builder().code(1000).data(accountService.getUserById(id)).build();
     }
 
@@ -61,7 +61,7 @@ public class AccountController {
      */
     @PostMapping("/generate-token")
     @ResponseStatus(HttpStatus.CREATED)
-    APIResponse<AuthenticationResponse> createUserAndGenerateToken(@NotNull @Valid @RequestBody AccountCreateRequest request) throws JsonProcessingException {
+    APIResponse<AuthenticationResponse> createUserAndGenerateToken( @Valid @RequestBody AccountCreateRequest request) throws JsonProcessingException {
         return APIResponse.<AuthenticationResponse>builder().code(1000).data(accountService.createAccountAndCustomerRequest(request)).build();
     }
 
@@ -72,7 +72,7 @@ public class AccountController {
      */
     @PostMapping()
     @ResponseStatus(HttpStatus.CREATED)
-    APIResponse<AccountResponse> createAccount(@RequestBody @NotNull AccountCreateRequest request) throws JsonProcessingException {
+    APIResponse<AccountResponse> createAccount(@RequestBody  AccountCreateRequest request) throws JsonProcessingException {
         log.info("{}", request);
         return APIResponse.<AccountResponse>builder().code(1000).data(accountService.createAccount(request)).build();
     }
@@ -83,7 +83,7 @@ public class AccountController {
      * @return
      */
     @PutMapping("/{id}")
-    APIResponse<AccountResponse> updateUser(@PathVariable("id") @NotNull Long id, @RequestBody @Valid AccountUpdateRequest request) {
+    APIResponse<AccountResponse> updateUser(@PathVariable("id")  Long id, @RequestBody @Valid AccountUpdateRequest request) {
         return APIResponse.<AccountResponse>builder().code(1000).data(accountService.updateAccount(id, request)).build();
     }
 
@@ -93,7 +93,7 @@ public class AccountController {
      */
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('HOSPITAL_ADMINISTRATOR')")
-    APIResponse<String> deleteUser(@PathVariable("id") @NotNull Long id) {
+    APIResponse<String> deleteUser(@PathVariable("id")  Long id) {
         accountService.deleteAccount(id);
         return APIResponse.<String>builder().code(1000).message("Delete account successful").build();
     }

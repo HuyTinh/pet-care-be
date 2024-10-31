@@ -22,13 +22,13 @@ import java.util.Map;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class CloudinaryService {
 
-    @NotNull Cloudinary cloudinary;
+     Cloudinary cloudinary;
 
     /**
      * @param file
      * @return
      */
-    @NotNull Mono<String> uploadImage(@NotNull MultipartFile file) {
+     Mono<String> uploadImage( MultipartFile file) {
         return Mono.fromCallable(() -> {
             // Tải file lên Cloudinary thông qua API upload
             Map<?, ?> uploadResult = cloudinary.uploader().upload(file, ObjectUtils.emptyMap());
@@ -40,8 +40,8 @@ public class CloudinaryService {
      * @param fileParts
      * @return
      */
-    @NotNull
-    public Mono<List<String>> uploadImages(@NotNull Flux<FilePart> fileParts) {
+    
+    public Mono<List<String>> uploadImages( Flux<FilePart> fileParts) {
         return fileParts
                 .flatMap(filePart -> filePart.content()
                         .map(dataBuffer -> {

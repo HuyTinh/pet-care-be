@@ -25,12 +25,12 @@ public class Specie {
 
     Boolean status;
 
-    @NotNull
+    
     @CreationTimestamp
     @Temporal(TemporalType.TIMESTAMP)
     Date createdAt;
 
-    @NotNull
+    
     @UpdateTimestamp
     @Temporal(TemporalType.TIMESTAMP)
     Date updatedAt;

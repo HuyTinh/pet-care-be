@@ -11,7 +11,7 @@ public class APIConfig {
     /**
      * @return
      */
-    @NotNull
+    
     @Bean
     public ObjectMapper objectMapper() {
         return new ObjectMapper();

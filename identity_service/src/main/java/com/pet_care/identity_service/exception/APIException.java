@@ -7,6 +7,6 @@ import org.jetbrains.annotations.NotNull;
 @Getter
 @RequiredArgsConstructor
 public class APIException extends RuntimeException {
-    @NotNull
+    
     private final ErrorCode errorCode;
 }

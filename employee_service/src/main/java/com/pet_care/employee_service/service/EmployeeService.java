@@ -28,18 +28,18 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class EmployeeService {
-    @NotNull EmployeeRepository employeeRepository;
+     EmployeeRepository employeeRepository;
 
-    @NotNull EmployeeMapper employeeMapper;
+     EmployeeMapper employeeMapper;
 
-    @NotNull UploadImageClient uploadImageClient;
+     UploadImageClient uploadImageClient;
 
-    @NotNull AccountClient accountClient;
+     AccountClient accountClient;
 
     /**
      * @return
      */
-    @NotNull
+    
     @Transactional(readOnly = true)
     public List<EmployeeResponse> getAllEmployee() {
         return employeeRepository
@@ -65,7 +65,7 @@ public class EmployeeService {
      * @return
      */
     @Transactional
-    public EmployeeResponse createEmployee(@NotNull EmployeeCreateRequest employeeCreateRequest, List<MultipartFile> files) {
+    public EmployeeResponse createEmployee( EmployeeCreateRequest employeeCreateRequest, List<MultipartFile> files) {
         if (employeeRepository
                 .getEmployeeByEmail(employeeCreateRequest.getEmail())
                 .isEmpty()
@@ -99,7 +99,7 @@ public class EmployeeService {
      * @return
      */
     @Transactional
-    public EmployeeResponse updateEmployee(@NotNull Long employeeId, @NotNull EmployeeUpdateRequest employeeUpdateRequest, List<MultipartFile> files) {
+    public EmployeeResponse updateEmployee( Long employeeId,  EmployeeUpdateRequest employeeUpdateRequest, List<MultipartFile> files) {
         Employee existingEmployee = employeeRepository
                 .findById(employeeId)
                 .orElseThrow(() -> new APIException(ErrorCode.EMPLOYEE_NOT_FOUND));

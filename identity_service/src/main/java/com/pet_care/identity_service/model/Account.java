@@ -31,12 +31,12 @@ public class Account {
     @Enumerated(EnumType.STRING)
     Provide provide;
 
-    @NotNull
+    
     @Temporal(TemporalType.TIMESTAMP)
     @CreationTimestamp
     Date createdAt;
 
-    @NotNull
+    
     @Temporal(TemporalType.TIMESTAMP)
     @UpdateTimestamp
     Date updatedAt;

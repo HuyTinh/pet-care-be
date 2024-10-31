@@ -22,14 +22,14 @@ import java.util.stream.Collectors;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class HospitalService {
 
-    @NotNull HospitalServiceRepository hospitalServiceRepository;
+     HospitalServiceRepository hospitalServiceRepository;
 
-    @NotNull HospitalServiceMapper hospitalServiceMapper;
+     HospitalServiceMapper hospitalServiceMapper;
 
     /**
      * @return
      */
-    @NotNull
+    
     @Transactional(readOnly = true)
     public List<HospitalServiceResponse> getAllHospitalService() {
         List<HospitalServiceEntity> hospitalServices = hospitalServiceRepository.findAll();
@@ -41,7 +41,7 @@ public class HospitalService {
      * @return
      */
     @Transactional(readOnly = true)
-    public HospitalServiceResponse getHospitalServiceById(@NotNull String name) {
+    public HospitalServiceResponse getHospitalServiceById( String name) {
         HospitalServiceEntity hospitalServiceEntity = hospitalServiceRepository
                 .findById(name)
                 .orElseThrow(() -> new APIException(ErrorCode.HOSPITAL_SERVICE_NOT_FOUND));
@@ -63,7 +63,7 @@ public class HospitalService {
      * @param hospitalServiceRequest
      * @return
      */
-    public HospitalServiceResponse updateHospitalService(@NotNull String hospitalService, HospitalServiceRequest hospitalServiceRequest) {
+    public HospitalServiceResponse updateHospitalService( String hospitalService, HospitalServiceRequest hospitalServiceRequest) {
         HospitalServiceEntity existHospitalServiceEntity = hospitalServiceRepository
                 .findById(hospitalService)
                 .orElseThrow(() -> new APIException(ErrorCode.HOSPITAL_SERVICE_NOT_FOUND));
@@ -75,7 +75,7 @@ public class HospitalService {
     /**
      * @param hospitalService
      */
-    public void deleteHospitalService(@NotNull String hospitalService) {
+    public void deleteHospitalService( String hospitalService) {
         hospitalServiceRepository.deleteById(hospitalService);
     }
 }

@@ -21,9 +21,9 @@ import java.util.function.Supplier;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class ESService {
 
-    @NotNull ElasticsearchClient elasticsearchClient;
+     ElasticsearchClient elasticsearchClient;
 
-    @NotNull
+    
     public SearchResponse<Pet> autoSuggestPet(String partialPetName) throws IOException {
         Supplier<Query> supplier = ESUtil.createSupplierAutoSuggest(partialPetName);
         SearchResponse<Pet> searchResponse = elasticsearchClient.search(s -> s.index("pets").query(supplier.get()), Pet.class);

@@ -41,37 +41,37 @@ import static java.util.stream.Collectors.toSet;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class PrescriptionService {
-    @NotNull
+    
     PetPrescriptionMapper petPrescriptionMapper;
 
-    @NotNull
+    
     PrescriptionDetailMapper prescriptionDetailMapper;
 
-    @NotNull
+    
     PrescriptionRepository PrescriptionRepository;
 
-    @NotNull
+    
     PrescriptionMapper prescriptionMapper;
 
-    @NotNull
+    
     AppointmentClient appointmentClient;
 
-    @NotNull
+    
     PrescriptionRepository prescriptionRepository;
 
-    @NotNull
+    
     MedicineClient medicineClient;
 
-    @NotNull
+    
     PetPrescriptionRepository petPrescriptionRepository;
 
-    @NotNull
+    
     PrescriptionDetailRepository prescriptionDetailRepository;
 
     /**
      * @return
      */
-    @NotNull
+    
     @Transactional(readOnly = true)
     public List<PrescriptionResponse> getAllPrescriptions() {
         log.info("Fetching all prescriptions");
@@ -96,7 +96,7 @@ public class PrescriptionService {
      * @param endDate
      * @return
      */
-    @NotNull
+    
     @Transactional(readOnly = true)
     public PageableResponse<PrescriptionResponse> filteredPrescription(
             int page,
@@ -126,9 +126,9 @@ public class PrescriptionService {
      * @param prescriptionId
      * @return
      */
-    @NotNull
+    
     @Transactional(readOnly = true)
-    public PrescriptionResponse getPrescriptionById(@NotNull Long prescriptionId) {
+    public PrescriptionResponse getPrescriptionById( Long prescriptionId) {
         log.info("Fetching prescription with id {}", prescriptionId);
 
         return PrescriptionRepository.findById(prescriptionId)
@@ -144,7 +144,7 @@ public class PrescriptionService {
      * @return
      */
     @Transactional
-    public PrescriptionResponse createPrescription(@NotNull PrescriptionCreateRequest prescriptionCreateRequest) {
+    public PrescriptionResponse createPrescription( PrescriptionCreateRequest prescriptionCreateRequest) {
         Prescription newPrescription = prescriptionMapper
                 .toEntity(prescriptionCreateRequest);
 
@@ -193,7 +193,7 @@ public class PrescriptionService {
      * @return
      */
     @Transactional
-    public PrescriptionResponse updatePrescription(@NotNull PrescriptionUpdateRequest prescriptionUpdateRequest) {
+    public PrescriptionResponse updatePrescription( PrescriptionUpdateRequest prescriptionUpdateRequest) {
         Prescription existingPrescription = PrescriptionRepository.findById
                         (prescriptionUpdateRequest.getId())
                 .orElseThrow(() -> new APIException(ErrorCode.PRESCRIPTION_NOT_FOUND));
@@ -255,7 +255,7 @@ public class PrescriptionService {
      * @return
      */
     @Transactional(readOnly = true)
-    public PrescriptionResponse getPrescriptionByAppointmentId(@NotNull Long appointmentId) {
+    public PrescriptionResponse getPrescriptionByAppointmentId( Long appointmentId) {
         Prescription existingPrescription = prescriptionRepository
                 .findByAppointmentId(appointmentId);
 

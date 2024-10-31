@@ -21,23 +21,23 @@ import java.util.Objects;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class PetController {
 
-    @NotNull PetService petService;
+     PetService petService;
 
-    @NotNull ESService esService;
+     ESService esService;
 
     @GetMapping()
-    @NotNull
+    
     Iterable<Pet> getAllPets() {
         return petService.getAllPets();
     }
 
     @PostMapping()
-    @NotNull
-    Pet insertPet(@NotNull @RequestBody Pet pet) {
+    
+    Pet insertPet( @RequestBody Pet pet) {
         return petService.insertPet(pet);
     }
 
-    @NotNull
+    
     @GetMapping("/autoSuggestion/{partialPetName}")
     List<String> autoSuggestion(@PathVariable("partialPetName") String partialPetName) throws IOException {
         SearchResponse<Pet> searchResponse = esService.autoSuggestPet(partialPetName);

@@ -18,9 +18,9 @@ public class APIExceptionHandler {
      * @param ex
      * @return
      */
-    @NotNull
+    
     @ExceptionHandler(Exception.class)
-    ResponseEntity<APIResponse<?>> handlingRuntimeException(@NotNull RuntimeException ex) {
+    ResponseEntity<APIResponse<?>> handlingRuntimeException( RuntimeException ex) {
         ErrorCode errorCode = ErrorCode.valueOf(ex.getMessage());
         return ResponseEntity.status(errorCode.getStatus()).body(APIResponse.builder().code(ErrorCode.UNCATEGORIZED_EXCEPTION.getCode()).message(ErrorCode.UNCATEGORIZED_EXCEPTION.getMessage()).build());
     }
@@ -29,14 +29,14 @@ public class APIExceptionHandler {
      * @param ex
      * @return
      */
-    @NotNull
+    
     @ExceptionHandler(APIException.class)
-    ResponseEntity<APIResponse<?>> handlingIdentityException(@NotNull APIException ex) {
+    ResponseEntity<APIResponse<?>> handlingIdentityException( APIException ex) {
         ErrorCode errorCode = ex.getErrorCode();
         return ResponseEntity.status(errorCode.getStatus()).body(APIResponse.builder().code(errorCode.getCode()).message(errorCode.getMessage()).build());
     }
 
-    @NotNull
+    
     @ExceptionHandler(AccessDeniedException.class)
     ResponseEntity<APIResponse<?>> handlingAccessDeniedException(AccessDeniedException ex) {
         ErrorCode errorCode = ErrorCode.UNAUTHORIZED;
@@ -47,7 +47,7 @@ public class APIExceptionHandler {
      * @param ex
      * @return
      */
-    @NotNull
+    
     @ExceptionHandler(AuthorizationDeniedException.class)
     ResponseEntity<APIResponse<?>> handlingAuthorizationDeniedException(AuthorizationDeniedException ex) {
         ErrorCode errorCode = ErrorCode.UNAUTHORIZED;
@@ -58,9 +58,9 @@ public class APIExceptionHandler {
      * @param ex
      * @return
      */
-    @NotNull
+    
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    ResponseEntity<APIResponse<?>> handlingMethodArgumentNotValidException(@NotNull MethodArgumentNotValidException ex) {
+    ResponseEntity<APIResponse<?>> handlingMethodArgumentNotValidException( MethodArgumentNotValidException ex) {
         String enumKey = Objects.requireNonNull(ex.getFieldError()).getDefaultMessage();
         ErrorCode errorCode = ErrorCode.UNAUTHORIZED;
 

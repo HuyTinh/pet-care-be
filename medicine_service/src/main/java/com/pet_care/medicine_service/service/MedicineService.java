@@ -46,24 +46,24 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class MedicineService {
-    @NotNull MedicineRepository medicineRepository;
+     MedicineRepository medicineRepository;
 
-    @NotNull LocationRepository locationRepository;
+     LocationRepository locationRepository;
 
-    @NotNull CalculationUnitRepository calculationUnitRepository;
+     CalculationUnitRepository calculationUnitRepository;
 
-    @NotNull ManufactureRepository manufactureRepository;
+     ManufactureRepository manufactureRepository;
 
-    @NotNull MedicineMapper medicineMapper;
+     MedicineMapper medicineMapper;
 
-    @NotNull UploadImageClient uploadImageClient;
+     UploadImageClient uploadImageClient;
 
     /**
      * @return
      */
-    @NotNull
+    
     @Transactional(readOnly = true)
-    public MedicinePageResponse getAllMedicine(int pageNumber, int pageSize, String searchTerm, Date manufacturingDate, Date expiryDate, MedicineStatus status, Double minPrice, Double maxPrice, String sortBy,
+    public List<MedicineResponse> getAllMedicine(int pageNumber, int pageSize, String searchTerm, Date manufacturingDate, Date expiryDate, MedicineStatus status, Double minPrice, Double maxPrice, String sortBy,
                                                String sortOrder) {
         Sort sort = Sort.by(Sort.Direction.fromString(sortOrder), sortBy);
         Pageable pageable = PageRequest.of(pageNumber, pageSize, sort);
@@ -76,16 +76,16 @@ public class MedicineService {
                 .collect(Collectors.toList());
 
         log.info("Find all medicines with filters");
-        return new MedicinePageResponse(medicineList, medicinePage.getTotalPages(), medicinePage.getTotalElements());
+        return medicineRepository.findAll().stream().map(medicineMapper::toDto).collect(Collectors.toList());
     }
 
     /**
      * @param id
      * @return
      */
-    @NotNull
+    
     @Transactional(readOnly = true)
-    public Medicine getMedicineById(@NotNull Long id) {
+    public Medicine getMedicineById( Long id) {
         Medicine medicine = medicineRepository.findById(id)
                 .orElseThrow(() -> new APIException(ErrorCode.MEDICINE_NOT_FOUND));
         log.info("Find medicine by id: {}", medicine.getId());
@@ -96,9 +96,9 @@ public class MedicineService {
      * @param medicineIds
      * @return
      */
-    @NotNull
+    
     @Transactional(readOnly = true)
-    public List<Medicine> getMedicineInIds(@NotNull Set<Long> medicineIds) {
+    public List<Medicine> getMedicineInIds( Set<Long> medicineIds) {
         List<Medicine> medicineList = medicineRepository.findAllById(medicineIds);
         log.info("Find medicine by ids: {}", medicineIds);
         return medicineList;
@@ -108,9 +108,9 @@ public class MedicineService {
      * @param medicineCreateRequest
      * @return
      */
-    @NotNull
+    
     @Transactional
-    public Medicine createMedicine(@NotNull MedicineCreateRequest medicineCreateRequest, MultipartFile imageFile) throws IOException {
+    public Medicine createMedicine( MedicineCreateRequest medicineCreateRequest, MultipartFile imageFile) throws IOException {
         Medicine newMedicine = medicineMapper.toEntity(medicineCreateRequest);
 
         checkAndUploadImageMedicine(imageFile, newMedicine);
@@ -133,9 +133,9 @@ public class MedicineService {
      * @param medicineUpdateRequest
      * @return
      */
-    @NotNull
+    
     @Transactional
-    public Medicine updateMedicine(@NotNull Long medicineId, @NotNull MedicineUpdateRequest medicineUpdateRequest, MultipartFile imageFile) throws IOException {
+    public Medicine updateMedicine( Long medicineId,  MedicineUpdateRequest medicineUpdateRequest, MultipartFile imageFile) throws IOException {
         Medicine existingMedicine = medicineRepository.findById(medicineId)
                 .orElseThrow(() -> new APIException(ErrorCode.MEDICINE_NOT_FOUND));
 
@@ -158,17 +158,19 @@ public class MedicineService {
         return updatedMedicine;
     }
 
-
     /**
      * @param medicineId
      */
     @Transactional
-    public void deleteMedicine(@NotNull Long medicineId) {
+    public void deleteMedicine( Long medicineId) {
         medicineRepository.deleteById(medicineId);
         log.info("Delete medicine successful");
     }
 
-
+    /**
+     * @param manufactureId
+     * @param medicine
+     */
     private void findAndSetManufactureById(Long manufactureId, Medicine medicine) {
         Manufacture manufacture = manufactureRepository
                 .findById(manufactureId)
@@ -177,6 +179,10 @@ public class MedicineService {
         medicine.setManufacture(manufacture);
     }
 
+    /**
+     * @param locationIds
+     * @param medicine
+     */
     private void findAllAndSetLocationByIdIn(Set<Long> locationIds, Medicine medicine) {
         Set<Location> locations = new HashSet<>
                 (locationRepository.findAllById(locationIds));
@@ -184,6 +190,10 @@ public class MedicineService {
         medicine.setLocations(locations);
     }
 
+    /**
+     * @param calculationUnitIds
+     * @param medicine
+     */
     private void findAllAndSetCalculationUnitByIdIn(Set<Long> calculationUnitIds, Medicine medicine) {
         Set<CalculationUnit> calculationUnits = new HashSet<>
                 (calculationUnitRepository.findAllById(calculationUnitIds));
@@ -192,6 +202,11 @@ public class MedicineService {
 
     }
 
+    /**
+     * @param imageFile
+     * @param medicine
+     * @throws IOException
+     */
     private void checkAndUploadImageMedicine(MultipartFile imageFile, Medicine medicine) throws IOException {
         if (imageFile != null && !imageFile.isEmpty()) {
             // Upload the new image and update the existing medicine's image URL
@@ -201,6 +216,10 @@ public class MedicineService {
         }
     }
 
+    /**
+     * @param dateStr
+     * @return
+     */
     private Date parseDate(String dateStr) {
         try {
             if (dateStr != null) {

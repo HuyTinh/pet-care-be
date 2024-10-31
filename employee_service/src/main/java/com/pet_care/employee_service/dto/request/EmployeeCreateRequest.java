@@ -43,7 +43,7 @@ public class EmployeeCreateRequest {
     @Enumerated(EnumType.STRING)
     Set<Role> roles;
 
-    @NotNull
+    
     public String getImageUrl() {
         if (this.imageUrl == null || this.imageUrl.isEmpty()) {
             return "https://api.multiavatar.com/" + this.firstName + this.lastName + ".png";

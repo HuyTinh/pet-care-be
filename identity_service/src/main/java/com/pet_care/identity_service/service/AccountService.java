@@ -33,24 +33,24 @@ import java.util.stream.Collectors;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class AccountService {
 
-    @NotNull AccountRepository accountRepository;
+     AccountRepository accountRepository;
 
-    @NotNull AccountMapper accountMapper;
+     AccountMapper accountMapper;
 
     PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
 
-    @NotNull RoleRepository roleRepository;
+     RoleRepository roleRepository;
 
-    @NotNull MessageService messageService;
+     MessageService messageService;
 
-    @NotNull AuthenticationService authenticationService;
+     AuthenticationService authenticationService;
 
-    @NotNull ObjectMapper objectMapper;
+     ObjectMapper objectMapper;
 
     /**
      * @return
      */
-    @NotNull
+    
     @Transactional(readOnly = true)
     public List<AccountResponse> getAllUser() {
         return accountRepository.findAll().stream().map(accountMapper::toDto).collect(Collectors.toList());
@@ -62,7 +62,7 @@ public class AccountService {
      * @throws JsonProcessingException
      */
     @Transactional
-    public AuthenticationResponse createAccountAndCustomerRequest(@NotNull AccountCreateRequest request) throws JsonProcessingException {
+    public AuthenticationResponse createAccountAndCustomerRequest( AccountCreateRequest request) throws JsonProcessingException {
         if (accountRepository.existsByEmail(request.getEmail()))
             throw new APIException(ErrorCode.USER_EXISTED);
 
@@ -87,7 +87,7 @@ public class AccountService {
      * @return
      */
     @Transactional
-    public AccountResponse createAccount(@NotNull AccountCreateRequest request) {
+    public AccountResponse createAccount( AccountCreateRequest request) {
 
         Account account = accountMapper.toEntity(request);
 
@@ -101,19 +101,19 @@ public class AccountService {
     }
 
     @Transactional
-    public AccountResponse updateAccount(@NotNull Long id, AccountUpdateRequest request) {
+    public AccountResponse updateAccount( Long id, AccountUpdateRequest request) {
         Account existAccount = accountRepository.findById(id).orElseThrow(() -> new RuntimeException(""));
         return accountMapper.toDto(accountRepository.save(accountMapper.partialUpdate(request, existAccount)));
     }
 
     @Transactional
-    public void deleteAccount(@NotNull Long id) {
+    public void deleteAccount( Long id) {
         accountRepository.deleteById(id);
     }
 
     @PostAuthorize("returnObject.email == authentication.name || hasRole('HOSPITAL_ADMINISTRATOR')")
     @Transactional(readOnly = true)
-    public AccountResponse getUserById(@NotNull Long id) {
+    public AccountResponse getUserById( Long id) {
         return accountMapper
                 .toDto(accountRepository
                         .findById(id)

@@ -13,9 +13,9 @@ public class APIExceptionHandler {
      * @param e
      * @return
      */
-    @NotNull
+    
     @ExceptionHandler(APIException.class)
-    public ResponseEntity<?> handleAPIException(@NotNull APIException e) {
+    public ResponseEntity<?> handleAPIException( APIException e) {
         ErrorCode errorCode = e.getErrorCode();
 
         return ResponseEntity.status(errorCode.getStatus())

@@ -22,7 +22,8 @@ import java.util.Set;
 public class CalculationUnitService {
 
     CalculationUnitRepository calculationUnitRepository;
-    private final CalculationUnitMapper calculationUnitMapper;
+
+    CalculationUnitMapper calculationUnitMapper;
 
     /**
      * @return
@@ -33,7 +34,11 @@ public class CalculationUnitService {
         return calculationUnitResponses;
     }
 
-    public List<CalculationUnitResponse> getCalculationUnitsInIds(@NotNull Set<Long> calculationUnitsInIds) {
+    /**
+     * @param calculationUnitsInIds
+     * @return
+     */
+    public List<CalculationUnitResponse> getCalculationUnitsInIds( Set<Long> calculationUnitsInIds) {
         List<CalculationUnitResponse> calculationUnitResponses = calculationUnitRepository.findAllById(calculationUnitsInIds).stream().map(calculationUnitMapper::toDto).toList();
         log.info("Find calculation by ids: {}", calculationUnitsInIds);
         return calculationUnitResponses;

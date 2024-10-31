@@ -13,16 +13,16 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class MessageService {
-    @NotNull JmsTemplate jmsTemplate;
+     JmsTemplate jmsTemplate;
 
-    @NotNull ObjectMapper objectMapper;
+     ObjectMapper objectMapper;
 
     /**
      * @param destination
      * @param customer
      * @throws JsonProcessingException
      */
-    public void sendMessageQueue(@NotNull String destination, @NotNull String customer) throws JsonProcessingException {
+    public void sendMessageQueue( String destination,  String customer) throws JsonProcessingException {
         jmsTemplate.convertAndSend(destination, customer);
     }
 }

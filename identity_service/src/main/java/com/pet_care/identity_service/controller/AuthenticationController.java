@@ -25,14 +25,14 @@ import java.text.ParseException;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class AuthenticationController {
-    @NotNull AuthenticationService authenticationService;
+     AuthenticationService authenticationService;
 
     /**
      * @param request
      * @return
      */
     @PostMapping("token")
-    APIResponse<AuthenticationResponse> authenticate(@NotNull @RequestBody AuthenticationRequest request) {
+    APIResponse<AuthenticationResponse> authenticate( @RequestBody AuthenticationRequest request) {
         return APIResponse.<AuthenticationResponse>builder()
                 .data(authenticationService.authenticate(request))
                 .build();
@@ -45,7 +45,7 @@ public class AuthenticationController {
      * @throws JOSEException
      */
     @PostMapping("refresh")
-    APIResponse<AuthenticationResponse> refresh(@NotNull @RequestBody RefreshRequest request) throws ParseException, JOSEException {
+    APIResponse<AuthenticationResponse> refresh( @RequestBody RefreshRequest request) throws ParseException, JOSEException {
         return APIResponse.<AuthenticationResponse>builder()
                 .data(authenticationService.refreshToken(request))
                 .build();
@@ -58,7 +58,7 @@ public class AuthenticationController {
      * @throws JOSEException
      */
     @PostMapping("introspect")
-    APIResponse<IntrospectResponse> authenticate(@NotNull @RequestBody IntrospectRequest request) throws ParseException, JOSEException {
+    APIResponse<IntrospectResponse> authenticate( @RequestBody IntrospectRequest request) throws ParseException, JOSEException {
         return APIResponse.<IntrospectResponse>builder()
                 .data(authenticationService.introspect(request))
                 .build();
@@ -71,7 +71,7 @@ public class AuthenticationController {
      * @throws JOSEException
      */
     @PostMapping("/logout")
-    APIResponse<Void> logout(@NotNull @RequestBody LogoutRequest request) throws ParseException, JOSEException {
+    APIResponse<Void> logout( @RequestBody LogoutRequest request) throws ParseException, JOSEException {
         authenticationService.logout(request);
         return APIResponse.<Void>builder().build();
     }

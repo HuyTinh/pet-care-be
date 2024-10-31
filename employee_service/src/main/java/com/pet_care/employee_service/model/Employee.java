@@ -49,12 +49,12 @@ public class Employee {
     @JsonProperty("phone_number")
     String phoneNumber;
 
-    @NotNull
+    
     @Temporal(TemporalType.TIMESTAMP)
     @CreationTimestamp
     Date createdAt;
 
-    @NotNull
+    
     @Temporal(TemporalType.TIMESTAMP)
     @UpdateTimestamp
     Date updatedAt;

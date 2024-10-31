@@ -17,12 +17,12 @@ import java.util.List;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class SpecieService {
-    @NotNull SpecieRepository specieRepository;
+     SpecieRepository specieRepository;
 
     /**
      * @return
      */
-    @NotNull
+    
     @Transactional(readOnly = true)
     public List<Specie> getAll() {
         return specieRepository.findAll();
@@ -33,7 +33,7 @@ public class SpecieService {
      * @return
      */
     @Transactional(readOnly = true)
-    public Specie getByName(@NotNull String name) {
+    public Specie getByName( String name) {
         return specieRepository.findById(name).orElseThrow(() -> new APIException(ErrorCode.SPECIE_NOT_FOUND));
     }
 }

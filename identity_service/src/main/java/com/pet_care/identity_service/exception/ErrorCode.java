@@ -27,6 +27,6 @@ public enum ErrorCode {
     PERMISSION_NOT_FOUND(1001, "Permission not found", HttpStatus.NOT_FOUND);
 
     int code;
-    @NotNull String message;
-    @NotNull HttpStatus status;
+     String message;
+     HttpStatus status;
 }

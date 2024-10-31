@@ -15,6 +15,6 @@ public enum ErrorCode {
     ;
 
     int code;
-    @NotNull String message;
-    @NotNull HttpStatus status;
+     String message;
+     HttpStatus status;
 }

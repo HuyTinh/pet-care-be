@@ -26,12 +26,12 @@ public class LocationService {
      * @return
      */
     public List<LocationResponse> getAllLocations() {
-        List<LocationResponse> locations = locationRepository.findAll()
+        List<LocationResponse> locationResponses = locationRepository.findAll()
                 .stream().map(locationMapper::toDto).toList();
 
         log.info("Get all locations");
 
-        return locations;
+        return locationResponses;
     }
 
     /**

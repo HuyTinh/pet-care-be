@@ -14,7 +14,7 @@ public class APIConfig implements WebMvcConfigurer {
     /**
      * @return
      */
-    @NotNull
+    
     @Bean
     public ObjectMapper objectMapper() {
         return new ObjectMapper();
