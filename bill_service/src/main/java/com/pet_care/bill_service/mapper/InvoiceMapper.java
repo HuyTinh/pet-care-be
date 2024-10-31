@@ -12,7 +12,7 @@ public interface InvoiceMapper {
      * @param createRequest
      * @return
      */
-    Invoice toEntity(InvoiceCreateRequest createRequest);
+    Invoice toEntity(InvoiceCreateRequest invoiceCreateRequest);
 
     /**
      * @param invoice
