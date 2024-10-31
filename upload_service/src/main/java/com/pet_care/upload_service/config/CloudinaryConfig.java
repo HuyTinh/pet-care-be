@@ -22,7 +22,7 @@ public class CloudinaryConfig {
     /**
      * @return
      */
-    @NotNull
+    
     @Bean
     public Cloudinary cloudinary() {
         return new Cloudinary(ObjectUtils.asMap(

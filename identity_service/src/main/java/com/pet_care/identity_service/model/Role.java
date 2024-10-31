@@ -26,12 +26,12 @@ public class Role {
     @ManyToMany
     Set<Permission> permissions;
 
-    @NotNull
+    
     @Temporal(TemporalType.TIMESTAMP)
     @CreationTimestamp
     Date createdAt;
 
-    @NotNull
+    
     @Temporal(TemporalType.TIMESTAMP)
     @UpdateTimestamp
     Date updatedAt;

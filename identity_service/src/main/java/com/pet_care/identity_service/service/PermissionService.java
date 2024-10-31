@@ -24,9 +24,9 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class PermissionService {
-    @NotNull PermissionRepository permissionRepository;
+     PermissionRepository permissionRepository;
 
-    @NotNull PermissionMapper permissionMapper;
+     PermissionMapper permissionMapper;
 
     /**
      * @param request
@@ -41,7 +41,7 @@ public class PermissionService {
     /**
      * @return
      */
-    @NotNull
+    
     @Transactional(readOnly = true)
     public List<PermissionResponse> getAllPermission() {
         return permissionRepository.findAll().stream().map(permissionMapper::toDto).collect(Collectors.toList());
@@ -53,7 +53,7 @@ public class PermissionService {
      * @return
      */
     @Transactional
-    public PermissionResponse updatePermission(@NotNull String permission, @NotNull PermissionRequest request) {
+    public PermissionResponse updatePermission( String permission,  PermissionRequest request) {
         Permission existPermission = permissionRepository.findById(permission).orElseThrow(() -> new APIException(ErrorCode.PERMISSION_NOT_FOUND));
 
         existPermission.setDescription(request.getDescription());
@@ -67,7 +67,7 @@ public class PermissionService {
      * @param permission
      */
     @Transactional
-    public void deletePermission(@NotNull String permission) {
+    public void deletePermission( String permission) {
         permissionRepository.deleteById(permission);
     }
 

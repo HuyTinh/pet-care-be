@@ -22,7 +22,7 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class SpecieController {
 
-    @NotNull SpecieService specieService;
+     SpecieService specieService;
 
     /**
      * @return

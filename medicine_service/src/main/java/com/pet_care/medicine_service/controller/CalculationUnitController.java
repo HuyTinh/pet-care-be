@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Set;
 
-@CrossOrigin("*")
 @RestController
 @RequestMapping("calculation-unit")
 @RequiredArgsConstructor
@@ -42,6 +41,10 @@ public class CalculationUnitController {
     }
 
 
+    /**
+     * @param calculationUnitIds
+     * @return
+     */
     @GetMapping("/in/{calculationUnitIds}")
     public APIResponse<List<CalculationUnitResponse>> getCalculationUnitByIds(@PathVariable("calculationUnitIds") Set<Long> calculationUnitIds) {
         return APIResponse.<List<CalculationUnitResponse>>builder()

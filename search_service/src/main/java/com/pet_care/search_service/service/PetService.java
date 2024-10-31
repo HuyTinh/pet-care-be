@@ -12,14 +12,14 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class PetService {
-    @NotNull PetRepository petRepository;
+     PetRepository petRepository;
 
-    @NotNull
-    public Pet insertPet(@NotNull Pet pet) {
+    
+    public Pet insertPet( Pet pet) {
         return petRepository.save(pet);
     }
 
-    @NotNull
+    
     public Iterable<Pet> getAllPets() {
         return petRepository.findAll();
     }

@@ -23,7 +23,7 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
     private String signerKey;
 
     @Override
-    public void commence(@NotNull HttpServletRequest request, @NotNull HttpServletResponse response, AuthenticationException authException) throws IOException {
+    public void commence( HttpServletRequest request,  HttpServletResponse response, AuthenticationException authException) throws IOException {
         ErrorCode errorCode = ErrorCode.UNAUTHENTICATED;
 
         String token = request.getHeader("Authorization").substring(7);

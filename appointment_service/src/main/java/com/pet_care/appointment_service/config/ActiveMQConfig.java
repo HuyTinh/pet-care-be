@@ -15,7 +15,7 @@ import java.util.Queue;
  */
 @Configuration
 public class ActiveMQConfig {
-    @NotNull
+    
     @Bean
     Queue<String> queue() {
         return new ArrayDeque<>();
@@ -24,7 +24,7 @@ public class ActiveMQConfig {
     /**
      * @return
      */
-    @NotNull
+    
     @Bean
     public ConnectionFactory connectionFactory() {
         ActiveMQConnectionFactory factory = new ActiveMQConnectionFactory("tcp://localhost:61616");
@@ -37,9 +37,9 @@ public class ActiveMQConfig {
      * @param connectionFactory
      * @return
      */
-    @NotNull
+    
     @Bean
-    public DefaultJmsListenerContainerFactory topicFactory(@NotNull ConnectionFactory connectionFactory) {
+    public DefaultJmsListenerContainerFactory topicFactory( ConnectionFactory connectionFactory) {
         DefaultJmsListenerContainerFactory factory = new DefaultJmsListenerContainerFactory();
         factory.setConnectionFactory(connectionFactory);
         factory.setSubscriptionDurable(true); // Enable durable subscriptions
@@ -52,9 +52,9 @@ public class ActiveMQConfig {
      * @param connectionFactory
      * @return
      */
-    @NotNull
+    
     @Bean
-    public DefaultJmsListenerContainerFactory queueFactory(@NotNull ConnectionFactory connectionFactory) {
+    public DefaultJmsListenerContainerFactory queueFactory( ConnectionFactory connectionFactory) {
         DefaultJmsListenerContainerFactory factory = new DefaultJmsListenerContainerFactory();
         factory.setConnectionFactory(connectionFactory);
         return factory;

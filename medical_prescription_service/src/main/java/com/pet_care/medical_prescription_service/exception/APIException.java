@@ -11,5 +11,5 @@ import org.jetbrains.annotations.NotNull;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class APIException extends RuntimeException {
-    @NotNull ErrorCode errorCode;
+     ErrorCode errorCode;
 }

@@ -21,6 +21,6 @@ public enum ErrorCode {
     SPECIE_NOT_FOUND(1001, "Specie not found", HttpStatus.NOT_FOUND),
     ;
     int code;
-    @NotNull String message;
-    @NotNull HttpStatusCode status;
+     String message;
+     HttpStatusCode status;
 }

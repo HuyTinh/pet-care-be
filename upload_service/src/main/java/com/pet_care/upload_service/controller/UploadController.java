@@ -22,15 +22,15 @@ import java.util.List;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class UploadController {
-    @NotNull CloudinaryService cloudinaryService;
+     CloudinaryService cloudinaryService;
 
     /**
      * @param files
      * @return
      */
-    @NotNull
+    
     @PostMapping(value = "upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<Mono<List<String>>> uploadImages(@NotNull @RequestPart("files") Flux<FilePart> files) {
+    public ResponseEntity<Mono<List<String>>> uploadImages( @RequestPart("files") Flux<FilePart> files) {
         return ResponseEntity.ok(cloudinaryService.uploadImages(files));
     }
 }

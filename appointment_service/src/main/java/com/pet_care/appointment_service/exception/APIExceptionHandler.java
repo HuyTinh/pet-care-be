@@ -12,9 +12,9 @@ public class APIExceptionHandler {
      * @param e
      * @return
      */
-    @NotNull
+    
     @ExceptionHandler(RuntimeException.class)
-    ResponseEntity<APIResponse<?>> HandlingRuntimeException(@NotNull APIException e) {
+    ResponseEntity<APIResponse<?>> HandlingRuntimeException( APIException e) {
         ErrorCode errorCode = e.getErrorCode();
 
         return ResponseEntity

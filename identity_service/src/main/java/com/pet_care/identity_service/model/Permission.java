@@ -24,12 +24,12 @@ public class Permission {
     String name;
     String description;
 
-    @NotNull
+    
     @Temporal(TemporalType.TIMESTAMP)
     @CreationTimestamp
     Date createdAt;
 
-    @NotNull
+    
     @Temporal(TemporalType.TIMESTAMP)
     @UpdateTimestamp
     Date updatedAt;

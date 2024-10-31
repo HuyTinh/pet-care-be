@@ -15,10 +15,10 @@ import java.util.List;
 @Repository
 public interface PrescriptionRepository extends JpaRepository<Prescription, Long> {
     @Query(value = "SELECT * FROM medical_prescription_service.prescriptions ORDER BY id LIMIT 10000000 OFFSET 0", nativeQuery = true)
-    @NotNull
+    
     List<Prescription> findAllCustom();
 
-    Prescription findByAppointmentId(@NotNull Long appointmentId);
+    Prescription findByAppointmentId( Long appointmentId);
 
     Page<Prescription> findByCreatedAtBetween(Date startDate,
                                               Date endDate, Pageable pageable);

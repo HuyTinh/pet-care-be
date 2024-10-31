@@ -18,15 +18,15 @@ import java.util.Queue;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class MessageService {
 
-    @NotNull Queue<String> petQueue;
+     Queue<String> petQueue;
 
-    @NotNull JmsTemplate jmsTemplate;
+     JmsTemplate jmsTemplate;
 
-    @NotNull ObjectMapper objectMapper;
+     ObjectMapper objectMapper;
 
-    @NotNull WebSocketHandler webSocketHandler;
+     WebSocketHandler webSocketHandler;
 
-    @NotNull WebSocketService webSocketService;
+     WebSocketService webSocketService;
 
 
     /**
@@ -47,7 +47,7 @@ public class MessageService {
      * @param destination
      * @param appointment
      */
-    public void sendMessage(@NotNull String destination, @NotNull String appointment) {
+    public void sendMessage( String destination,  String appointment) {
         jmsTemplate.convertAndSend(destination, appointment);
     }
 

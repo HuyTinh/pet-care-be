@@ -56,12 +56,12 @@ public class Appointment {
     @Enumerated(EnumType.STRING)
     AppointmentStatus status;
 
-    @NotNull
+    
     @CreationTimestamp
     @Temporal(TemporalType.TIMESTAMP)
     Date createdAt;
 
-    @NotNull
+    
     @UpdateTimestamp
     @Temporal(TemporalType.TIMESTAMP)
     Date updatedAt;

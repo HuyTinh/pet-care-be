@@ -30,20 +30,20 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class CustomerService {
-    @NotNull CustomerRepository customerRepository;
+     CustomerRepository customerRepository;
 
-    @NotNull CustomerMapper customerMapper;
+     CustomerMapper customerMapper;
 
-    @NotNull MessageService messageService;
+     MessageService messageService;
 
-    @NotNull ObjectMapper objectMapper;
+     ObjectMapper objectMapper;
 
-    @NotNull UploadImageClient uploadImageClient;
+     UploadImageClient uploadImageClient;
 
     /**
      * @return
      */
-    @NotNull
+    
     @Transactional(readOnly = true)
     public List<CustomerResponse> getAllCustomer() {
         return customerRepository.findAll().stream().map(customerMapper::toDto).collect(Collectors.toList());
@@ -54,7 +54,7 @@ public class CustomerService {
      * @return
      */
     @Transactional(readOnly = true)
-    public CustomerResponse getCustomerById(@NotNull Long id) {
+    public CustomerResponse getCustomerById( Long id) {
         return customerRepository.findById(id).map(customerMapper::toDto).orElseThrow(() -> new RuntimeException(("")));
     }
 
@@ -83,7 +83,7 @@ public class CustomerService {
      * @return
      * @throws JsonProcessingException
      */
-    public CustomerResponse createAppointment(@NotNull AppointmentCreateRequest request, Boolean notification) throws JsonProcessingException {
+    public CustomerResponse createAppointment( AppointmentCreateRequest request, Boolean notification) throws JsonProcessingException {
         Customer customerSave = customerRepository.findByAccountId(request.getAccountId()).orElse(null);
 
         if (customerSave == null) {
@@ -128,7 +128,7 @@ public class CustomerService {
     /**
      * @param id
      */
-    public void deleteCustomer(@NotNull Long id) {
+    public void deleteCustomer( Long id) {
         customerRepository.deleteById(id);
     }
 }

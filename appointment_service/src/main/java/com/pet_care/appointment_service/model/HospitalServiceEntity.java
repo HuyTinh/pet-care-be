@@ -29,12 +29,12 @@ public class HospitalServiceEntity {
 
     Double price;
 
-    @NotNull
+    
     @CreationTimestamp
     @Temporal(TemporalType.TIMESTAMP)
     Date createdAt;
 
-    @NotNull
+    
     @UpdateTimestamp
     @Temporal(TemporalType.TIMESTAMP)
     Date updatedAt;

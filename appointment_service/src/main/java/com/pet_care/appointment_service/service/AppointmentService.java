@@ -43,24 +43,24 @@ import static java.util.stream.Collectors.toSet;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class AppointmentService {
-    @NotNull
+    
     HospitalServiceMapper hospitalServiceMapper;
 
-    @NotNull AppointmentRepository appointmentRepository;
+     AppointmentRepository appointmentRepository;
 
-    @NotNull HospitalServiceRepository hospitalServiceRepository;
+     HospitalServiceRepository hospitalServiceRepository;
 
-    @NotNull AppointmentMapper appointmentMapper;
+     AppointmentMapper appointmentMapper;
 
-    @NotNull MessageService messageService;
+     MessageService messageService;
 
-    @NotNull Queue<String> queue;
+     Queue<String> queue;
 
-    @NotNull ObjectMapper objectMapper;
+     ObjectMapper objectMapper;
 
-    @NotNull PetRepository petRepository;
+     PetRepository petRepository;
 
-    @NotNull PetMapper petMapper;
+     PetMapper petMapper;
 
     /**
      * @param appointmentId
@@ -69,7 +69,7 @@ public class AppointmentService {
      * @throws JsonProcessingException
      */
     @Transactional
-    public AppointmentResponse updateAppointment(@NotNull Long appointmentId, @NotNull AppointmentUpdateRequest appointmentUpdateRequest) {
+    public AppointmentResponse updateAppointment( Long appointmentId,  AppointmentUpdateRequest appointmentUpdateRequest) {
         Appointment existingAppointment = appointmentRepository.findById(appointmentId)
                 .orElseThrow(() -> new APIException(ErrorCode.APPOINTMENT_NOT_FOUND));
 
@@ -94,7 +94,7 @@ public class AppointmentService {
     /**
      * @return
      */
-    @NotNull
+    
     @Transactional(readOnly = true)
     public List<AppointmentResponse> getAllAppointment() {
         List<AppointmentResponse> appointmentResponses = appointmentRepository.findAll().stream().map(appointment -> {
@@ -115,9 +115,9 @@ public class AppointmentService {
      * @param appointmentId
      * @return
      */
-    @NotNull
+    
     @Transactional(readOnly = true)
-    public AppointmentResponse getAppointmentById(@NotNull Long appointmentId) {
+    public AppointmentResponse getAppointmentById( Long appointmentId) {
         Appointment existingAppointment = appointmentRepository
                 .findById(appointmentId)
                 .orElseThrow(() -> new APIException(ErrorCode.APPOINTMENT_NOT_FOUND));
@@ -141,7 +141,7 @@ public class AppointmentService {
      * @param accountId
      * @return
      */
-    @NotNull
+    
     @Transactional(readOnly = true)
     public List<AppointmentResponse> getAllAppointmentByAccountId(Long accountId) {
 
@@ -204,7 +204,7 @@ public class AppointmentService {
      * @param status
      * @return
      */
-    @NotNull
+    
     @Transactional(readOnly = true)
     public List<AppointmentResponse> getByStatus(String status) {
         List<AppointmentResponse> appointmentResponses = appointmentRepository
@@ -223,7 +223,7 @@ public class AppointmentService {
      * @param accountId
      * @return
      */
-    @NotNull
+    
     @Transactional(readOnly = true)
     public List<AppointmentResponse> getByStatusAndAccountId(String status, Long accountId) {
         try {
@@ -242,7 +242,7 @@ public class AppointmentService {
      * @param appointmentDate
      * @return
      */
-    @NotNull
+    
     @Transactional(readOnly = true)
     public List<AppointmentResponse> getAllAppointmentByAppointmentDate(Date appointmentDate) {
         List<AppointmentResponse> appointmentResponses = appointmentRepository
@@ -260,9 +260,9 @@ public class AppointmentService {
      * @param statues
      * @return
      */
-    @NotNull
+    
     @Transactional(readOnly = true)
-    public PageableResponse<AppointmentResponse> filterAppointments(int page, int size, @NotNull LocalDate startDate, @NotNull LocalDate endDate, @Nullable Set<String> statues) {
+    public PageableResponse<AppointmentResponse> filterAppointments(int page, int size,  LocalDate startDate,  LocalDate endDate, @Nullable Set<String> statues) {
 
         Date sDate = Date.from(startDate.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant());
 
@@ -290,9 +290,9 @@ public class AppointmentService {
      * @return
      * @throws JsonProcessingException
      */
-    @NotNull
+    
     @Transactional
-    public AppointmentResponse createAppointment(@NotNull AppointmentCreateRequest appointmentCreateRequest, Boolean notification) throws JsonProcessingException {
+    public AppointmentResponse createAppointment( AppointmentCreateRequest appointmentCreateRequest, Boolean notification) throws JsonProcessingException {
         Appointment appointment = appointmentMapper.toEntity(appointmentCreateRequest);
 
         Set<HospitalServiceEntity> bookingService = new HashSet<>(hospitalServiceRepository
@@ -379,7 +379,7 @@ public class AppointmentService {
      * @param appointment
      * @return
      */
-    @NotNull
+    
     private AppointmentResponse toAppointmentResponse(Appointment appointment) {
         AppointmentResponse appointmentResponse = appointmentMapper.toDto(appointment);
 

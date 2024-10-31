@@ -15,13 +15,13 @@ import java.util.Map;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class WebSocketService {
 
-    @NotNull SimpMessagingTemplate messagingTemplate;
+     SimpMessagingTemplate messagingTemplate;
 
     /**
      * @param message
      * @param status
      */
-    public void sendToAllUpdateListAppointment(@NotNull String message, @NotNull AppointmentStatus status) {
+    public void sendToAllUpdateListAppointment( String message,  AppointmentStatus status) {
         Map<String, String> body = Map.of("appointmentId", message, "status", status.toString());
         messagingTemplate.convertAndSend("/topic/updateAppointment", body);
     }
@@ -29,7 +29,7 @@ public class WebSocketService {
     /**
      * @param message
      */
-    public void sendToAllCreateAppointment(@NotNull String message) {
+    public void sendToAllCreateAppointment( String message) {
         messagingTemplate.convertAndSend("/topic/createAppointment", message);
     }
 
@@ -37,7 +37,7 @@ public class WebSocketService {
      * @param sessionId
      * @param message
      */
-    public void sendToExportPDFAppointment(String sessionId, @NotNull String message) {
+    public void sendToExportPDFAppointment(String sessionId,  String message) {
         messagingTemplate.convertAndSend("/topic/exportPDF/" + sessionId, message);
     }
 }

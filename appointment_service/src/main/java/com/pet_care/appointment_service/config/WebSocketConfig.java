@@ -19,7 +19,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
      * @param config
      */
     @Override
-    public void configureMessageBroker(@NotNull MessageBrokerRegistry config) {
+    public void configureMessageBroker( MessageBrokerRegistry config) {
         config.enableSimpleBroker("/topic");
         config.setApplicationDestinationPrefixes("/app");
     }
@@ -28,14 +28,14 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
      * @param registry
      */
     @Override
-    public void registerStompEndpoints(@NotNull StompEndpointRegistry registry) {
+    public void registerStompEndpoints( StompEndpointRegistry registry) {
         registry.addEndpoint("/ws").setAllowedOrigins("http://localhost:5173/", "https://tsm885rc-5173.asse.devtunnels.ms/").withSockJS();
     }
 
     /**
      * @return
      */
-    @NotNull
+    
     @Bean
     public WebSocketHandler webSocketHandler() {
         return new WebSocketHandler();

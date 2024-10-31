@@ -12,15 +12,15 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class MessageService {
-    @NotNull JmsTemplate jmsTemplate;
+     JmsTemplate jmsTemplate;
 
-    @NotNull ObjectMapper objectMapper;
+     ObjectMapper objectMapper;
 
     /**
      * @param destination
      * @param appointment
      */
-    public void sendMessageQueue(@NotNull String destination, @NotNull String appointment) {
+    public void sendMessageQueue( String destination,  String appointment) {
         jmsTemplate.convertAndSend(destination, appointment);
     }
 }

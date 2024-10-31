@@ -34,17 +34,17 @@ public class WebSocketHandler extends TextWebSocketHandler {
 
     Set<WebSocketSession> sessions = Collections.synchronizedSet(new HashSet<>());
 
-    @NotNull JmsTemplate jmsTemplate;
+     JmsTemplate jmsTemplate;
 
-    @NotNull ObjectMapper objectMapper;
+     ObjectMapper objectMapper;
 
-    @NotNull
+    
     @NonFinal
     Iterator<WebSocketSession> sessionIterator = sessions.iterator();
 
 
     @Override
-    public void handleMessage(@NotNull WebSocketSession session, @NotNull WebSocketMessage<?> message) throws Exception {
+    public void handleMessage( WebSocketSession session,  WebSocketMessage<?> message) throws Exception {
         // Optional: handle incoming messages if needed
         super.handleMessage(session, message);
     }
@@ -54,7 +54,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
      * @throws Exception
      */
     @Override
-    public void afterConnectionEstablished(@NotNull WebSocketSession session) throws Exception {
+    public void afterConnectionEstablished( WebSocketSession session) throws Exception {
         sessions.add(session);
         // Reset iterator when a new session is added
         sessionIterator = sessions.iterator();
@@ -66,7 +66,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
      * @throws Exception
      */
     @Override
-    public void afterConnectionClosed(@NotNull WebSocketSession session, @NotNull CloseStatus status) throws Exception {
+    public void afterConnectionClosed( WebSocketSession session,  CloseStatus status) throws Exception {
         sessions.remove(session);
         // Reset iterator if the current session was the iterator's next
         if (!sessionIterator.hasNext()) {
@@ -80,7 +80,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
      * @throws Exception
      */
     @Override
-    public void handleTransportError(@NotNull WebSocketSession session, @NotNull Throwable exception) throws Exception {
+    public void handleTransportError( WebSocketSession session,  Throwable exception) throws Exception {
         // Handle error if needed
     }
 
@@ -96,7 +96,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
      * @param message
      * @throws IOException
      */
-    public void sendMessageRoundRobin(@NotNull String message) throws IOException {
+    public void sendMessageRoundRobin( String message) throws IOException {
         synchronized (sessions) {
             if (!sessions.isEmpty()) {
                 if (!sessionIterator.hasNext()) {

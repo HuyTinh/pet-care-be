@@ -14,14 +14,14 @@ import org.springframework.web.client.RestClient;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class BrevoService {
 
-    @NotNull RestClient restClient;
+     RestClient restClient;
 
     /**
      * @param message
      * @throws JsonProcessingException
      */
     @JmsListener(destination = "appointment-success-notification-queue")
-    public void sendAppointmentSuccessfulEmail(@NotNull String message) throws JsonProcessingException {
+    public void sendAppointmentSuccessfulEmail( String message) throws JsonProcessingException {
         restClient.post().body(message).retrieve();
     }
 

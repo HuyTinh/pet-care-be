@@ -34,6 +34,10 @@ public class ManufactureService {
         return manufactureResponseList;
     }
 
+    /**
+     * @param id
+     * @return
+     */
     public ManufactureResponse getManufactureById(Long id) {
         ManufactureResponse manufactureResponse = manufactureMapper.toDto(manufactureRepository.findById(id).orElseThrow(() -> new APIException(ErrorCode.MANUFACTURE_NOT_FOUND)));
 

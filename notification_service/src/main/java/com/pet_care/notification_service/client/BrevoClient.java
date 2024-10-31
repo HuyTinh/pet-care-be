@@ -18,7 +18,7 @@ public class BrevoClient {
     /**
      * @return
      */
-    @NotNull
+    
     @Bean
     public RestClient client() {
         return RestClient.create().mutate().baseUrl(brevoUrl)

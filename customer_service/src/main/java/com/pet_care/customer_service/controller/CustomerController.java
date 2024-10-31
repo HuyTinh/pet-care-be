@@ -20,7 +20,7 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class CustomerController {
 
-    @NotNull CustomerService customerService;
+     CustomerService customerService;
 
     /**
      * @return
@@ -38,7 +38,7 @@ public class CustomerController {
      * @return
      */
     @GetMapping("/{customerId}")
-    public APIResponse<CustomerResponse> getCustomerById(@NotNull @PathVariable("customerId") Long customerId) {
+    public APIResponse<CustomerResponse> getCustomerById( @PathVariable("customerId") Long customerId) {
         return APIResponse.<CustomerResponse>builder()
                 .data(customerService.getCustomerById(customerId))
                 .build();
@@ -50,7 +50,7 @@ public class CustomerController {
      * @return
      */
     @DeleteMapping("/{customerId}")
-    public APIResponse<Void> deleteCustomer(@NotNull @PathVariable Long customerId) {
+    public APIResponse<Void> deleteCustomer( @PathVariable Long customerId) {
         customerService.deleteCustomer(customerId);
         return APIResponse.<Void>builder()
                 .message("Customer deleted successfully")
