@@ -57,12 +57,12 @@ public class Medicine {
     @Builder.Default
     MedicineStatus status = MedicineStatus.ACTIVE;
 
-    @NotNull
+//    @NotNull
     @Temporal(TemporalType.TIMESTAMP)
     @CreationTimestamp
     Date createdAt;
 
-    @NotNull
+//    @NotNull
     @Temporal(TemporalType.TIMESTAMP)
     @UpdateTimestamp
     Date updatedAt;
