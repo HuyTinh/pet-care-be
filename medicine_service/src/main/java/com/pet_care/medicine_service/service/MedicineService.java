@@ -1,11 +1,17 @@
 package com.pet_care.medicine_service.service;
 
+import com.pet_care.medicine_service.client.UploadImageClient;
 import com.pet_care.medicine_service.dto.request.MedicineCreateRequest;
 import com.pet_care.medicine_service.dto.request.MedicineUpdateRequest;
+import com.pet_care.medicine_service.dto.response.MedicinePageResponse;
 import com.pet_care.medicine_service.dto.response.MedicineResponse;
+import com.pet_care.medicine_service.enums.MedicineStatus;
 import com.pet_care.medicine_service.exception.APIException;
 import com.pet_care.medicine_service.exception.ErrorCode;
 import com.pet_care.medicine_service.mapper.MedicineMapper;
+import com.pet_care.medicine_service.model.CalculationUnit;
+import com.pet_care.medicine_service.model.Location;
+import com.pet_care.medicine_service.model.Manufacture;
 import com.pet_care.medicine_service.model.Medicine;
 import com.pet_care.medicine_service.repository.CalculationUnitRepository;
 import com.pet_care.medicine_service.repository.LocationRepository;
@@ -16,9 +22,20 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -39,15 +56,27 @@ public class MedicineService {
 
     @NotNull MedicineMapper medicineMapper;
 
+    @NotNull UploadImageClient uploadImageClient;
+
     /**
      * @return
      */
     @NotNull
     @Transactional(readOnly = true)
-    public List<MedicineResponse> getAllMedicine() {
-        List<MedicineResponse> medicineList = medicineRepository.findAll().stream().map(medicineMapper::toDto).collect(Collectors.toList());
-        log.info("Find all medicine");
-        return medicineList;
+    public MedicinePageResponse getAllMedicine(int pageNumber, int pageSize, String searchTerm, Date manufacturingDate, Date expiryDate, MedicineStatus status, Double minPrice, Double maxPrice, String sortBy,
+                                               String sortOrder) {
+        Sort sort = Sort.by(Sort.Direction.fromString(sortOrder), sortBy);
+        Pageable pageable = PageRequest.of(pageNumber, pageSize, sort);
+        Page<Medicine> medicinePage = medicineRepository.findByFilters(
+                searchTerm, manufacturingDate, expiryDate, status, minPrice, maxPrice, pageable
+        );
+
+        List<MedicineResponse> medicineList = medicinePage.getContent().stream()
+                .map(medicineMapper::toDto)
+                .collect(Collectors.toList());
+
+        log.info("Find all medicines with filters");
+        return new MedicinePageResponse(medicineList, medicinePage.getTotalPages(), medicinePage.getTotalElements());
     }
 
     /**
@@ -81,16 +110,16 @@ public class MedicineService {
      */
     @NotNull
     @Transactional
-    public Medicine createMedicine(@NotNull MedicineCreateRequest medicineCreateRequest) {
+    public Medicine createMedicine(@NotNull MedicineCreateRequest medicineCreateRequest, MultipartFile imageFile) throws IOException {
         Medicine newMedicine = medicineMapper.toEntity(medicineCreateRequest);
 
-        newMedicine.setCalculationUnits(
-                new HashSet<>(calculationUnitRepository
-                        .findAllById(medicineCreateRequest.getCalculationUnits())));
+        checkAndUploadImageMedicine(imageFile, newMedicine);
 
-        newMedicine.setLocations(
-                new HashSet<>(locationRepository
-                        .findAllById(medicineCreateRequest.getLocations())));
+        findAndSetManufactureById(medicineCreateRequest.getManufactureId(), newMedicine);
+
+        findAllAndSetCalculationUnitByIdIn(medicineCreateRequest.getCalculationUnits(), newMedicine);
+
+        findAllAndSetLocationByIdIn(medicineCreateRequest.getLocations(), newMedicine);
 
         Medicine savedMedicine = medicineRepository.save(newMedicine);
 
@@ -106,25 +135,29 @@ public class MedicineService {
      */
     @NotNull
     @Transactional
-    public Medicine updateMedicine(@NotNull Long medicineId, @NotNull MedicineUpdateRequest medicineUpdateRequest) {
-        Medicine existingMedicine = medicineRepository.findById(medicineId).orElseThrow(() -> new APIException(ErrorCode.MEDICINE_NOT_FOUND));
+    public Medicine updateMedicine(@NotNull Long medicineId, @NotNull MedicineUpdateRequest medicineUpdateRequest, MultipartFile imageFile) throws IOException {
+        Medicine existingMedicine = medicineRepository.findById(medicineId)
+                .orElseThrow(() -> new APIException(ErrorCode.MEDICINE_NOT_FOUND));
 
-        existingMedicine.setCalculationUnits(
-                new HashSet<>(calculationUnitRepository
-                        .findAllById(medicineUpdateRequest.getCalculationUnits())));
+        // Check if the user uploaded a new image
+        checkAndUploadImageMedicine(imageFile, existingMedicine);
 
-        existingMedicine.setLocations(
-                new HashSet<>(locationRepository
-                        .findAllById(medicineUpdateRequest.getLocations())));
+        // Update calculation units and locations
+        findAllAndSetCalculationUnitByIdIn(medicineUpdateRequest.getCalculationUnits(), existingMedicine);
 
+        findAllAndSetLocationByIdIn(medicineUpdateRequest.getLocations(), existingMedicine);
+
+        findAndSetManufactureById(medicineUpdateRequest.getManufactureId(), existingMedicine);
+
+        // Update the rest of the medicine fields
         medicineMapper.partialUpdate(medicineUpdateRequest, existingMedicine);
-
         Medicine updatedMedicine = medicineRepository.save(existingMedicine);
 
         log.info("Update medicine: {}", updatedMedicine);
 
         return updatedMedicine;
     }
+
 
     /**
      * @param medicineId
@@ -134,4 +167,51 @@ public class MedicineService {
         medicineRepository.deleteById(medicineId);
         log.info("Delete medicine successful");
     }
+
+
+    private void findAndSetManufactureById(Long manufactureId, Medicine medicine) {
+        Manufacture manufacture = manufactureRepository
+                .findById(manufactureId)
+                .orElseThrow(() -> new APIException(ErrorCode.MANUFACTURE_NOT_FOUND));
+
+        medicine.setManufacture(manufacture);
+    }
+
+    private void findAllAndSetLocationByIdIn(Set<Long> locationIds, Medicine medicine) {
+        Set<Location> locations = new HashSet<>
+                (locationRepository.findAllById(locationIds));
+
+        medicine.setLocations(locations);
+    }
+
+    private void findAllAndSetCalculationUnitByIdIn(Set<Long> calculationUnitIds, Medicine medicine) {
+        Set<CalculationUnit> calculationUnits = new HashSet<>
+                (calculationUnitRepository.findAllById(calculationUnitIds));
+
+        medicine.setCalculationUnits(calculationUnits);
+
+    }
+
+    private void checkAndUploadImageMedicine(MultipartFile imageFile, Medicine medicine) throws IOException {
+        if (imageFile != null && !imageFile.isEmpty()) {
+            // Upload the new image and update the existing medicine's image URL
+            String imageUrl = uploadImageClient
+                    .uploadImage(List.of(imageFile)).get(0);
+            medicine.setImage_url(imageUrl);
+        }
+    }
+
+    private Date parseDate(String dateStr) {
+        try {
+            if (dateStr != null) {
+                LocalDate localDate = LocalDate.parse(dateStr, DateTimeFormatter.ofPattern("yyyy/MM/dd"));
+                return Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
+            }
+            return null;
+        } catch (DateTimeParseException e) {
+            log.error("Invalid date format: {}", dateStr);
+            return null;
+        }
+    }
+
 }

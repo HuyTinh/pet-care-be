@@ -14,8 +14,7 @@ public interface PrescriptionDetailRepository extends JpaRepository<Prescription
 
     @Modifying
     @Transactional
-    @Query(value = "DELETE FROM medical_prescription_service.prescription_details where prescription_details.pet_prescriptions_id in :petPrescriptionsIds",nativeQuery = true)
+    @Query(value = "DELETE FROM medical_prescription_service.prescription_details where prescription_details.pet_prescriptions_id in :petPrescriptionsIds", nativeQuery = true)
     void deleteAllByPetPrescriptionIdIn(@Param("petPrescriptionsIds") Iterable<Long> petPrescriptionsIds);
 
-//    void deleteAllByPetPrescriptionId(Long petPrescription_id);
 }

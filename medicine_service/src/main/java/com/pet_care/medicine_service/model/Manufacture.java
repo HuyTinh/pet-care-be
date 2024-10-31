@@ -1,13 +1,10 @@
 package com.pet_care.medicine_service.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
-import org.jetbrains.annotations.NotNull;
 
-import java.util.Date;
 import java.util.Set;
 
 @Getter
@@ -26,14 +23,8 @@ public class Manufacture {
 
     Boolean status;
 
-    @OneToMany(mappedBy = "manufacture")
-    Set<Medicine> medicines;
 
-    @Temporal(TemporalType.TIMESTAMP)
-    @CreationTimestamp
-    Date createdAt;
-
-    @Temporal(TemporalType.TIMESTAMP)
-    @UpdateTimestamp
-    Date updatedAt;
+    @OneToMany(mappedBy = "manufacture", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    private Set<Medicine> medicines;
 }

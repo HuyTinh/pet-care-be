@@ -3,17 +3,20 @@ package com.pet_care.medical_prescription_service.controller;
 import com.pet_care.medical_prescription_service.dto.request.PrescriptionCreateRequest;
 import com.pet_care.medical_prescription_service.dto.request.PrescriptionUpdateRequest;
 import com.pet_care.medical_prescription_service.dto.response.APIResponse;
+import com.pet_care.medical_prescription_service.dto.response.PageableResponse;
 import com.pet_care.medical_prescription_service.dto.response.PrescriptionResponse;
-import com.pet_care.medical_prescription_service.model.Prescription;
 import com.pet_care.medical_prescription_service.repository.PrescriptionRepository;
 import com.pet_care.medical_prescription_service.service.PrescriptionService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("prescription")
@@ -32,6 +35,25 @@ public class PrescriptionController {
     public @NotNull APIResponse<List<PrescriptionResponse>> getAllPrescription() {
         return APIResponse.<List<PrescriptionResponse>>builder()
                 .data(prescriptionService.getAllPrescriptions())
+                .build();
+    }
+
+    @GetMapping("/filter")
+    public @NotNull APIResponse<PageableResponse<PrescriptionResponse>> getFilteredPrescription(
+            @RequestParam(value = "page",required = false, defaultValue = "0") int page,
+            @RequestParam(value = "size", required = false, defaultValue = "50") int size,
+            @RequestParam(value = "startDate", required = false) LocalDate startDate,
+            @RequestParam(value = "endDate", required = false) LocalDate endDate
+    ) {
+
+        return APIResponse.<PageableResponse<PrescriptionResponse>>builder()
+                .data(prescriptionService
+                        .filteredPrescription(
+                                page,
+                                size,
+                                Objects.requireNonNullElse(startDate, LocalDate.now()),
+                                Objects.requireNonNullElse(endDate, LocalDate.now()))
+                )
                 .build();
     }
 
@@ -57,6 +79,7 @@ public class PrescriptionController {
                 .data(prescriptionService.getPrescriptionByAppointmentId(appointmentId))
                 .build();
     }
+
     /**
      * @param prescriptionCreateRequest
      * @return

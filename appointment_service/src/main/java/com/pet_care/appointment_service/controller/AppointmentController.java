@@ -5,19 +5,18 @@ import com.pet_care.appointment_service.dto.request.AppointmentCreateRequest;
 import com.pet_care.appointment_service.dto.request.AppointmentUpdateRequest;
 import com.pet_care.appointment_service.dto.response.APIResponse;
 import com.pet_care.appointment_service.dto.response.AppointmentResponse;
+import com.pet_care.appointment_service.dto.response.PageableResponse;
 import com.pet_care.appointment_service.service.AppointmentService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
 import java.text.ParseException;
 import java.time.LocalDate;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 @RestController
 @RequestMapping("appointment")
@@ -28,13 +27,11 @@ public class AppointmentController {
     @NotNull AppointmentService appointmentService;
 
     /**
-     * @param startDate
-     * @param endDate
      * @return
      * @throws JsonProcessingException
      */
     @GetMapping
-    public APIResponse<List<AppointmentResponse>> getAllAppointment(@RequestParam(value = "startDate", required = false) String startDate, @RequestParam(value = "endDate", required = false) String endDate) throws JsonProcessingException {
+    public APIResponse<List<AppointmentResponse>> getAllAppointment() throws JsonProcessingException {
         return APIResponse.<List<AppointmentResponse>>builder()
                 .data(appointmentService.getAllAppointment())
                 .build();
@@ -48,13 +45,15 @@ public class AppointmentController {
      * @throws JsonProcessingException
      */
     @GetMapping("/filter")
-    public APIResponse<List<AppointmentResponse>> getAllAppointmentByStartDateAndEndDate(
-            @NotNull @RequestParam(value = "startDate", required = false) LocalDate startDate,
-            @NotNull @RequestParam(value = "endDate", required = false) LocalDate endDate,
+    public APIResponse<PageableResponse<AppointmentResponse>> getAllAppointmentByStartDateAndEndDate(
+            @RequestParam(value = "page",required = false, defaultValue = "0") int page,
+            @RequestParam(value = "size", required = false, defaultValue = "50") int size,
+            @RequestParam(value = "startDate", required = false) LocalDate startDate,
+            @RequestParam(value = "endDate", required = false) LocalDate endDate,
             @RequestParam(value = "statues", required = false) Set<String> statues) throws JsonProcessingException {
 
-        return APIResponse.<List<AppointmentResponse>>builder()
-                .data(appointmentService.filterAppointments(startDate, endDate, statues))
+        return APIResponse.<PageableResponse<AppointmentResponse>>builder()
+                .data(appointmentService.filterAppointments(page, size, Objects.requireNonNullElse(startDate, LocalDate.now()), Objects.requireNonNullElse(endDate, LocalDate.now()), statues))
                 .build();
     }
 

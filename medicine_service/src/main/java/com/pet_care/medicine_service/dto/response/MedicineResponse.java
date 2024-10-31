@@ -35,6 +35,10 @@ public class MedicineResponse {
     @JsonFormat(shape = JsonFormat.Shape.STRING, timezone = "GMT+08:00", pattern = "yyyy-MM-dd")
     Date expiryDate;
 
+    @JsonProperty("date_import")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, timezone = "GMT+08:00", pattern = "yyyy-MM-dd")
+    Date dateImport;
+
     Integer quantity;
 
     @JsonProperty("date_import")
@@ -45,10 +49,12 @@ public class MedicineResponse {
 
     String note;
 
+    String image_url;
+
     @JsonProperty("calculation_units")
     Set<CalculationUnit> calculationUnits;
 
-    Set<Manufacture> manufactures;
+    Manufacture manufacture;
 
     Set<Location> locations;
 

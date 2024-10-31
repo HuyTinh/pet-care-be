@@ -1,10 +1,8 @@
-package com.pet_care.medical_prescription_service.dto.request;
+package com.pet_care.bill_service.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-
-import java.util.Set;
 
 @Getter
 @Setter
@@ -12,11 +10,13 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class PrescriptionCreateRequest {
-    @JsonProperty("appointment_id")
-    Long appointmentId;
-    Set<String> services;
-    Set<PetPrescriptionCreateRequest> details;
+public class MedicinePrescriptionResponse {
+    Long id;
+    String name;
+    Long quantity;
+    @JsonProperty("calculate_unit")
+    String calculateUnit;
+
     @JsonProperty("total_money")
     Double totalMoney;
 }

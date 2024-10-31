@@ -5,16 +5,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pet_care.appointment_service.dto.request.AppointmentCreateRequest;
 import com.pet_care.appointment_service.dto.request.AppointmentUpdateRequest;
 import com.pet_care.appointment_service.dto.response.AppointmentResponse;
+import com.pet_care.appointment_service.dto.response.PageableResponse;
 import com.pet_care.appointment_service.enums.AppointmentStatus;
 import com.pet_care.appointment_service.exception.APIException;
 import com.pet_care.appointment_service.exception.ErrorCode;
 import com.pet_care.appointment_service.mapper.AppointmentMapper;
 import com.pet_care.appointment_service.mapper.HospitalServiceMapper;
 import com.pet_care.appointment_service.mapper.PetMapper;
-import com.pet_care.appointment_service.model.Appointment;
-import com.pet_care.appointment_service.model.EmailBookingSuccessful;
-import com.pet_care.appointment_service.model.HospitalServiceEntity;
-import com.pet_care.appointment_service.model.Pet;
+import com.pet_care.appointment_service.model.*;
 import com.pet_care.appointment_service.repository.AppointmentRepository;
 import com.pet_care.appointment_service.repository.HospitalServiceRepository;
 import com.pet_care.appointment_service.repository.PetRepository;
@@ -25,6 +23,9 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -261,24 +262,26 @@ public class AppointmentService {
      */
     @NotNull
     @Transactional(readOnly = true)
-    public List<AppointmentResponse> filterAppointments(@NotNull LocalDate startDate, @NotNull LocalDate endDate, @Nullable Set<String> statues) {
+    public PageableResponse<AppointmentResponse> filterAppointments(int page, int size, @NotNull LocalDate startDate, @NotNull LocalDate endDate, @Nullable Set<String> statues) {
 
         Date sDate = Date.from(startDate.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant());
+
         Date eDate = Date.from(endDate.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant());
 
-        CompletableFuture<List<Appointment>> appointmentsBetweenDateFuture = CompletableFuture.supplyAsync(() -> appointmentRepository.findByAppointmentDateBetween(sDate, eDate));
+        Pageable pageable = PageRequest.of(page, size, Sort.by("appointmentDate").descending());
 
-        List<AppointmentResponse> appointmentResponses = appointmentsBetweenDateFuture.thenApply(appointments -> appointments.parallelStream().map(this::toAppointmentResponse).toList()).join();
+        CompletableFuture<Page<Appointment>> appointmentsBetweenDateFuture = CompletableFuture.supplyAsync(() -> appointmentRepository.findByAppointmentDateBetweenAndStatusIn(sDate, eDate, Objects.requireNonNullElse(statues, new HashSet<>()),pageable));
 
-        if (statues != null) {
-            appointmentResponses = appointmentResponses.parallelStream()
-                    .filter(appointment -> statues.parallelStream()
-                            .anyMatch(s -> s.equals(appointment.getStatus().name()))).toList();
-        }
-
+        Page<AppointmentResponse> appointmentResponses = appointmentsBetweenDateFuture.thenApply(appointments -> appointments.map(this::toAppointmentResponse)).join();
+        
         log.info("Appointment Service: Filter appointments successful");
 
-        return appointmentResponses;
+        return PageableResponse.<AppointmentResponse>builder()
+                .content(appointmentResponses.getContent())
+                .pageNumber(appointmentResponses.getPageable().getPageNumber())
+                .pageSize(appointmentResponses.getPageable().getPageSize())
+                .totalPages(appointmentResponses.getTotalPages())
+                .build();
     }
 
     /**
