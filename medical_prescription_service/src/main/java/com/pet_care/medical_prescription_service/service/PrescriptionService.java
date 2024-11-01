@@ -16,6 +16,7 @@ import com.pet_care.medical_prescription_service.model.PrescriptionDetail;
 import com.pet_care.medical_prescription_service.repository.PetPrescriptionRepository;
 import com.pet_care.medical_prescription_service.repository.PrescriptionDetailRepository;
 import com.pet_care.medical_prescription_service.repository.PrescriptionRepository;
+import com.pet_care.medical_prescription_service.utils.PaginationUtil;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -25,6 +26,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.support.PageableUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -68,6 +70,8 @@ public class PrescriptionService {
     
     PrescriptionDetailRepository prescriptionDetailRepository;
 
+    CacheService cacheService;
+
     /**
      * @return
      */
@@ -76,12 +80,15 @@ public class PrescriptionService {
     public List<PrescriptionResponse> getAllPrescriptions() {
         log.info("Fetching all prescriptions");
 
-        List<PrescriptionResponse> prescriptionResponseList = prescriptionRepository.findAllCustom().parallelStream()
+        List<PrescriptionResponse> prescriptionResponseList =
+                (List<PrescriptionResponse>) cacheService.getData("prescriptions");
+
+        if (prescriptionResponseList == null) {
+            prescriptionResponseList =  prescriptionRepository.findAllCustom().parallelStream()
                 .map(this::toPrescriptionResponse)
                 .collect(Collectors.toList());
 
-        if (prescriptionResponseList.isEmpty()) {
-            log.warn("No prescriptions found");
+            cacheService.saveData("prescriptions", prescriptionResponseList);
         } else {
             log.info("Retrieved {} prescriptions", prescriptionResponseList.size());
         }
@@ -108,10 +115,16 @@ public class PrescriptionService {
 
         Date eDate = Date.from(endDate.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant());
 
+
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
 
-        Page<PrescriptionResponse> prescriptionPage = prescriptionRepository
-                .findByCreatedAtBetween(sDate, eDate, pageable).map(this::toPrescriptionResponse);
+
+        List<PrescriptionResponse> prescriptionResponseList =
+                (List<PrescriptionResponse>) cacheService.getData("prescriptions");
+
+
+        Page<PrescriptionResponse> prescriptionPage = PaginationUtil
+                .convertListToPage(prescriptionResponseList, pageable);
 
         return PageableResponse.<PrescriptionResponse>builder()
                 .content(prescriptionPage.getContent())
