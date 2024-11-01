@@ -81,14 +81,14 @@ public class PrescriptionService {
         log.info("Fetching all prescriptions");
 
         List<PrescriptionResponse> prescriptionResponseList =
-                (List<PrescriptionResponse>) cacheService.getData("prescriptions");
+                (List<PrescriptionResponse>) cacheService.getCache("prescriptions");
 
         if (prescriptionResponseList == null) {
             prescriptionResponseList =  prescriptionRepository.findAllCustom().parallelStream()
                 .map(this::toPrescriptionResponse)
                 .collect(Collectors.toList());
 
-            cacheService.saveData("prescriptions", prescriptionResponseList);
+            cacheService.saveCache("prescriptions", prescriptionResponseList);
         } else {
             log.info("Retrieved {} prescriptions", prescriptionResponseList.size());
         }
@@ -120,7 +120,7 @@ public class PrescriptionService {
 
 
         List<PrescriptionResponse> prescriptionResponseList =
-                (List<PrescriptionResponse>) cacheService.getData("prescriptions");
+                (List<PrescriptionResponse>) cacheService.getCache("prescriptions");
 
 
         Page<PrescriptionResponse> prescriptionPage = PaginationUtil
@@ -197,6 +197,8 @@ public class PrescriptionService {
 
         prescriptionResponse.setAppointmentResponse(appointmentClient
                 .updateAppointmentService(prescriptionCreateRequest.getAppointmentId(), prescriptionCreateRequest.getServices()).getData());
+
+        cacheService.addInListCache("prescriptions", prescriptionResponse);
 
         return prescriptionResponse;
     }
