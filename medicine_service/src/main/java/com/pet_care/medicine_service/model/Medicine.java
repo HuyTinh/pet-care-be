@@ -7,7 +7,6 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.Date;
 import java.util.Set;
@@ -56,12 +55,12 @@ public class Medicine {
     @Builder.Default
     MedicineStatus status = MedicineStatus.ACTIVE;
 
-//    
+    //
     @Temporal(TemporalType.TIMESTAMP)
     @CreationTimestamp
     Date createdAt;
 
-//    
+    //
     @Temporal(TemporalType.TIMESTAMP)
     @UpdateTimestamp
     Date updatedAt;

@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.Date;
 
@@ -23,12 +22,12 @@ public class CalculationUnit {
 
     Boolean status;
 
-//    
+    //
     @Temporal(TemporalType.TIMESTAMP)
     @CreationTimestamp
     Date createdAt;
 
-//    
+    //
     @Temporal(TemporalType.TIMESTAMP)
     @UpdateTimestamp
     Date updatedAt;

@@ -21,12 +21,11 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.jpa.support.PageableUtils;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -43,39 +42,41 @@ import static java.util.stream.Collectors.toSet;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class PrescriptionService {
-    
+
     PetPrescriptionMapper petPrescriptionMapper;
 
-    
+
     PrescriptionDetailMapper prescriptionDetailMapper;
 
-    
+
     PrescriptionRepository PrescriptionRepository;
 
-    
+
     PrescriptionMapper prescriptionMapper;
 
-    
+
     AppointmentClient appointmentClient;
 
-    
+
     PrescriptionRepository prescriptionRepository;
 
-    
+
     MedicineClient medicineClient;
 
-    
+
     PetPrescriptionRepository petPrescriptionRepository;
 
-    
+
     PrescriptionDetailRepository prescriptionDetailRepository;
 
     CacheService cacheService;
 
+    RedisTemplate<String, PrescriptionResponse> redisTemplate;
+
     /**
      * @return
      */
-    
+
     @Transactional(readOnly = true)
     public List<PrescriptionResponse> getAllPrescriptions() {
         log.info("Fetching all prescriptions");
@@ -84,9 +85,9 @@ public class PrescriptionService {
                 (List<PrescriptionResponse>) cacheService.getCache("prescriptions");
 
         if (prescriptionResponseList == null) {
-            prescriptionResponseList =  prescriptionRepository.findAllCustom().parallelStream()
-                .map(this::toPrescriptionResponse)
-                .collect(Collectors.toList());
+            prescriptionResponseList = prescriptionRepository.findAllCustom().parallelStream()
+                    .map(this::toPrescriptionResponse)
+                    .collect(Collectors.toList());
 
             cacheService.saveCache("prescriptions", prescriptionResponseList);
         } else {
@@ -103,14 +104,14 @@ public class PrescriptionService {
      * @param endDate
      * @return
      */
-    
+
     @Transactional(readOnly = true)
     public PageableResponse<PrescriptionResponse> filteredPrescription(
             int page,
             int size,
             LocalDate startDate,
             LocalDate endDate
-    ){
+    ) {
         Date sDate = Date.from(startDate.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant());
 
         Date eDate = Date.from(endDate.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant());
@@ -139,17 +140,28 @@ public class PrescriptionService {
      * @param prescriptionId
      * @return
      */
-    
-    @Transactional(readOnly = true)
-    public PrescriptionResponse getPrescriptionById( Long prescriptionId) {
-        log.info("Fetching prescription with id {}", prescriptionId);
 
-        return PrescriptionRepository.findById(prescriptionId)
-                .map(this::toPrescriptionResponse)
-                .orElseThrow(() -> {
-                    log.error("Prescription with id {} not found", prescriptionId);
-                    return new APIException(ErrorCode.PRESCRIPTION_NOT_FOUND);
-                });
+    @Transactional(readOnly = true)
+    public PrescriptionResponse getPrescriptionById(Long prescriptionId) {
+
+        List<PrescriptionResponse> prescriptionResponseList =
+                (List<PrescriptionResponse>) cacheService.getCache("prescriptions");
+
+        PrescriptionResponse prescriptionResponse = null;
+
+        if (prescriptionResponseList != null) {
+            prescriptionResponse = prescriptionResponseList.stream()
+                    .filter(pR -> Objects.equals(pR.getId(), prescriptionId)).
+                    findFirst().orElse(null);
+        } else {
+            prescriptionResponse = PrescriptionRepository.findById(prescriptionId)
+                    .map(this::toPrescriptionResponse)
+                    .orElseThrow(() -> {
+                        log.error("Prescription with id {} not found", prescriptionId);
+                        return new APIException(ErrorCode.PRESCRIPTION_NOT_FOUND);
+                    });
+        }
+        return prescriptionResponse;
     }
 
     /**
@@ -157,9 +169,11 @@ public class PrescriptionService {
      * @return
      */
     @Transactional
-    public PrescriptionResponse createPrescription( PrescriptionCreateRequest prescriptionCreateRequest) {
+    public PrescriptionResponse createPrescription(PrescriptionCreateRequest prescriptionCreateRequest) {
         Prescription newPrescription = prescriptionMapper
                 .toEntity(prescriptionCreateRequest);
+
+        List<PrescriptionResponse> objectList = (List<PrescriptionResponse>) redisTemplate.opsForValue().get("prescriptions");
 
         Prescription savePrescription = prescriptionRepository.save(newPrescription);
 
@@ -195,10 +209,14 @@ public class PrescriptionService {
 
         PrescriptionResponse prescriptionResponse = toPrescriptionResponse(newPrescription);
 
+
         prescriptionResponse.setAppointmentResponse(appointmentClient
                 .updateAppointmentService(prescriptionCreateRequest.getAppointmentId(), prescriptionCreateRequest.getServices()).getData());
 
-        cacheService.addInListCache("prescriptions", prescriptionResponse);
+        if (objectList != null) {
+            objectList.add(prescriptionResponse);
+            cacheService.saveCache("prescriptions", objectList);
+        }
 
         return prescriptionResponse;
     }
@@ -208,7 +226,7 @@ public class PrescriptionService {
      * @return
      */
     @Transactional
-    public PrescriptionResponse updatePrescription( PrescriptionUpdateRequest prescriptionUpdateRequest) {
+    public PrescriptionResponse updatePrescription(PrescriptionUpdateRequest prescriptionUpdateRequest) {
         Prescription existingPrescription = PrescriptionRepository.findById
                         (prescriptionUpdateRequest.getId())
                 .orElseThrow(() -> new APIException(ErrorCode.PRESCRIPTION_NOT_FOUND));
@@ -270,11 +288,22 @@ public class PrescriptionService {
      * @return
      */
     @Transactional(readOnly = true)
-    public PrescriptionResponse getPrescriptionByAppointmentId( Long appointmentId) {
-        Prescription existingPrescription = prescriptionRepository
-                .findByAppointmentId(appointmentId);
+    public PrescriptionResponse getPrescriptionByAppointmentId(Long appointmentId) {
+        List<PrescriptionResponse> prescriptionResponseList =
+                (List<PrescriptionResponse>) cacheService.getCache("prescriptions");
 
-        return toPrescriptionResponse(existingPrescription);
+        PrescriptionResponse prescriptionResponse = null;
+
+        if (prescriptionResponseList != null) {
+            prescriptionResponseList.stream()
+                    .filter(pR -> Objects.equals(pR.getAppointmentResponse().getId(), appointmentId)).findFirst()
+                    .orElseThrow(() -> new APIException(ErrorCode.PRESCRIPTION_NOT_FOUND));
+        } else {
+            prescriptionResponse = toPrescriptionResponse(prescriptionRepository
+                    .findByAppointmentId(appointmentId));
+        }
+
+        return prescriptionResponse;
     }
 
     /**
@@ -297,11 +326,11 @@ public class PrescriptionService {
                                             .getPetById(petPrescription.getPetId()).getData());
 
                             CompletableFuture<List<MedicineResponse>> medicinesFuture = prescriptionDetailsFuture.thenApply(prescriptionDetails ->
-                                    medicineClient.getMedicineInIds(prescriptionDetails.parallelStream().map(PrescriptionDetail::getMedicineId).collect(Collectors.toSet())).getData()
+                                    medicineClient.getMedicineInIds(prescriptionDetails.parallelStream().map(PrescriptionDetail::getMedicineId).collect(toSet())).getData()
                             );
 
                             CompletableFuture<List<CalculationUnitResponse>> calculateFuture = prescriptionDetailsFuture.thenApply(prescriptionDetails ->
-                                    medicineClient.getCalculationUnitByIds(prescriptionDetails.parallelStream().map(PrescriptionDetail::getCalculationId).collect(Collectors.toSet())).getData()
+                                    medicineClient.getCalculationUnitByIds(prescriptionDetails.parallelStream().map(PrescriptionDetail::getCalculationId).collect(toSet())).getData()
                             );
 
                             CompletableFuture<Set<MedicinePrescriptionResponse>> medicinePrescriptionResponsesFuture = prescriptionDetailsFuture.thenCompose(prescriptionDetails ->
@@ -326,7 +355,7 @@ public class PrescriptionService {
                                                         .quantity(prescriptionDetail.getQuantity())
                                                         .totalMoney(prescriptionDetail.getTotalMoney())
                                                         .build();
-                                            }).collect(Collectors.toSet())
+                                            }).collect(toSet())
                                     )
                             );
 
@@ -337,7 +366,7 @@ public class PrescriptionService {
                                     .diagnosis(petPrescription.getDiagnosis())
                                     .medicines(medicinePrescriptionResponsesFuture.join())
                                     .build();
-                        }).collect(Collectors.toSet()));
+                        }).collect(toSet()));
 
         return CompletableFuture.allOf(appointmentFuture, petPrescriptionResponsesFuture).thenApply(v -> {
             PrescriptionResponse prescriptionResponse = prescriptionMapper.toResponse(prescription);

@@ -1,7 +1,6 @@
 package com.pet_care.medical_prescription_service.exception;
 
 import com.pet_care.medical_prescription_service.dto.response.APIResponse;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -12,9 +11,9 @@ public class APIExceptionHandler {
      * @param e
      * @return
      */
-    
+
     @ExceptionHandler(value = APIException.class)
-    public ResponseEntity<APIResponse<?>> handleAPIException( APIException e) {
+    public ResponseEntity<APIResponse<?>> handleAPIException(APIException e) {
         ErrorCode errorCode = e.getErrorCode();
 
         return ResponseEntity.status(errorCode.getStatus())

@@ -6,7 +6,6 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.Date;
 
@@ -33,12 +32,12 @@ public class Location {
 
     Boolean status;
 
-//    
+    //
     @Temporal(TemporalType.TIMESTAMP)
     @CreationTimestamp
     Date createdAt;
 
-//    
+    //
     @Temporal(TemporalType.TIMESTAMP)
     @UpdateTimestamp
     Date updatedAt;
