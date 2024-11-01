@@ -1,6 +1,11 @@
 spring:
   application:
     name: medical_prescription_service
+  data:
+    redis:
+      host: localhost
+      port: 6380
+
 
   datasource:
     url: "jdbc:mysql://localhost:3312/medical_prescription_service"

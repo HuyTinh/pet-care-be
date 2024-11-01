@@ -41,10 +41,6 @@ public class MedicineResponse {
 
     Integer quantity;
 
-    @JsonProperty("date_import")
-    @Temporal(TemporalType.TIMESTAMP)
-    Date dateImport;
-
     Double price;
 
     String note;
