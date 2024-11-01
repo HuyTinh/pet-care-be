@@ -29,7 +29,7 @@ public class WebSocketService {
     /**
      * @param message
      */
-    public void sendToAllCreateAppointment( String message) {
+    public void sendToAllCreateAppointment(String message) {
         messagingTemplate.convertAndSend("/topic/createAppointment", message);
     }
 

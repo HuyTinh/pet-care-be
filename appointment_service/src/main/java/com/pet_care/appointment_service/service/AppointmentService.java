@@ -319,10 +319,12 @@ public class AppointmentService {
         if (createAppointmentStatus.equals("CHECKED_IN")) {
             messageService.sendMessage("doctor-appointment-queue", objectMapper.writeValueAsString(appointmentResponse));
         } else {
-            try {
-                queue.add(objectMapper.writeValueAsString(appointmentResponse));
-            } catch (Exception e) {
-                throw new RuntimeException(e);
+            if(appointmentResponse.getAppointmentDate().equals(new Date())) {
+                try {
+                    queue.add(objectMapper.writeValueAsString(appointmentResponse));
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
             }
         }
         if (notification) {
@@ -379,7 +381,6 @@ public class AppointmentService {
      * @param appointment
      * @return
      */
-    
     private AppointmentResponse toAppointmentResponse(Appointment appointment) {
         AppointmentResponse appointmentResponse = appointmentMapper.toDto(appointment);
 
