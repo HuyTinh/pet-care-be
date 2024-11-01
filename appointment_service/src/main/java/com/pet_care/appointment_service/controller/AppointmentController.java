@@ -142,7 +142,6 @@ public class AppointmentController {
                 .build();
     }
 
-
     /**
      * @param accountId
      * @param status
