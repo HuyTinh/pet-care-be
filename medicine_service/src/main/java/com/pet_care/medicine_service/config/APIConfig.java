@@ -12,7 +12,7 @@ public class APIConfig implements WebMvcConfigurer {
     /**
      * @return
      */
-    
+
     @Bean
     public ObjectMapper objectMapper() {
         return new ObjectMapper();

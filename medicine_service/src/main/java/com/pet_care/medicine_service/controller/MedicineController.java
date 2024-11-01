@@ -3,15 +3,14 @@ package com.pet_care.medicine_service.controller;
 import com.pet_care.medicine_service.dto.request.MedicineCreateRequest;
 import com.pet_care.medicine_service.dto.request.MedicineUpdateRequest;
 import com.pet_care.medicine_service.dto.response.APIResponse;
-import com.pet_care.medicine_service.dto.response.MedicinePageResponse;
 import com.pet_care.medicine_service.dto.response.MedicineResponse;
+import com.pet_care.medicine_service.dto.response.PageableResponse;
 import com.pet_care.medicine_service.enums.MedicineStatus;
 import com.pet_care.medicine_service.model.Medicine;
 import com.pet_care.medicine_service.service.MedicineService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
@@ -28,23 +27,23 @@ import java.util.Set;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class MedicineController {
 
-     MedicineService medicineService;
+    MedicineService medicineService;
 
     /**
-     * @param pageNumber số trang (bắt đầu từ 0)
-     * @param pageSize kích thước trang
-     * @param searchTerm từ khóa tìm kiếm
+     * @param pageNumber        số trang (bắt đầu từ 0)
+     * @param pageSize          kích thước trang
+     * @param searchTerm        từ khóa tìm kiếm
      * @param manufacturingDate lọc theo ngày sản xuất
-     * @param expiryDate lọc theo ngày hết hạn
-     * @param status lọc theo trạng thái
-     * @param minPrice giá tối thiểu
-     * @param maxPrice giá tối đa
-     * @param sortBy trường để sắp xếp
-     * @param sortOrder hướng sắp xếp (asc hoặc desc)
+     * @param expiryDate        lọc theo ngày hết hạn
+     * @param status            lọc theo trạng thái
+     * @param minPrice          giá tối thiểu
+     * @param maxPrice          giá tối đa
+     * @param sortBy            trường để sắp xếp
+     * @param sortOrder         hướng sắp xếp (asc hoặc desc)
      * @return
      */
     @GetMapping
-    public APIResponse<List<MedicineResponse>> getAllMedicine(
+    public APIResponse<PageableResponse<MedicineResponse>> getAllMedicine(
             @RequestParam(defaultValue = "0") int pageNumber,
             @RequestParam(defaultValue = "10") int pageSize,
             @RequestParam(required = false) String searchTerm,
@@ -57,11 +56,18 @@ public class MedicineController {
             @RequestParam(required = false) Double maxPrice,
             @RequestParam(required = false, defaultValue = "id") String sortBy,
             @RequestParam(required = false, defaultValue = "asc") String sortOrder) {
-//        MedicinePageResponse response = medicineService.getAllMedicine(
-//                pageNumber, pageSize, searchTerm, manufacturingDate, expiryDate, status, minPrice, maxPrice, sortBy, sortOrder);
-        return APIResponse.<List<MedicineResponse>>builder()
-                .data(medicineService.getAllMedicine(
-                        pageNumber, pageSize, searchTerm, manufacturingDate, expiryDate, status, minPrice, maxPrice, sortBy, sortOrder))
+
+        return APIResponse.<PageableResponse<MedicineResponse>>builder()
+                .data(medicineService.filterMedicines(
+                        pageNumber,
+                        pageSize,
+                        searchTerm,
+                        manufacturingDate,
+                        expiryDate, status,
+                        minPrice,
+                        maxPrice,
+                        sortBy,
+                        sortOrder))
                 .build();
     }
 
@@ -70,7 +76,7 @@ public class MedicineController {
      * @return
      */
     @GetMapping("{medicineId}")
-    public APIResponse<Medicine> getMedicineById( @PathVariable("medicineId") Long medicineId) {
+    public APIResponse<Medicine> getMedicineById(@PathVariable("medicineId") Long medicineId) {
         return APIResponse.<Medicine>builder()
                 .data(medicineService.getMedicineById(medicineId))
                 .build();
@@ -81,7 +87,7 @@ public class MedicineController {
      * @return
      */
     @GetMapping("/in/{medicineIds}")
-    public APIResponse<List<Medicine>> getMedicineInIds( @PathVariable("medicineIds") Set<Long> medicineIds) {
+    public APIResponse<List<Medicine>> getMedicineInIds(@PathVariable("medicineIds") Set<Long> medicineIds) {
         return APIResponse.<List<Medicine>>builder()
                 .data(medicineService.getMedicineInIds(medicineIds))
                 .build();
@@ -92,7 +98,7 @@ public class MedicineController {
      * @return
      */
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public APIResponse<?> createMedicine( @ModelAttribute MedicineCreateRequest medicineCreateRequest, @RequestPart("image_url") MultipartFile imageFile) throws IOException {
+    public APIResponse<?> createMedicine(@ModelAttribute MedicineCreateRequest medicineCreateRequest, @RequestPart("image_url") MultipartFile imageFile) throws IOException {
         return APIResponse.builder()
                 .data(medicineService.createMedicine(medicineCreateRequest, imageFile))
                 .build();
@@ -104,7 +110,7 @@ public class MedicineController {
      * @return
      */
     @PutMapping(value = "/{medicineId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public APIResponse<Medicine> updateMedicine( @PathVariable("medicineId") Long medicineId,  @ModelAttribute MedicineUpdateRequest medicineUpdateRequest, @RequestPart(value = "image_url", required = false) MultipartFile imageFile) throws IOException {
+    public APIResponse<Medicine> updateMedicine(@PathVariable("medicineId") Long medicineId, @ModelAttribute MedicineUpdateRequest medicineUpdateRequest, @RequestPart(value = "image_url", required = false) MultipartFile imageFile) throws IOException {
         return APIResponse.<Medicine>builder()
                 .data(medicineService.updateMedicine(medicineId, medicineUpdateRequest, imageFile))
                 .build();
@@ -116,7 +122,7 @@ public class MedicineController {
      * @return
      */
     @DeleteMapping("/{medicineId}")
-    public APIResponse<Medicine> deleteMedicine( @PathVariable("medicineId") Long medicineId, @RequestBody MedicineUpdateRequest medicineUpdateRequest) {
+    public APIResponse<Medicine> deleteMedicine(@PathVariable("medicineId") Long medicineId, @RequestBody MedicineUpdateRequest medicineUpdateRequest) {
         medicineService.deleteMedicine(medicineId);
         return APIResponse.<Medicine>builder()
                 .message("Delete medicine successful")

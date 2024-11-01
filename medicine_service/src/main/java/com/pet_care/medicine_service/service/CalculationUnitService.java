@@ -9,7 +9,6 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -38,7 +37,7 @@ public class CalculationUnitService {
      * @param calculationUnitsInIds
      * @return
      */
-    public List<CalculationUnitResponse> getCalculationUnitsInIds( Set<Long> calculationUnitsInIds) {
+    public List<CalculationUnitResponse> getCalculationUnitsInIds(Set<Long> calculationUnitsInIds) {
         List<CalculationUnitResponse> calculationUnitResponses = calculationUnitRepository.findAllById(calculationUnitsInIds).stream().map(calculationUnitMapper::toDto).toList();
         log.info("Find calculation by ids: {}", calculationUnitsInIds);
         return calculationUnitResponses;

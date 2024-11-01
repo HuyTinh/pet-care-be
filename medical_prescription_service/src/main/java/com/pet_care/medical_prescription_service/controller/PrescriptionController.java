@@ -10,8 +10,6 @@ import com.pet_care.medical_prescription_service.service.PrescriptionService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.jetbrains.annotations.NotNull;
-import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -24,23 +22,23 @@ import java.util.Objects;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class PrescriptionController {
 
-     PrescriptionService prescriptionService;
+    PrescriptionService prescriptionService;
 
-     PrescriptionRepository prescriptionRepository;
+    PrescriptionRepository prescriptionRepository;
 
     /**
      * @return
      */
     @GetMapping
-    public  APIResponse<List<PrescriptionResponse>> getAllPrescription() {
+    public APIResponse<List<PrescriptionResponse>> getAllPrescription() {
         return APIResponse.<List<PrescriptionResponse>>builder()
                 .data(prescriptionService.getAllPrescriptions())
                 .build();
     }
 
     @GetMapping("/filter")
-    public  APIResponse<PageableResponse<PrescriptionResponse>> getFilteredPrescription(
-            @RequestParam(value = "page",required = false, defaultValue = "0") int page,
+    public APIResponse<PageableResponse<PrescriptionResponse>> getFilteredPrescription(
+            @RequestParam(value = "page", required = false, defaultValue = "0") int page,
             @RequestParam(value = "size", required = false, defaultValue = "50") int size,
             @RequestParam(value = "startDate", required = false) LocalDate startDate,
             @RequestParam(value = "endDate", required = false) LocalDate endDate
@@ -62,7 +60,7 @@ public class PrescriptionController {
      * @return
      */
     @GetMapping("/{prescriptionId}")
-    public  APIResponse<PrescriptionResponse> getPrescriptionById( @PathVariable("prescriptionId") Long prescriptionId) {
+    public APIResponse<PrescriptionResponse> getPrescriptionById(@PathVariable("prescriptionId") Long prescriptionId) {
         return APIResponse.<PrescriptionResponse>builder()
                 .data(prescriptionService.getPrescriptionById(prescriptionId))
                 .build();
@@ -74,7 +72,7 @@ public class PrescriptionController {
      * @return
      */
     @GetMapping("/{appointmentId}/appointment")
-    public  APIResponse<PrescriptionResponse> getPrescriptionByAppointmentId( @PathVariable("appointmentId") Long appointmentId) {
+    public APIResponse<PrescriptionResponse> getPrescriptionByAppointmentId(@PathVariable("appointmentId") Long appointmentId) {
         return APIResponse.<PrescriptionResponse>builder()
                 .data(prescriptionService.getPrescriptionByAppointmentId(appointmentId))
                 .build();
@@ -85,7 +83,7 @@ public class PrescriptionController {
      * @return
      */
     @PostMapping
-    public  APIResponse<PrescriptionResponse> createPrescription( @RequestBody PrescriptionCreateRequest prescriptionCreateRequest) {
+    public APIResponse<PrescriptionResponse> createPrescription(@RequestBody PrescriptionCreateRequest prescriptionCreateRequest) {
         return APIResponse.<PrescriptionResponse>builder()
                 .data(prescriptionService.createPrescription(prescriptionCreateRequest))
                 .build();
@@ -96,7 +94,7 @@ public class PrescriptionController {
      * @return
      */
     @PutMapping
-    public  APIResponse<PrescriptionResponse> updatePrescription( @RequestBody PrescriptionUpdateRequest prescriptionUpdateRequest) {
+    public APIResponse<PrescriptionResponse> updatePrescription(@RequestBody PrescriptionUpdateRequest prescriptionUpdateRequest) {
         return APIResponse.<PrescriptionResponse>builder()
                 .data(prescriptionService.updatePrescription(prescriptionUpdateRequest))
                 .build();
@@ -107,7 +105,7 @@ public class PrescriptionController {
      * @return
      */
     @DeleteMapping("/{prescriptionId}")
-    public APIResponse<String> deletePrescription( @PathVariable("prescriptionId") Long prescriptionId) {
+    public APIResponse<String> deletePrescription(@PathVariable("prescriptionId") Long prescriptionId) {
         prescriptionRepository.deleteById(prescriptionId);
         return APIResponse.<String>builder()
                 .message("Delete prescription successfully")
