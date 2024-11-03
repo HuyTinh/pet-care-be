@@ -1,4 +1,4 @@
-package com.pet_care.payment_service.config;
+package com.pet_care.payment_service.common;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;

@@ -22,21 +22,21 @@ public class PayOSService {
     @Value("${PAYOS_CHECKSUM_KEY}")
     String checksumKey;
 
-    public String createPaymentLink() throws Exception {
+    public CheckoutResponseData createPaymentQRCode() throws Exception {
         final PayOS payOS = new PayOS(clientId, apiKey, checksumKey);
         Long orderCode = System.currentTimeMillis() / 1000;
-        String domain = "http://localhost:3000";
+        String domain = "https://tsm885rc-5173.asse.devtunnels.ms";
         ItemData itemData = ItemData
                 .builder()
                 .name("Mỳ tôm Hảo Hảo ly")
                 .quantity(1)
-                .price(2000)
+                .price(10000)
                 .build();
 
         PaymentData paymentData = PaymentData
                 .builder()
                 .orderCode(orderCode)
-                .amount(2000)
+                .amount(10000)
                 .description("Thanh toán đơn hàng")
                 .returnUrl(domain)
                 .cancelUrl(domain)
@@ -44,6 +44,10 @@ public class PayOSService {
                 .build();
 
         CheckoutResponseData result = payOS.createPaymentLink(paymentData);
-        return result.getCheckoutUrl();
+        result.setQrCode(
+                "https://quickchart.io/qr?text=" + result.getQrCode().replace(" ", "%20") +
+                        "&centerImageUrl=https://res.cloudinary.com/dprkvtle0/image/upload/v1730557423/image_7_dt4t0t.png"
+        );
+        return result;
     }
 }
