@@ -3,12 +3,22 @@ package com.petcare.service;
 import com.petcare.dto.response.PetDetailResponse;
 import com.petcare.dto.response.PetResponse;
 import com.petcare.entity.Pet;
+import com.petcare.exception.APIException;
+import com.petcare.exception.APIExceptionHandler;
+import com.petcare.exception.ErrorCode;
 import com.petcare.mapper.PetDetailMapper;
 import com.petcare.mapper.PetMapper;
 import com.petcare.repository.PetRepository;
+import com.petcare.utils.ExcelExport;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.util.List;
 
 @Service
@@ -17,19 +27,40 @@ public class PetService {
     @Autowired
     private PetRepository petRepository;
 
-    public List<PetResponse> getAllPets() {
+    private static final int MAX_SIZE = 50;
 
-        List<Pet> pets = petRepository.findAll();
+    public Page<Pet> getAllPets(int getPage) {
 
-        return PetMapper.INSTANCE.mapperPetsToPetsResponse(pets);
+        getPage = getPage <= 1 ? 0 : getPage - 1;
+
+        Pageable pageable = PageRequest.of(getPage, MAX_SIZE, Sort.by("id").descending());
+        Page<Pet> pets = petRepository.findAll(pageable);
+        return pets;
     }
 
-    public PetDetailResponse getPetById(long petId) {
+    public List<Pet> getAllPetsNoPage() {
 
-        Pet pet = petRepository.findById(petId).get();
+        List<Pet> pets = petRepository.findAll();
+        return pets;
+    }
 
-        return PetDetailMapper.INSTANCE.mapperPetToPetDetailResponse(pet);
-//        return pet;
+    public Pet getPetById(long petId) {
+
+        Pet pet = petRepository.findById(petId)
+                .orElseThrow(() -> new APIException(ErrorCode.PET_ID_NOT_FOUND));
+
+        return pet;
+    }
+
+    public ByteArrayInputStream getActualData() throws IOException {
+
+        List<Pet> pets = getAllPetsNoPage();
+        List<PetResponse> petResponses = PetMapper.INSTANCE.mapperPetsToPetsResponse(pets);
+        System.out.println(1);
+        ByteArrayInputStream inputStream = ExcelExport.exportExcel(petResponses);
+        System.out.println(3);
+
+        return inputStream;
     }
 
 }
