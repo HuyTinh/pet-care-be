@@ -23,4 +23,7 @@ public interface ServicesRepository extends JpaRepository<Services, Long> {
             "             WHERE ctm.id = :id " +
             "             GROUP BY s.name " , nativeQuery = true)
     List<Object[]> findServicesByCustomerId(@Param("id") Long id);
+
+    @Query(value = "SELECT sv FROM Services sv WHERE sv.status = true ")
+    List<Services> getAllServices();
 }

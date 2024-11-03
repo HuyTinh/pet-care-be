@@ -38,4 +38,10 @@ public class CustomerController {
         return  ResponseEntity.ok(new ApiResponse<>(2000, "Get All Customers", null));
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<ApiResponse<CustomerPetAndServiceResponse>> getById(@PathVariable Long id){
+        CustomerPetAndServiceResponse customer = customerService.getCustomerById(id);
+        return ResponseEntity.ok(new ApiResponse<>(2000, "Get Customers", customer));
+    }
+
 }

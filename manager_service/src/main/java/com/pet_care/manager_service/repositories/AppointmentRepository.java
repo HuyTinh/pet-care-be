@@ -36,4 +36,24 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
 
     @Query(value = "SELECT app FROM Appointment app WHERE app.appointment_date = :date and app.status = true ")
     List<Appointment> findByAppointmentYesterday(LocalDate date);
+    
+    @Query(value = " WITH Appointment_hours AS ( " +
+            "     SELECT 9 AS Hour, '9:00:00' AS Hour_appointment UNION ALL " +
+            "     SELECT 10 AS Hour, '10:00:00' UNION ALL " +
+            "     SELECT 11 AS Hour, '11:00:00' UNION ALL " +
+            "     SELECT 12 AS Hour, '12:00:00' UNION ALL " +
+            "     SELECT 13 AS Hour, '13:00:00' UNION ALL " +
+            "     SELECT 14 AS Hour, '14:00:00' UNION ALL " +
+            "     SELECT 15 AS Hour, '15:00:00' " +
+            "), " +
+            "Appointment_Today AS ( " +
+            "    SELECT COUNT(app.id) as count_appointment, app.appointment_hour " +
+            "        FROM appointments app " +
+            "        WHERE app.status = true and app.appointment_date = :date " +
+            "        GROUP BY app.appointment_hour " +
+            ") " +
+            "SELECT aph.Hour_appointment , IFNULL(apt.count_appointment,0) " +
+            "    FROM Appointment_hours aph " +
+            "        LEFT JOIN Appointment_Today apt on aph.Hour_appointment = apt.appointment_hour ", nativeQuery = true)
+    List<Object[]> getAppointmentHoursToday(LocalDate date);
 }

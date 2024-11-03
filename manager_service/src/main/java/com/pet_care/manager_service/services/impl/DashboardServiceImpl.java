@@ -330,4 +330,18 @@ public class DashboardServiceImpl implements DashboardService {
         }
         return prescriptionResponses;
     }
+
+
+    public AppointmentChartTodayResponse appointmentChartTodayResponse(Object[] row){
+        return AppointmentChartTodayResponse.builder()
+                .hour_name((String) row[0])
+                .count_appointment((Long) row[1])
+                .build();
+    }
+
+    public List<AppointmentChartTodayResponse> listAppointmentChartTodayResponse(){
+        LocalDate now = LocalDate.now();
+        List<Object[]> listAppointment = appointmentRepository.getAppointmentHoursToday(now);
+        return listAppointment.stream().map(this::appointmentChartTodayResponse).toList();
+    }
 }

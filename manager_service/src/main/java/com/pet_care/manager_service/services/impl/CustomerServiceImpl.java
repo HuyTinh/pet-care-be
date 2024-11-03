@@ -186,22 +186,55 @@ public class CustomerServiceImpl implements CustomerService {
                 .build();
     }
 
-    public SpeciesResponse convertToSpeciesResponse(Pet pet){
-        Optional<Object[]> species = speciesRepository.findSpeciesByPetId(pet.getId());
-        System.out.println("Check Species : " + species.get()[0]);
-        System.out.println("Check Species : " + species.get());
-        if (species.isPresent()) {
-            Object[] speciesArray = (Object[]) species.get()[0];
+    public CustomerPetAndServiceResponse getCustomerById(Long id){
+        Customer customer = customerRepository.findById(id).get();
+        List<Object[]> listPet = petRepository.getPetByCustomerId(id);
+        if(listPet.isEmpty()){
+            throw new AppException(ErrorCode.PET_NOTFOUND);
+        }
+//      Lấy pet
+        Set<PetResponse> petResponses = new HashSet<>();
 
-            Long speciesId = (Long) speciesArray[0]; // Chuyển đổi ID
-            String speciesName = (String) speciesArray[1]; // Chuyển đổi tên
-
-            System.out.println("Species ID: " + speciesId);
-            System.out.println("Species Name: " + speciesName);
-        } else {
-            System.out.println("No species found for pet ID: " + pet.getId());
+        for(Object[] obj : listPet) {
+            Long petId = ((Number) obj[0]).longValue();
+            Pet pet = petRepository.findById(petId).get();
+            PetResponse petResponse = PetResponse.builder()
+                    .id(pet.getId())
+                    .name(pet.getName())
+                    .weight(pet.getWeight())
+                    .age(pet.getAge())
+                    .prescriptionResponses(convertPrescriptionByPetId(pet.getId())) // get Prescription
+                    .speciesResponse(convertToSpeciesResponse(pet)) // get Species
+                    .build();
+            petResponses.add(petResponse);
+        }
+        Set<ServiceResponse> service_set = new HashSet<>();
+        List<Object[]> listServices = servicesRepository.findServicesByCustomerId( id);
+        if(listServices.isEmpty()){
+            throw new AppException(ErrorCode.SERVICE_NOTFOUND);
+        }
+//        Lấy service
+        for(Object[] obj : listServices){
+            Services services = servicesRepository.findServicesByName((String) obj[0]).get();
+            service_set.add(ServiceResponse.builder()
+                    .id(services.getId())
+                    .name(services.getName())
+                    .price(services.getPrice())
+                    .build());
         }
 
+        return CustomerPetAndServiceResponse.builder()
+                .id( customer.getId())
+                .last_name(customer.getLast_name())
+                .first_name(customer.getFirst_name())
+                .phone_number(customer.getPhone_number())
+                .petResponses(petResponses)
+                .serviceResponses(service_set)
+                .build();
+    }
+
+    public SpeciesResponse convertToSpeciesResponse(Pet pet){
+        Optional<Object[]> species = speciesRepository.findSpeciesByPetId(pet.getId());
         SpeciesResponse build = SpeciesResponse.builder()
                 .id((Long) ((Object[]) species.get()[0])[0])
                 .name((String) ((Object[]) species.get()[0])[1])
@@ -210,7 +243,6 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     public MedicineResponse convertToMedicineResponse(Medicine medicine){
-        System.out.println("Check Medicine convert : " + medicine);
         return MedicineResponse.builder()
                 .id( medicine.getId())
                 .name(medicine.getName())
@@ -219,7 +251,6 @@ public class CustomerServiceImpl implements CustomerService {
     public PrescriptionDetailResponse convertToPrescriptionDetailResponse(Prescription_Details prescription_details){
         Medicine medicine = medicineRepository.findById(prescription_details.getMedicine().getId()).get();
         MedicineResponse medicineResponse = convertToMedicineResponse(medicine);
-        System.out.println("Check Medicine Pres : " + medicineResponse);
         return PrescriptionDetailResponse.builder()
                 .id(prescription_details.getId())
                 .quantity(prescription_details.getQuantity())

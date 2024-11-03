@@ -42,14 +42,7 @@ public class AccountServiceImpl implements AccountService {
 
     public static final String HASH_KEY = "account";
 
-
-
     public final RedisTemplate<String, Object> redisTemplate;
-
-    public List<Account> getAllAccount(){
-        return accountRepository.findAll();
-    }
-
 
     public Optional<Role> getRoleByName(RoleEnum roleEnum) {
         return roleRepository.findByName(roleEnum);
@@ -62,7 +55,7 @@ public class AccountServiceImpl implements AccountService {
             Account account = Account.builder()
                     .email(request.getEmail())
                     .password(request.getPassword())
-                    .status(request.getStatus())
+                    .status(true)
                     .build();
             Account savedAccount = accountRepository.save(account);
             System.out.println(">> Check Account : " + account);

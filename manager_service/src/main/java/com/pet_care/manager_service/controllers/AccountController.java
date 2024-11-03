@@ -20,11 +20,11 @@ public class AccountController {
     @Autowired
     AccountServiceImpl accountService;
 
-    @GetMapping
-    public ResponseEntity<List<Account>> getAllAccount(){
-//        System.out.println(accountService.getAllEmployee());
-        return ResponseEntity.ok(accountService.getAllAccount());
-    }
+//    @GetMapping
+//    public ResponseEntity<List<Account>> getAllAccount(){
+////        System.out.println(accountService.getAllEmployee());
+//        return ResponseEntity.ok(accountService.getAllAccount());
+//    }
 
     @GetMapping("/{accountId}")
     public ResponseEntity<ApiResponse<AccountResponse>> getById(@PathVariable("accountId") Long accountId){
