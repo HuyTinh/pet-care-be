@@ -30,8 +30,12 @@ public class PaymentController {
 
     @PostMapping("/confirm")
     public void checkOutSuccessfully(@RequestBody WebhookRequest webhookRequest) throws Exception {
-//        System.out.println(webhookRequest.getData());
-        sseService.sendEventToClient("channel1", "Chào");
+        sseService.sendEventToClient(
+                String.valueOf(
+                        payOSService.getOrderCode(
+                                webhookRequest.getData().getFirst().getId()
+                        )
+                ), true);
     }
 
 }

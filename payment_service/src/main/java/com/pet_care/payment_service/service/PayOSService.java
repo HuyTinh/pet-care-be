@@ -50,4 +50,10 @@ public class PayOSService {
         );
         return result;
     }
+
+    public Integer getOrderCode(Long webHookResponseId) throws Exception {
+        final PayOS payOS = new PayOS(clientId, apiKey, checksumKey);
+
+        return Math.toIntExact(payOS.getPaymentLinkInformation(webHookResponseId).getOrderCode());
+    }
 }
