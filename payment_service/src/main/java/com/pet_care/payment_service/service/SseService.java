@@ -13,11 +13,11 @@ public class SseService {
     public final Map<String, SseEmitter> emitters = new ConcurrentHashMap<>();
 
 
-    public void sendEventToClient(String clientId, String message) {
+    public void sendEventToClient(String clientId, boolean event) {
         SseEmitter emitter = emitters.get(clientId);
         if (emitter != null) {
             try {
-                emitter.send(SseEmitter.event().name("custom-event").data(message));
+                emitter.send(SseEmitter.event().name(clientId).data(event));
             } catch (IOException e) {
                 emitter.completeWithError(e);
                 emitters.remove(clientId);

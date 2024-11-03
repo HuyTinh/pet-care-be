@@ -17,8 +17,7 @@ public class WebhookRequest {
     @AllArgsConstructor
     @NoArgsConstructor
     @FieldDefaults(level = AccessLevel.PRIVATE)
-    static
-    class Data {
+    public class Data {
         private long id;
         private long tid;
         private String description;
