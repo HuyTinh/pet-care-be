@@ -36,5 +36,10 @@ spring:
             predicates:
               - Path=/api/v1/medical-prescription-service/**
 
+          - id: payment_service
+            uri: http://localhost:8092
+            predicates:
+              - Path=/api/v1/payment-service/**
+
 server:
   port: 8888
