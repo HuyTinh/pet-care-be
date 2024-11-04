@@ -1,16 +1,17 @@
 package com.pet_care.payment_service.controller;
 
-import com.pet_care.payment_service.dto.response.WebhookRequest;
+import com.pet_care.payment_service.dto.request.PaymentRequest;
+import com.pet_care.payment_service.dto.request.WebhookRequest;
 import com.pet_care.payment_service.service.PayOSService;
 import com.pet_care.payment_service.service.SseService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import vn.payos.type.CheckoutResponseData;
+
+import java.util.Map;
 
 
 @RestController
@@ -23,19 +24,30 @@ public class PaymentController {
 
     SseService sseService;
 
-    @PostMapping
-    public ResponseEntity<?> getPaymentLink() throws Exception {
-        return  ResponseEntity.ok(payOSService.createPaymentQRCode());
+    @PostMapping()
+    public ResponseEntity<CheckoutResponseData> getPaymentLink(@RequestBody PaymentRequest paymentRequest) throws Exception {
+        return  ResponseEntity.ok(payOSService.createPaymentQRCode(paymentRequest));
+    }
+
+    @PostMapping("{orderId}/cancel")
+    public ResponseEntity<?> cancelPayment(@PathVariable("orderId") Integer orderId) throws Exception {
+      Integer cancelSuccess = payOSService.cancelPaymentLink(orderId);
+      String message = "Cancelled Fail";
+        if(cancelSuccess == 1){
+            message = "Cancelled Successfully";
+        }
+        return ResponseEntity.ok(Map.of("message", message));
     }
 
     @PostMapping("/confirm")
     public void checkOutSuccessfully(@RequestBody WebhookRequest webhookRequest) throws Exception {
+
         sseService.sendEventToClient(
-                String.valueOf(
-                        payOSService.getOrderCode(
-                                webhookRequest.getData().getFirst().getId()
-                        )
+                payOSService.getOrderCode(
+                        webhookRequest
                 ), true);
     }
+
+
 
 }
