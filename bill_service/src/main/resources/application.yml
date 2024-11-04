@@ -25,9 +25,10 @@ spring:
 #    locations: classpath:db/migrations
 
 server:
+  port: 8090
   servlet:
     context-path: /api/v1/bill-service
-  port: 8090
+
 
 
 #springdoc:

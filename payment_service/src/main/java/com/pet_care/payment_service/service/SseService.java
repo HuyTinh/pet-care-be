@@ -10,30 +10,18 @@ import java.util.concurrent.ConcurrentHashMap;
 @Service
 public class SseService {
 
-    public final Map<String, SseEmitter> emitters = new ConcurrentHashMap<>();
+    public final Map<Long, SseEmitter> emitters = new ConcurrentHashMap<>();
 
-
-    public void sendEventToClient(String clientId, boolean event) {
-        SseEmitter emitter = emitters.get(clientId);
+    public void sendEventToClient(Long orderId, boolean event) {
+        SseEmitter emitter = emitters.get(orderId);
         if (emitter != null) {
             try {
-                emitter.send(SseEmitter.event().name(clientId).data(event));
+                emitter.send(SseEmitter.event().name(String.valueOf(orderId)).data(event));
             } catch (IOException e) {
                 emitter.completeWithError(e);
-                emitters.remove(clientId);
+                emitters.remove(orderId);
             }
             emitter.complete();
         }
-    }
-
-    public void broadcastEvent(String message) {
-        emitters.forEach((clientId, emitter) -> {
-            try {
-                emitter.send(SseEmitter.event().name("broadcast-event").data(message));
-            } catch (IOException e) {
-                emitter.completeWithError(e);
-                emitters.remove(clientId);
-            }
-        });
     }
 }

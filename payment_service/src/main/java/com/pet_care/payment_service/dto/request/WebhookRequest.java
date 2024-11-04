@@ -1,4 +1,4 @@
-package com.pet_care.payment_service.dto.response;
+package com.pet_care.payment_service.dto.request;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -14,10 +14,11 @@ public class WebhookRequest {
 
     @Getter
     @Setter
+    @ToString
     @AllArgsConstructor
     @NoArgsConstructor
     @FieldDefaults(level = AccessLevel.PRIVATE)
-    public class Data {
+    public static class Data {
         private long id;
         private long tid;
         private String description;

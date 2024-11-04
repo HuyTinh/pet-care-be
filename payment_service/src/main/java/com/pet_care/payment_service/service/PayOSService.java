@@ -1,31 +1,73 @@
 package com.pet_care.payment_service.service;
 
+import com.pet_care.payment_service.client.BillClient;
+import com.pet_care.payment_service.dto.request.PaymentRequest;
+import com.pet_care.payment_service.dto.request.WebhookRequest;
 import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.beans.factory.annotation.Value;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import vn.payos.PayOS;
 import vn.payos.type.CheckoutResponseData;
 import vn.payos.type.ItemData;
 import vn.payos.type.PaymentData;
 
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.List;
+
+@Slf4j
 @Service
-@FieldDefaults(level = AccessLevel.PRIVATE)
+@RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class PayOSService {
 
-    @Value("${PAYOS_CLIENT_ID}")
-    String clientId;
+    PayOS payOS;
 
-    @Value("${PAYOS_API_KEY}")
-    String apiKey;
+    BillClient billClient;
 
-    @Value("${PAYOS_CHECKSUM_KEY}")
-    String checksumKey;
+    public CheckoutResponseData createPaymentQRCode(PaymentRequest paymentRequest) throws Exception {
 
-    public CheckoutResponseData createPaymentQRCode() throws Exception {
-        final PayOS payOS = new PayOS(clientId, apiKey, checksumKey);
-        Long orderCode = System.currentTimeMillis() / 1000;
+        Instant now = Instant.now();
+
+        Instant expiredAt = now.plus(30, ChronoUnit.MINUTES);
+
+        long expiredAtSeconds = expiredAt.getEpochSecond();
+
         String domain = "https://tsm885rc-5173.asse.devtunnels.ms";
+
+        List<ItemData> itemsData = new ArrayList<>();
+
+        paymentRequest.getMedicines().forEach(medicinePrescriptionResponse -> itemsData.add(
+                ItemData.builder()
+                .name(medicinePrescriptionResponse.getName())
+                        .quantity(
+                                Integer.parseInt(
+                                        String.valueOf(medicinePrescriptionResponse.getQuantity())
+                                )
+                        )
+                        .price(
+                        Integer.parseInt(
+                                String.valueOf(medicinePrescriptionResponse.getTotalMoney())
+                                )
+                        )
+                .build()
+        ));
+
+        paymentRequest.getServices().forEach(hospitalServiceResponse -> itemsData.add(
+                ItemData.builder()
+                        .name(hospitalServiceResponse.getName())
+                        .quantity(1)
+                        .price(
+                                Integer.parseInt(
+                                        String.valueOf(hospitalServiceResponse.getPrice())
+                                )
+                        )
+                        .build()
+        ));
+
         ItemData itemData = ItemData
                 .builder()
                 .name("Mỳ tôm Hảo Hảo ly")
@@ -35,12 +77,17 @@ public class PayOSService {
 
         PaymentData paymentData = PaymentData
                 .builder()
-                .orderCode(orderCode)
-                .amount(10000)
+                .orderCode(paymentRequest.getOrderId())
+                .amount(Integer.parseInt(
+                        String.valueOf(
+                                paymentRequest.getTotalMoney()
+                        )
+                ))
                 .description("Thanh toán đơn hàng")
                 .returnUrl(domain)
                 .cancelUrl(domain)
-                .item(itemData)
+                .items(itemsData)
+                .expiredAt(expiredAtSeconds)
                 .build();
 
         CheckoutResponseData result = payOS.createPaymentLink(paymentData);
@@ -51,9 +98,28 @@ public class PayOSService {
         return result;
     }
 
-    public Integer getOrderCode(Long webHookResponseId) throws Exception {
-        final PayOS payOS = new PayOS(clientId, apiKey, checksumKey);
+    public Integer cancelPaymentLink(Integer orderId) throws Exception {
+        try {
+            payOS.cancelPaymentLink(orderId,"");
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return 0;
+        }
+        return 1;
+    }
 
-        return Math.toIntExact(payOS.getPaymentLinkInformation(webHookResponseId).getOrderCode());
+    public Long getOrderCode(WebhookRequest webhookRequest) throws Exception {
+
+        String text = webhookRequest.getData().get(0).getDescription();
+
+        int lastDashIndex = text.lastIndexOf('-');
+
+        String code = text.substring(lastDashIndex + 1, text.indexOf(' ', lastDashIndex));
+
+//        billClient.getBillByDescriptionCode(code);
+
+
+
+        return payOS.getPaymentLinkInformation(2L).getOrderCode();
     }
 }
