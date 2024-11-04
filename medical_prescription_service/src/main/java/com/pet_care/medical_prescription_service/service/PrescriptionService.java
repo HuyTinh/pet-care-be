@@ -71,7 +71,7 @@ public class PrescriptionService {
 
     CacheService cacheService;
 
-    RedisTemplate<String, PrescriptionResponse> redisTemplate;
+    RedisTemplate<String, Object> redisTemplate;
 
     /**
      * @return
@@ -144,15 +144,15 @@ public class PrescriptionService {
     @Transactional(readOnly = true)
     public PrescriptionResponse getPrescriptionById(Long prescriptionId) {
 
-        List<PrescriptionResponse> prescriptionResponseList =
-                (List<PrescriptionResponse>) cacheService.getCache("prescriptions");
+//        List<PrescriptionResponse> prescriptionResponseList =
+//                (List<PrescriptionResponse>) cacheService.getCache("prescriptions");
 
         PrescriptionResponse prescriptionResponse = null;
 
-        if (prescriptionResponseList != null) {
-            prescriptionResponse = prescriptionResponseList.stream()
-                    .filter(pR -> Objects.equals(pR.getId(), prescriptionId)).
-                    findFirst().orElse(null);
+        if (false) {
+//            prescriptionResponse = prescriptionResponseList.stream()
+//                    .filter(pR -> Objects.equals(pR.getId(), prescriptionId)).
+//                    findFirst().orElse(null);
         } else {
             prescriptionResponse = PrescriptionRepository.findById(prescriptionId)
                     .map(this::toPrescriptionResponse)
