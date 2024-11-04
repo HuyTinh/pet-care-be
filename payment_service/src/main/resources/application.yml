@@ -3,7 +3,7 @@ spring:
     name: payment_service
 
 server:
-  port: 8092
+  port: 8087
   servlet:
     context-path: /api/v1/payment-service
 

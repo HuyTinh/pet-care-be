@@ -1,6 +1,7 @@
 package com.pet_care.bill_service.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.pet_care.bill_service.enums.InvoiceStatus;
 import com.pet_care.bill_service.enums.PaymentMethod;
@@ -17,6 +18,7 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class InvoiceResponse {
 
     Long id;
@@ -30,7 +32,11 @@ public class InvoiceResponse {
     @JsonProperty("payment_method")
     PaymentMethod paymentMethod;
 
-    InvoiceStatus status;
+    @Builder.Default
+    InvoiceStatus status = InvoiceStatus.PENDING;
+
+    @JsonProperty("checkout_response")
+    Object checkoutResponse;
 
     @JsonProperty("created_at")
     @JsonFormat(shape = JsonFormat.Shape.STRING, timezone = "GMT+07:00", pattern = "yyyy-MM-dd")

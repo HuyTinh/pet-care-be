@@ -26,6 +26,7 @@ public class Invoice {
     @Enumerated(EnumType.STRING)
     PaymentMethod paymentMethod;
 
+    @Enumerated(EnumType.STRING)
     InvoiceStatus status;
 
     Double totalMoney;

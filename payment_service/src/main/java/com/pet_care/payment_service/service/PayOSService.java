@@ -44,14 +44,11 @@ public class PayOSService {
                 ItemData.builder()
                 .name(medicinePrescriptionResponse.getName())
                         .quantity(
-                                Integer.parseInt(
-                                        String.valueOf(medicinePrescriptionResponse.getQuantity())
-                                )
+                                (int) Math.ceil(medicinePrescriptionResponse.getQuantity())
                         )
                         .price(
-                        Integer.parseInt(
-                                String.valueOf(medicinePrescriptionResponse.getTotalMoney())
-                                )
+                                (int) Math.ceil(medicinePrescriptionResponse.getTotalMoney()) *
+                                        (int) Math.ceil(medicinePrescriptionResponse.getQuantity())
                         )
                 .build()
         ));
@@ -61,28 +58,17 @@ public class PayOSService {
                         .name(hospitalServiceResponse.getName())
                         .quantity(1)
                         .price(
-                                Integer.parseInt(
-                                        String.valueOf(hospitalServiceResponse.getPrice())
-                                )
+                                (int) Math.ceil(hospitalServiceResponse.getPrice())
                         )
                         .build()
         ));
 
-        ItemData itemData = ItemData
-                .builder()
-                .name("Mỳ tôm Hảo Hảo ly")
-                .quantity(1)
-                .price(10000)
-                .build();
-
         PaymentData paymentData = PaymentData
                 .builder()
                 .orderCode(paymentRequest.getOrderId())
-                .amount(Integer.parseInt(
-                        String.valueOf(
-                                paymentRequest.getTotalMoney()
-                        )
-                ))
+                .amount(
+                        (int) Math.ceil( paymentRequest.getTotalMoney())
+                )
                 .description("Thanh toán đơn hàng")
                 .returnUrl(domain)
                 .cancelUrl(domain)

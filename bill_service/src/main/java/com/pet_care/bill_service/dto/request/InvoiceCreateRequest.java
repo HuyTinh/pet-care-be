@@ -22,6 +22,7 @@ public class InvoiceCreateRequest {
     @JsonProperty("payment_method")
     PaymentMethod paymentMethod;
 
+    @Enumerated(EnumType.STRING)
     InvoiceStatus status;
 
     @JsonProperty("total_money")

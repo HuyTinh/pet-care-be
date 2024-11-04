@@ -2,6 +2,7 @@ package com.pet_care.payment_service.controller;
 
 import com.pet_care.payment_service.dto.request.PaymentRequest;
 import com.pet_care.payment_service.dto.request.WebhookRequest;
+import com.pet_care.payment_service.dto.response.APIResponse;
 import com.pet_care.payment_service.service.PayOSService;
 import com.pet_care.payment_service.service.SseService;
 import lombok.AccessLevel;
@@ -25,18 +26,22 @@ public class PaymentController {
     SseService sseService;
 
     @PostMapping()
-    public ResponseEntity<CheckoutResponseData> getPaymentLink(@RequestBody PaymentRequest paymentRequest) throws Exception {
-        return  ResponseEntity.ok(payOSService.createPaymentQRCode(paymentRequest));
+    public APIResponse<CheckoutResponseData> getPaymentLink(@RequestBody PaymentRequest paymentRequest) throws Exception {
+        return  APIResponse.<CheckoutResponseData>builder()
+                .data(payOSService.createPaymentQRCode(paymentRequest))
+                .build();
     }
 
     @PostMapping("{orderId}/cancel")
-    public ResponseEntity<?> cancelPayment(@PathVariable("orderId") Integer orderId) throws Exception {
+    public APIResponse<?> cancelPayment(@PathVariable("orderId") Integer orderId) throws Exception {
       Integer cancelSuccess = payOSService.cancelPaymentLink(orderId);
       String message = "Cancelled Fail";
         if(cancelSuccess == 1){
             message = "Cancelled Successfully";
         }
-        return ResponseEntity.ok(Map.of("message", message));
+        return APIResponse.builder()
+                .message(message)
+                .build();
     }
 
     @PostMapping("/confirm")
