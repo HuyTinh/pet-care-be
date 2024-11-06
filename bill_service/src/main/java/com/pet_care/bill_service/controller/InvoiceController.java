@@ -1,6 +1,8 @@
 package com.pet_care.bill_service.controller;
 
 import com.pet_care.bill_service.dto.request.InvoiceCreateRequest;
+import com.pet_care.bill_service.dto.request.InvoiceUpdatePayOSIdRequest;
+import com.pet_care.bill_service.dto.request.InvoiceUpdateRequest;
 import com.pet_care.bill_service.dto.response.APIResponse;
 import com.pet_care.bill_service.dto.response.InvoiceResponse;
 import com.pet_care.bill_service.service.InvoiceService;
@@ -50,6 +52,28 @@ public class InvoiceController {
     public  APIResponse<InvoiceResponse> createInvoice(@RequestBody InvoiceCreateRequest invoiceCreateRequest){
         return APIResponse.<InvoiceResponse>builder()
                 .data(invoiceService.createInvoice(invoiceCreateRequest))
+                .build();
+    }
+
+    /**
+     * @param invoiceUpdatePayOSIdRequest
+     * @return
+     */
+    @PutMapping("payOSId")
+    public  APIResponse<InvoiceResponse> updateInvoicePayOSId(@RequestBody InvoiceUpdatePayOSIdRequest invoiceUpdatePayOSIdRequest){
+        return  APIResponse.<InvoiceResponse>builder()
+                .data(invoiceService.updateInvoicePayOSId(invoiceUpdatePayOSIdRequest))
+                .build();
+    }
+
+    /**
+     * @param payOSId
+     * @return
+     */
+    @GetMapping("{payOSId}/payOSId")
+    public APIResponse<Long> getInvoiceIdByOSId(@PathVariable("payOSId") String payOSId){
+        return  APIResponse.<Long>builder()
+                .data(invoiceService.getInvoiceIdByPayOSId(payOSId))
                 .build();
     }
 }

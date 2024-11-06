@@ -1,12 +1,16 @@
 package com.pet_care.medical_prescription_service.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.pet_care.medical_prescription_service.dto.request.PrescriptionCreateRequest;
 import com.pet_care.medical_prescription_service.dto.request.PrescriptionUpdateRequest;
 import com.pet_care.medical_prescription_service.dto.response.APIResponse;
 import com.pet_care.medical_prescription_service.dto.response.PageableResponse;
 import com.pet_care.medical_prescription_service.dto.response.PrescriptionResponse;
+import com.pet_care.medical_prescription_service.enums.PrescriptionStatus;
 import com.pet_care.medical_prescription_service.repository.PrescriptionRepository;
 import com.pet_care.medical_prescription_service.service.PrescriptionService;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -15,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 @RestController
 @RequestMapping("prescription")
@@ -32,7 +37,7 @@ public class PrescriptionController {
     @GetMapping
     public APIResponse<List<PrescriptionResponse>> getAllPrescription() {
         return APIResponse.<List<PrescriptionResponse>>builder()
-                .data(prescriptionService.getAllPrescriptions())
+                .data(prescriptionService.getAllPrescriptions().subList(0, 10))
                 .build();
     }
 
@@ -41,8 +46,9 @@ public class PrescriptionController {
             @RequestParam(value = "page", required = false, defaultValue = "0") int page,
             @RequestParam(value = "size", required = false, defaultValue = "50") int size,
             @RequestParam(value = "startDate", required = false) LocalDate startDate,
-            @RequestParam(value = "endDate", required = false) LocalDate endDate
-    ) {
+            @RequestParam(value = "endDate", required = false) LocalDate endDate,
+            @RequestParam(value = "statues", required = false)  String prescriptionStatus
+    ) throws JsonProcessingException {
 
         return APIResponse.<PageableResponse<PrescriptionResponse>>builder()
                 .data(prescriptionService
@@ -50,7 +56,9 @@ public class PrescriptionController {
                                 page,
                                 size,
                                 Objects.requireNonNullElse(startDate, LocalDate.now()),
-                                Objects.requireNonNullElse(endDate, LocalDate.now()))
+                                Objects.requireNonNullElse(endDate, LocalDate.now()),
+                                PrescriptionStatus.valueOf(prescriptionStatus)
+                        )
                 )
                 .build();
     }
@@ -60,7 +68,7 @@ public class PrescriptionController {
      * @return
      */
     @GetMapping("/{prescriptionId}")
-    public APIResponse<PrescriptionResponse> getPrescriptionById(@PathVariable("prescriptionId") Long prescriptionId) {
+    public APIResponse<PrescriptionResponse> getPrescriptionById(@PathVariable("prescriptionId") Long prescriptionId) throws JsonProcessingException {
         return APIResponse.<PrescriptionResponse>builder()
                 .data(prescriptionService.getPrescriptionById(prescriptionId))
                 .build();

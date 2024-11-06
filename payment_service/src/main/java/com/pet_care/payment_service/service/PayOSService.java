@@ -102,10 +102,20 @@ public class PayOSService {
 
         String code = text.substring(lastDashIndex + 1, text.indexOf(' ', lastDashIndex));
 
-//        billClient.getBillByDescriptionCode(code);
-
-
-
-        return payOS.getPaymentLinkInformation(2L).getOrderCode();
+        return billClient.getInvoiceIdByOSId(code).getData();
     }
+
+//    public Long getOrderCode(WebhookRequest webhookRequest) throws Exception {
+//
+//        String text = webhookRequest.getData().get(0).getDescription();
+//
+//        int lastDashIndex = text.lastIndexOf('-');
+//
+//        String code = text.substring(lastDashIndex + 1, text.indexOf(' ', lastDashIndex));
+//
+//        billClient.getBillByDescriptionCode(code);
+//
+//        return payOS.getPaymentLinkInformation(2L).getOrderCode();
+//    }
+
 }

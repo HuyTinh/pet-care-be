@@ -46,7 +46,7 @@ public class PaymentController {
 
     @PostMapping("/confirm")
     public void checkOutSuccessfully(@RequestBody WebhookRequest webhookRequest) throws Exception {
-
+        System.out.println("Chào" + webhookRequest);
         sseService.sendEventToClient(
                 payOSService.getOrderCode(
                         webhookRequest

@@ -31,6 +31,10 @@ public class Invoice {
 
     Double totalMoney;
 
+    String description;
+
+    String payOSId;
+
     @CreationTimestamp
     @Temporal(TemporalType.TIMESTAMP)
     Date createdAt;

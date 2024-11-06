@@ -20,7 +20,7 @@ public class SseController {
 
     @GetMapping("/stream")
     public SseEmitter streamEvents(@RequestParam Long channel) {
-        SseEmitter emitter = new SseEmitter(Long.MAX_VALUE); // Đặt timeout lớn để giữ kết nối lâu
+        SseEmitter emitter = new SseEmitter(Long.MAX_VALUE);
         sseService.emitters.put(channel, emitter);
 
         // Xóa emitter khi hoàn thành hoặc khi có lỗi
