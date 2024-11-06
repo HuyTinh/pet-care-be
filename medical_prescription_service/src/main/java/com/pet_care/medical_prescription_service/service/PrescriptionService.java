@@ -1,10 +1,13 @@
 package com.pet_care.medical_prescription_service.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pet_care.medical_prescription_service.client.AppointmentClient;
 import com.pet_care.medical_prescription_service.client.MedicineClient;
 import com.pet_care.medical_prescription_service.dto.request.PrescriptionCreateRequest;
 import com.pet_care.medical_prescription_service.dto.request.PrescriptionUpdateRequest;
 import com.pet_care.medical_prescription_service.dto.response.*;
+import com.pet_care.medical_prescription_service.enums.PrescriptionStatus;
 import com.pet_care.medical_prescription_service.exception.APIException;
 import com.pet_care.medical_prescription_service.exception.ErrorCode;
 import com.pet_care.medical_prescription_service.mapper.PetPrescriptionMapper;
@@ -110,19 +113,18 @@ public class PrescriptionService {
             int page,
             int size,
             LocalDate startDate,
-            LocalDate endDate
+            LocalDate endDate,
+            PrescriptionStatus prescriptionStatus
     ) {
         Date sDate = Date.from(startDate.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant());
 
         Date eDate = Date.from(endDate.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant());
 
-
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
 
+        ObjectMapper mapper = new ObjectMapper();
 
-        List<PrescriptionResponse> prescriptionResponseList =
-                (List<PrescriptionResponse>) cacheService.getCache("prescriptions");
-
+        List<PrescriptionResponse> prescriptionResponseList = mapper.convertValue(cacheService.getCache("prescriptions"),List.class);
 
         Page<PrescriptionResponse> prescriptionPage = PaginationUtil
                 .convertListToPage(prescriptionResponseList, pageable);
@@ -142,18 +144,24 @@ public class PrescriptionService {
      */
 
     @Transactional(readOnly = true)
-    public PrescriptionResponse getPrescriptionById(Long prescriptionId) {
+    public PrescriptionResponse getPrescriptionById(Long prescriptionId) throws JsonProcessingException {
 
-//        List<PrescriptionResponse> prescriptionResponseList =
-//                (List<PrescriptionResponse>) cacheService.getCache("prescriptions");
+        ObjectMapper mapper = new ObjectMapper();
 
-        PrescriptionResponse prescriptionResponse = null;
+        List<PrescriptionResponse> prescriptionResponseList =
+                (List<PrescriptionResponse>) cacheService.getCache("prescriptions");
 
-        if (false) {
-//            prescriptionResponse = prescriptionResponseList.stream()
-//                    .filter(pR -> Objects.equals(pR.getId(), prescriptionId)).
-//                    findFirst().orElse(null);
-        } else {
+       PrescriptionResponse prescriptionResponse = null;
+
+        for (int i = 0; i < prescriptionResponseList.size(); i++ ) {
+            PrescriptionResponse pR = mapper.readValue(mapper.writeValueAsString(prescriptionResponseList.get(i)), PrescriptionResponse.class);
+            if(pR.getId().equals(prescriptionId)){
+                prescriptionResponse = pR;
+                break;
+            }
+        }
+
+        if (prescriptionResponse == null) {
             prescriptionResponse = PrescriptionRepository.findById(prescriptionId)
                     .map(this::toPrescriptionResponse)
                     .orElseThrow(() -> {
