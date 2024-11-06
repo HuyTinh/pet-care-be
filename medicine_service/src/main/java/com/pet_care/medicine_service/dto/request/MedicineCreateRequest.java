@@ -3,6 +3,7 @@ package com.pet_care.medicine_service.dto.request;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.pet_care.medicine_service.enums.MedicineStatus;
+import com.pet_care.medicine_service.enums.MedicineTypes;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -51,5 +52,7 @@ public class MedicineCreateRequest {
     String note;
 
     MedicineStatus status;
+
+    MedicineTypes types;
 
 }

@@ -6,6 +6,7 @@ import com.pet_care.medicine_service.dto.request.MedicineUpdateRequest;
 import com.pet_care.medicine_service.dto.response.MedicineResponse;
 import com.pet_care.medicine_service.dto.response.PageableResponse;
 import com.pet_care.medicine_service.enums.MedicineStatus;
+import com.pet_care.medicine_service.enums.MedicineTypes;
 import com.pet_care.medicine_service.exception.APIException;
 import com.pet_care.medicine_service.exception.ErrorCode;
 import com.pet_care.medicine_service.mapper.MedicineMapper;
@@ -61,12 +62,12 @@ public class MedicineService {
      */
 
     @Transactional(readOnly = true)
-    public PageableResponse<MedicineResponse> filterMedicines(int pageNumber, int pageSize, String searchTerm, Date manufacturingDate, Date expiryDate, MedicineStatus status, Double minPrice, Double maxPrice, String sortBy,
+    public PageableResponse<MedicineResponse> filterMedicines(int pageNumber, int pageSize, String searchTerm, Date manufacturingDate, Date expiryDate, MedicineTypes types, MedicineStatus status, Double minPrice, Double maxPrice, String sortBy,
                                                               String sortOrder) {
         Sort sort = Sort.by(Sort.Direction.fromString(sortOrder), sortBy);
         Pageable pageable = PageRequest.of(pageNumber, pageSize, sort);
         Page<Medicine> medicinePage = medicineRepository.findByFilters(
-                searchTerm, manufacturingDate, expiryDate, status, minPrice, maxPrice, pageable
+                searchTerm, manufacturingDate, expiryDate, status,types ,minPrice, maxPrice, pageable
         );
 
         List<MedicineResponse> medicineList = medicinePage.getContent().stream()
@@ -117,7 +118,6 @@ public class MedicineService {
     @Transactional
     public Medicine createMedicine(MedicineCreateRequest medicineCreateRequest, MultipartFile imageFile) throws IOException {
         Medicine newMedicine = medicineMapper.toEntity(medicineCreateRequest);
-
         checkAndUploadImageMedicine(imageFile, newMedicine);
 
         findAndSetManufactureById(medicineCreateRequest.getManufactureId(), newMedicine);

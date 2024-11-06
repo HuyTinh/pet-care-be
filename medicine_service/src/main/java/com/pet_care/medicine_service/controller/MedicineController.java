@@ -6,6 +6,7 @@ import com.pet_care.medicine_service.dto.response.APIResponse;
 import com.pet_care.medicine_service.dto.response.MedicineResponse;
 import com.pet_care.medicine_service.dto.response.PageableResponse;
 import com.pet_care.medicine_service.enums.MedicineStatus;
+import com.pet_care.medicine_service.enums.MedicineTypes;
 import com.pet_care.medicine_service.model.Medicine;
 import com.pet_care.medicine_service.service.MedicineService;
 import lombok.AccessLevel;
@@ -46,6 +47,7 @@ public class MedicineController {
     public APIResponse<PageableResponse<MedicineResponse>> getAllMedicine(
             @RequestParam(defaultValue = "0") int pageNumber,
             @RequestParam(defaultValue = "10") int pageSize,
+            @RequestParam(defaultValue = "MEDICINE") MedicineTypes types ,
             @RequestParam(required = false) String searchTerm,
             @RequestParam(required = false)
             @DateTimeFormat(pattern = "yyyy-MM-dd") Date manufacturingDate,
@@ -63,7 +65,9 @@ public class MedicineController {
                         pageSize,
                         searchTerm,
                         manufacturingDate,
-                        expiryDate, status,
+                        expiryDate,
+                        types,
+                        status,
                         minPrice,
                         maxPrice,
                         sortBy,
