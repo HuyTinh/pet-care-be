@@ -13,6 +13,7 @@ import java.util.Set;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class PrescriptionHomeDashboardResponse {
     Long prescriptionId;
+    String disease_name;
     CustomerPrescriptionResponse customerPrescription;
     PetPrescriptionResponse petPrescription;
     ProfilesDoctorResponse profilesDoctor;

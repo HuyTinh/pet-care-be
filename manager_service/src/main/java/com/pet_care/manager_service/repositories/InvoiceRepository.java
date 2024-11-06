@@ -10,6 +10,7 @@ import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 public interface InvoiceRepository extends JpaRepository<Invoice, Long> {
     @Query(value = " SELECT c.id  " +
@@ -24,6 +25,11 @@ public interface InvoiceRepository extends JpaRepository<Invoice, Long> {
             " FROM Invoice i   "+
             " WHERE i.create_date = :date and i.status = true ")
     List<Object[]> getAllInvoiceToday(@Param("date") LocalDate date);
+
+    @Query(value = " SELECT i " +
+            " FROM Invoice i " +
+            " WHERE i.create_date = :date and i.status = true ")
+    List<Invoice> getTotalByDate(@Param("date") LocalDate date);
 
     @Query(value = "SELECT app FROM Appointment app WHERE app.appointment_date = :date and app.status = true ")
     List<Appointment> findByAppointmentDate(LocalDate date);
@@ -89,4 +95,102 @@ public interface InvoiceRepository extends JpaRepository<Invoice, Long> {
             "    LEFT JOIN TotalAppointment ta on m.MonthName = ta.MonthName  " +
             "ORDER BY m.Month  " , nativeQuery = true)
     List<Object[]> getInvoiceAndAppointmentByYear(@Param("years") Long year);
+    
+    @Query(value = "SET @year = :year; " +
+            "SET @month = :month; " +
+            "WITH dates AS ( " +
+            "    SELECT " +
+            "        DATE(CONCAT(@year, '-', @month, '-01')) + INTERVAL (n) DAY AS date " +
+            "    FROM ( " +
+            "             SELECT @row := @row + 1 AS n " +
+            "             FROM (SELECT 0 UNION ALL SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3) a, " +
+            "                  (SELECT 0 UNION ALL SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3) b, " +
+            "                  (SELECT 0 UNION ALL SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3) c, " +
+            "                  (SELECT 0 UNION ALL SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3) d, " +
+            "                  (SELECT @row := -1) init " +
+            "         ) numbers " +
+            "    WHERE DATE(CONCAT(@year, '-', @month, '-01')) + INTERVAL (n) DAY <= LAST_DAY(DATE(CONCAT(@year, '-', @month, '-01'))) " +
+            ") " +
+            "SELECT " +
+            "    d.date AS DAY_INVOICE, " +
+            "    IFNULL(SUM(i.total), 0) AS REVENUE " +
+            "FROM " +
+            "    dates d " +
+            "        LEFT JOIN " +
+            "    invoices i ON d.date = i.create_date " +
+            "GROUP BY " +
+            "    DAY_INVOICE " +
+            "ORDER BY " +
+            "    d.date; ", nativeQuery = true)
+    List<Object[]> getRevenueOfMonthAnhYear(
+            @Param("year") Long year,
+            @Param("month") Long month
+    );
+
+    @Query(value = "WITH Months AS (      " +
+            "                   SELECT 1 AS Month, 'Jan' AS MonthName UNION ALL      " +
+            "                   SELECT 2 AS Month, 'Feb' UNION ALL      " +
+            "                   SELECT 3 AS Month, 'Mar' UNION ALL      " +
+            "                   SELECT 4 AS Month, 'Apr' UNION ALL      " +
+            "                   SELECT 5 AS Month, 'May' UNION ALL      " +
+            "                   SELECT 6 AS Month, 'Jun' UNION ALL      " +
+            "                   SELECT 7 AS Month, 'Jul' UNION ALL      " +
+            "                   SELECT 8 AS Month, 'Aug' UNION ALL      " +
+            "                   SELECT 9 AS Month, 'Sep' UNION ALL      " +
+            "                   SELECT 10 AS Month, 'Oct' UNION ALL      " +
+            "                   SELECT 11 AS Month, 'Nov' UNION ALL      " +
+            "                   SELECT 12 AS Month, 'Dec'      " +
+            "               ),      " +
+            "                   TotalInvoice AS (      " +
+            "                   SELECT DATE_FORMAT(i.create_date, '%b') AS MonthName,      " +
+            "                          IFNULL(SUM(i.Total), 0) AS Total      " +
+            "                   FROM invoices i      " +
+            "                   WHERE i.status = 1      " +
+            "                     AND YEAR(i.create_date) = COALESCE(:year, YEAR(CURDATE())) " +
+            "                   GROUP BY DATE_FORMAT(i.create_date, '%b')      " +
+            "               ) " +
+            "               SELECT m.Month, m.MonthName, IFNULL(ti.Total,0) AS Total " +
+            "               FROM Months m      " +
+            "                   LEFT JOIN TotalInvoice ti ON m.MonthName = ti.MonthName      " +
+            "               ORDER BY m.Month " , nativeQuery = true)
+    Set<Object[]> getRevenueYear(@Param("year") Long year);
+
+    @Query(value = " WITH Months AS (         " +
+            "                   SELECT 1 AS Month, 'Jan' AS MonthName UNION ALL         " +
+            "                   SELECT 2 AS Month, 'Feb' UNION ALL         " +
+            "                   SELECT 3 AS Month, 'Mar' UNION ALL         " +
+            "                   SELECT 4 AS Month, 'Apr' UNION ALL         " +
+            "                   SELECT 5 AS Month, 'May' UNION ALL         " +
+            "                   SELECT 6 AS Month, 'Jun' UNION ALL         " +
+            "                   SELECT 7 AS Month, 'Jul' UNION ALL         " +
+            "                   SELECT 8 AS Month, 'Aug' UNION ALL         " +
+            "                   SELECT 9 AS Month, 'Sep' UNION ALL         " +
+            "                   SELECT 10 AS Month, 'Oct' UNION ALL         " +
+            "                   SELECT 11 AS Month, 'Nov' UNION ALL         " +
+            "                   SELECT 12 AS Month, 'Dec'  )    " +
+            ", YEAR_FIRST AS (    " +
+            "    SELECT DATE_FORMAT(i.create_date, '%b') AS MonthName, sum(i.total) as revenue_year_first    " +
+            "    FROM invoices i    " +
+            "    WHERE i.status = true    " +
+            "        AND year(i.create_date) = :year_first    " +
+            "    GROUP BY DATE_FORMAT(i.create_date, '%b')    " +
+            "),    " +
+            "    YEAR_SECOND AS (    " +
+            "        SELECT DATE_FORMAT(i.create_date, '%b') AS MonthName, sum(i.total) as revenue_year_second    " +
+            "        FROM invoices i    " +
+            "        WHERE i.status = true    " +
+            "          AND year(i.create_date) = :year_second    " +
+            "        GROUP BY DATE_FORMAT(i.create_date, '%b')    " +
+            "    )" +
+            "SELECT m.Month, m.MonthName    " +
+            "     , IFNULL(yf.revenue_year_first,0) as year_first    " +
+            "     , IFNULL(ys.revenue_year_second,0) as year_second    " +
+            "    FROM Months m    " +
+            "    LEFT JOIN YEAR_FIRST yf on yf.MonthName = m.MonthName    " +
+            "    LEFT JOIN YEAR_SECOND ys on ys.MonthName = m.MonthName    "
+            , nativeQuery = true)
+    Set<Object[]> getInvoiceYearFirstAndYearSecond(
+            @Param("year_first") Long year_first,
+            @Param("year_second") Long year_second
+    );
 }

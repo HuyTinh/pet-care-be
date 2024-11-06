@@ -6,9 +6,12 @@ import com.pet_care.manager_service.exception.AppException;
 import com.pet_care.manager_service.exception.ErrorCode;
 import com.pet_care.manager_service.repositories.*;
 import com.pet_care.manager_service.services.DashboardService;
+import io.swagger.v3.oas.models.links.Link;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -42,9 +45,8 @@ public class DashboardServiceImpl implements DashboardService {
     @Autowired
     PrescriptionDetailRepository prescriptionDetailRepository;
 
-    public CustomerHomeDashboardResponse getCountCustomer(){
-        LocalDate now = LocalDate.now();
-        List<Object[]> listCustomer = invoiceRepository.getAllCustomerToday(now);
+    public CustomerHomeDashboardResponse getCountCustomer(LocalDate date){
+        List<Object[]> listCustomer = invoiceRepository.getAllCustomerToday(date);
         Long count = (long) listCustomer.size();
         System.out.println("Check list customer: " + count);
         return CustomerHomeDashboardResponse.builder()
@@ -52,11 +54,9 @@ public class DashboardServiceImpl implements DashboardService {
                 .build();
     }
 
-    public AppointmentHomeDashboardResponse getCountAppointment(){
-        LocalDate now = LocalDate.now();
-//      LocalDate now = LocalDate.parse("2024-10-01");
-//        List<Object[]> listAppointment = invoiceRepository.getAllAppointmentToday(now);
-        List<Appointment> listAppointment = invoiceRepository.findByAppointmentDate(now);
+    public AppointmentHomeDashboardResponse getCountAppointment(LocalDate date){
+
+        List<Appointment> listAppointment = invoiceRepository.findByAppointmentDate(date);
         Long count = (long) listAppointment.size();
         System.out.println("Check list appointment: " + count);
         return AppointmentHomeDashboardResponse.builder()
@@ -64,9 +64,9 @@ public class DashboardServiceImpl implements DashboardService {
                 .build();
     }
 
-    public InvoiceHomeDashboardResponse getCountInvoice(){
-        LocalDate now = LocalDate.now();
-        List<Object[]> listInvoice = invoiceRepository.getAllInvoiceToday(now);
+    public InvoiceHomeDashboardResponse getCountInvoice(LocalDate date ){
+//        LocalDate now = LocalDate.now();
+        List<Object[]> listInvoice = invoiceRepository.getAllInvoiceToday(date);
         Long count = (long) listInvoice.size();
         System.out.println("Check list invoice: " + count);
         return InvoiceHomeDashboardResponse.builder()
@@ -105,6 +105,7 @@ public class DashboardServiceImpl implements DashboardService {
                 .build();
         return PrescriptionHomeDashboardResponse.builder()
                 .prescriptionId(id)
+                .disease_name(prescription.getDisease_name())
                 .customerPrescription(getCustomerPrescription(id))
                 .profilesDoctor(profilesResponse)
                 .petPrescription(convertPetPrescriptionResponse(prescription))
@@ -156,10 +157,12 @@ public class DashboardServiceImpl implements DashboardService {
 
     @Override
     public DashboardResponse getDashboardHome() {
+        LocalDate now = LocalDate.now();
+
         return DashboardResponse.builder()
-                .customers(getCountCustomer())
-                .appointments(getCountAppointment())
-                .invoices(getCountInvoice())
+                .customers(getCountCustomer(now))
+                .appointments(getCountAppointment(now))
+                .invoices(getCountInvoice(now))
                 .prescriptions(getPrescriptionHomeDashboard())
                 .build();
     }
@@ -335,7 +338,7 @@ public class DashboardServiceImpl implements DashboardService {
     public AppointmentChartTodayResponse appointmentChartTodayResponse(Object[] row){
         return AppointmentChartTodayResponse.builder()
                 .hour_name((String) row[0])
-                .count_appointment((Long) row[1])
+                .appointment((Long) row[1])
                 .build();
     }
 
@@ -343,5 +346,194 @@ public class DashboardServiceImpl implements DashboardService {
         LocalDate now = LocalDate.now();
         List<Object[]> listAppointment = appointmentRepository.getAppointmentHoursToday(now);
         return listAppointment.stream().map(this::appointmentChartTodayResponse).toList();
+    }
+
+    public AppointmentChartResponse appointmentChartResponse(Object[] row){
+        return AppointmentChartResponse
+                .builder()
+                .hour_name((String) row[0])
+                .appointment((Long) row[1])
+                .percent((BigDecimal) row[2])
+                .build();
+    }
+
+    public Set<AppointmentChartResponse> appointmentChartResponseSet(LocalDate from_date, LocalDate to_date){
+        Set<Object[]> chartAppointment = appointmentRepository.getAppointmentChartFromAndToDate(from_date, to_date);
+        Set<AppointmentChartResponse> appointmentChartResponses = new HashSet<>();
+        appointmentChartResponses.addAll(chartAppointment.stream().map(this::appointmentChartResponse).collect(Collectors.toSet()));
+
+        Set<AppointmentChartResponse> sortAppChartResponses = appointmentChartResponses.stream()
+                .sorted(Comparator.comparing(AppointmentChartResponse::getHour_name))
+                .collect(Collectors.toCollection(LinkedHashSet::new));
+
+        return sortAppChartResponses;
+    }
+
+    public Set<AppointmentChartResponse> appointmentByMonthAndYear(Long month, Long year){
+        Set<Object[]> chartAppointment = appointmentRepository.getAppointmentChartMonthAndYear(month, year);
+        Set<AppointmentChartResponse> appointmentChartResponses = new HashSet<>();
+        appointmentChartResponses.addAll(chartAppointment.stream().map(this::appointmentChartResponse).collect(Collectors.toSet()));
+
+        Set<AppointmentChartResponse> sortAppointment = appointmentChartResponses.stream()
+                .sorted(Comparator.comparing(AppointmentChartResponse::getHour_name))
+                .collect(Collectors.toCollection(LinkedHashSet::new));
+
+        return sortAppointment;
+    }
+
+    public Set<AppointmentYearFirstAndYearSecondResponse> appointmentYearFirstAndYearSecond(Long year_first,Long year_second){
+        Set<Object[]> appYearFirstAndSecond = appointmentRepository.getAppointmentYearFirstAndYearSecond(year_first,year_second);
+        Set<AppointmentYearFirstAndYearSecondResponse> appYFAndYS = new HashSet<>();
+        appYFAndYS.addAll(appYearFirstAndSecond.stream().map(this::appYearFirstAndYearSecond).collect(Collectors.toSet()));
+
+        Set<AppointmentYearFirstAndYearSecondResponse> sortAppointment = appYFAndYS.stream()
+                .sorted(Comparator.comparing((AppointmentYearFirstAndYearSecondResponse::getMonth)))
+                .collect(Collectors.toCollection(LinkedHashSet::new));
+        return sortAppointment;
+    }
+
+    public AppointmentFromAndTodateResponse appFromAndTodateResponse(
+            LocalDate from_date, LocalDate to_date,
+            Long month, Long year,
+            Long year_first, Long year_second
+            ){
+        LocalDate today = LocalDate.now();
+        if(month == null && year == null){
+            month = (long) today.getMonthValue();
+            year = (long) today.getYear();
+        }
+        if(month == null ){
+            month = (long) today.getMonthValue();
+        }
+        if(year == null){
+            year = (long) today.getYear();
+        }
+        if(from_date == null && to_date == null){
+            from_date = today.withDayOfMonth(1);
+            to_date = today.withDayOfMonth(today.lengthOfMonth());
+        }
+        if(from_date != null && to_date == null){
+            to_date = from_date.withDayOfMonth(from_date.lengthOfMonth());
+        }
+        if(from_date == null && to_date != null){
+            from_date = to_date.withDayOfMonth(1);
+        }
+        if(year_first == null && year_second == null){
+            year_second = (long) today.getYear();
+            year_first = year_second - 1;
+        }
+        if(year_first == null && year_second != null){
+            year_first = year_second - 1;
+        }
+        if(year_first != null && year_second == null){
+            year_second = year_first + 1;
+        }
+        return AppointmentFromAndTodateResponse.builder()
+                .from_date(from_date)
+                .to_date(to_date)
+                .appointment_chart_response(appointmentChartResponseSet(from_date, to_date))
+                .month(month)
+                .year(year)
+                .appointment_month_year(appointmentByMonthAndYear(month, year))
+                .year_first(year_first)
+                .year_second(year_second)
+                .appointment_year_first_year_second_response(appointmentYearFirstAndYearSecond(year_first,year_second))
+                .build();
+    }
+
+    public AppointmentYearFirstAndYearSecondResponse appYearFirstAndYearSecond(Object[] row){
+        return AppointmentYearFirstAndYearSecondResponse.builder()
+                .month((Long) row[0])
+                .monthName((String) row[1])
+                .count_year_first((Long) row[2])
+                .count_year_second((Long) row[3])
+                .percent_year_first((BigDecimal) row[4])
+                .percent_year_second((BigDecimal) row[5])
+                .build();
+    }
+
+    public InvoiceOfYearResponse invoiceOfYearResponse(Object[] row){
+
+        return InvoiceOfYearResponse.builder()
+                .month((Long) row[0])
+                .monthName((String) row[1])
+                .total((Double) row[2])
+                .build();
+    }
+    public Set<InvoiceOfYearResponse> invoiceOfYearSet(Long year){
+        Set<Object[]> invoiceOfYear = invoiceRepository.getRevenueYear(year);
+        Set<InvoiceOfYearResponse> iofSet = new HashSet<>();
+        iofSet.addAll(invoiceOfYear.stream().map(this::invoiceOfYearResponse).collect(Collectors.toSet()));
+
+        Set<InvoiceOfYearResponse> sortInvoice = iofSet.stream()
+                .sorted(Comparator.comparing((InvoiceOfYearResponse::getMonth)))
+                .collect(Collectors.toCollection(LinkedHashSet::new));
+        return sortInvoice;
+    }
+
+    public Double getTotalRevenueByDate(LocalDate date){
+        List<Invoice> listInvoice = invoiceRepository.getTotalByDate(date);
+        Double total = (double) 0;
+        if(listInvoice.isEmpty()){
+            return total;
+        }
+        for(Invoice invoice : listInvoice){
+            total = total + invoice.getTotal();
+        }
+        return total;
+    }
+    public InvoiceCountResponse invoiceCountResponse(Long month, Long year, Boolean today,  Long year_first, Long year_second){
+        LocalDate now = LocalDate.now();
+        String today_yesterday  = "";
+        if(today == true ){
+            now = LocalDate.now();
+            today_yesterday = "Today";
+        }
+        if(today == false ){
+            now = now.minusDays(1);
+            today_yesterday = "Yesterday";
+        }
+        if(year_first == null && year_second == null){
+            year_second = (long) now.getYear();
+            year_first = year_second - 1;
+        }
+        if(year_first == null && year_second != null){
+            year_first = year_second - 1;
+        }
+        if(year_first != null && year_second == null){
+            year_second = year_first + 1;
+        }
+        return InvoiceCountResponse.builder()
+                .appointments(getCountAppointment(now))
+                .customers(getCountCustomer(now))
+                .invoices(getCountInvoice(now))
+                .total(getTotalRevenueByDate(now))
+                .today_yesterday(today_yesterday)
+                .invoiceOfYears(invoiceOfYearSet(year))
+                .year_first(year_first)
+                .year_second(year_second)
+                .revenueYearFirstAndYearSeconds(getRevenueYFAndYSs(year_first,year_second))
+                .build();
+    }
+
+    public RevenueYearFirstAndYearSecondResponse getRevenueYearFirstAndYearSecond(Object[] row){
+
+        return RevenueYearFirstAndYearSecondResponse.builder()
+                .month((Long) row[0])
+                .monthName((String) row[1])
+                .revenue_year_first((Double) row[2])
+                .revenue_year_second((Double) row[3])
+                .build();
+    }
+
+    public Set<RevenueYearFirstAndYearSecondResponse> getRevenueYFAndYSs(Long year_first, Long year_second){
+        Set<Object[]> revYFAndYS = invoiceRepository.getInvoiceYearFirstAndYearSecond(year_first,year_second);
+        Set<RevenueYearFirstAndYearSecondResponse> revenueYearFirstAndYearSecondResponses = new HashSet<>();
+        revenueYearFirstAndYearSecondResponses.addAll(revYFAndYS.stream().map(this::getRevenueYearFirstAndYearSecond).collect(Collectors.toSet()));
+
+        Set<RevenueYearFirstAndYearSecondResponse> sortRevenue = revenueYearFirstAndYearSecondResponses.stream()
+                .sorted(Comparator.comparing(RevenueYearFirstAndYearSecondResponse::getMonth))
+                .collect(Collectors.toCollection(LinkedHashSet::new));
+        return sortRevenue;
     }
 }

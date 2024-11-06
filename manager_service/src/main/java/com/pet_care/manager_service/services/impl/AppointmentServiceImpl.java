@@ -2,6 +2,7 @@ package com.pet_care.manager_service.services.impl;
 
 import com.pet_care.manager_service.dto.response.*;
 import com.pet_care.manager_service.entity.*;
+import com.pet_care.manager_service.enums.AppointmentStatus;
 import com.pet_care.manager_service.exception.AppException;
 import com.pet_care.manager_service.exception.ErrorCode;
 import com.pet_care.manager_service.repositories.*;
@@ -10,10 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -54,14 +52,19 @@ public class AppointmentServiceImpl implements AppointmentService {
         }
         return responses;
     }
-    public Set<AppointmentHomeDashboardTableResponse> searchAppointment(LocalDate create_date, Boolean status, String status_accept, LocalDate from_date, LocalDate to_date, String search_query ){
-        List<Appointment> appointments = appointmentRepository.searchAppointmentDashboard(create_date, status,status_accept, from_date, to_date, search_query);
+    public Set<AppointmentHomeDashboardTableResponse> searchAppointment(LocalDate create_date, AppointmentStatus status_accept, LocalDate from_date, LocalDate to_date, String search_query ){
+        List<Appointment> appointments = appointmentRepository.searchAppointmentDashboard(create_date,status_accept, from_date, to_date, search_query);
         Set<AppointmentHomeDashboardTableResponse> responses = new HashSet<>();
         for (Appointment appointment: appointments) {
             AppointmentHomeDashboardTableResponse response = appointmentHomeDashboardTableResponse(appointment);
             responses.add(response);
         }
-        return responses;
+
+        Set<AppointmentHomeDashboardTableResponse> sortedAppointment= responses.stream()
+                .sorted(Comparator.comparing(AppointmentHomeDashboardTableResponse::getAppointmentId).reversed())
+                .collect(Collectors.toCollection(LinkedHashSet::new));
+
+        return sortedAppointment;
     }
     @Override
     public AppointmentHomeDashboardTableResponse getAppointmentById(Long id){
@@ -205,5 +208,10 @@ public class AppointmentServiceImpl implements AppointmentService {
                 .id( medicine.getId())
                 .name(medicine.getName())
                 .build();
+    }
+
+    public Appointment findByAppointmentId(Long id){
+        Appointment appointment = appointmentRepository.findById(id).get();
+        return appointment;
     }
 }

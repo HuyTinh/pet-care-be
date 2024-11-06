@@ -213,15 +213,18 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public List<AccountResponse> getAllByRole(Long id) {
+    public List<AccountResponse> getAllByRole(RoleEnum role_name) {
 //        List<Object[]> listEmployeeByRole = accountRepository.getAllByRole(id);
 //
 //        if (listEmployeeByRole.isEmpty()) {
 //            throw new AppException(ErrorCode.ACCOUNT_NOTFOUND);
 //        };
         redisTemplate.getConnectionFactory().getConnection().flushAll();
-        List<Object> redisObjects = redisTemplate.opsForHash().values(HASH_KEY);
 
+        if (role_name != null) {
+            List<Object[]> accounts = accountRepository.getAllByRole(role_name);
+        }
+        List<Object> redisObjects = redisTemplate.opsForHash().values(HASH_KEY);
         // loc. va` ep' thành Object[]
         List<Object[]> listEmployeeByRole = redisObjects.stream()
                 .filter(obj -> obj instanceof Object[]) // Ensure the object is an Object[]
@@ -230,7 +233,10 @@ public class AccountServiceImpl implements AccountService {
 
         System.out.println(">> Check List Employee True : " + listEmployeeByRole);
         if (listEmployeeByRole.isEmpty()) {
-            listEmployeeByRole = accountRepository.getAllByRole(id);
+            if (role_name != null) {
+                listEmployeeByRole = accountRepository.getAllByRole(role_name);
+            }
+//            listEmployeeByRole = accountRepository.getAllByRole(role_name + "%");
             System.out.println(">> Check List Employee True : " + listEmployeeByRole);
 
             if (listEmployeeByRole.isEmpty()) {

@@ -27,7 +27,7 @@ public class Invoice_Medicine_Detail {
     @Column(name = "price", nullable = false)
     double price;
 
-    @Column(name = "note", columnDefinition = "text", nullable = false)
+    @Column(name = "note", columnDefinition = "text", nullable = true)
     String note;
 
     @ManyToOne

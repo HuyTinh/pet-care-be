@@ -4,6 +4,7 @@ import com.pet_care.manager_service.dto.request.CreateAccountRequest;
 import com.pet_care.manager_service.dto.response.AccountResponse;
 import com.pet_care.manager_service.dto.response.ApiResponse;
 import com.pet_care.manager_service.entity.Account;
+import com.pet_care.manager_service.enums.RoleEnum;
 import com.pet_care.manager_service.services.impl.AccountServiceImpl;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,9 +51,11 @@ public class AccountController {
         return ResponseEntity.ok(new ApiResponse<>(2000, "Get All Employee Successful",allEmployee));
     }
 
-    @GetMapping("/employee/role/{id}")
-    public ResponseEntity<ApiResponse<List<AccountResponse>>> getAllEmployeeRole(@PathVariable Long id){
-        List<AccountResponse> listEmployeeByRole = accountService.getAllByRole(id);
+    @GetMapping("/employee/role/{role_name}")
+    public ResponseEntity<ApiResponse<List<AccountResponse>>> getAllEmployeeRole(
+            @RequestParam(required = false) RoleEnum role_name
+    ){
+        List<AccountResponse> listEmployeeByRole = accountService.getAllByRole(role_name );
         AccountResponse accountResponse = listEmployeeByRole.get(0);
         return ResponseEntity.ok(new ApiResponse<>(2000, "Get All "+ accountResponse.getProfile().getRole().getName() +" Successful",listEmployeeByRole));
     }

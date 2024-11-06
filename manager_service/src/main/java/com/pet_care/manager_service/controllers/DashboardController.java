@@ -1,6 +1,7 @@
 package com.pet_care.manager_service.controllers;
 
 import com.pet_care.manager_service.dto.response.*;
+import com.pet_care.manager_service.entity.Appointment;
 import com.pet_care.manager_service.services.impl.AppointmentServiceImpl;
 import com.pet_care.manager_service.services.impl.DashboardServiceImpl;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -51,5 +52,23 @@ public class DashboardController {
             return ResponseEntity.ok(new ApiResponse<>(2000, "No have Appointment", appointment));
         }
         return ResponseEntity.ok(new ApiResponse<>(2000, "Find get Appointment", appointment));
+    }
+    @GetMapping("/prescription-id/{id}")
+    public ResponseEntity<ApiResponse<PrescriptionHomeDashboardResponse>> getPrescriptionByID(@PathVariable Long id) {
+        PrescriptionHomeDashboardResponse prescription = dashboardService.prescriptionHomeDashboardResponse(id);
+        if(prescription == null){
+            return ResponseEntity.ok(new ApiResponse<>(2000, "No have Prescription", null));
+        }
+        return ResponseEntity.ok(new ApiResponse<>(2000, "Find get Appointment", prescription));
+    }
+
+    @GetMapping("/pet-id/{id}")
+    public ResponseEntity<ApiResponse<Set<PetResponse>>> getPetByAppointmentId(@PathVariable Long id) {
+        Appointment appointment = appointmentService.findByAppointmentId(id);
+        Set<PetResponse> pets = dashboardService.petResponses(appointment);
+        if(pets == null){
+            return ResponseEntity.ok(new ApiResponse<>(2000, "No have Prescription", null));
+        }
+        return ResponseEntity.ok(new ApiResponse<>(2000, "Find get Pets", pets));
     }
 }

@@ -3,6 +3,7 @@ package com.pet_care.manager_service.controllers;
 import com.pet_care.manager_service.dto.response.ApiResponse;
 import com.pet_care.manager_service.dto.response.AppointmentHomeDashboardTableResponse;
 import com.pet_care.manager_service.entity.Appointment;
+import com.pet_care.manager_service.enums.AppointmentStatus;
 import com.pet_care.manager_service.services.impl.AppointmentServiceImpl;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,13 +24,12 @@ public class AppointmentController {
     @GetMapping("/search")
     public ResponseEntity<ApiResponse<Set<AppointmentHomeDashboardTableResponse>>> searchAppointment(
             @RequestParam(required = false) LocalDate create_date,
-            @RequestParam(required = false) Boolean status,
-            @RequestParam(required = false) String status_accept,
+            @RequestParam(required = false) AppointmentStatus status_accept,
             @RequestParam(required = false) LocalDate from_date,
             @RequestParam(required = false) LocalDate to_date,
             @RequestParam(required = false) String search_query
     ) {
-        Set<AppointmentHomeDashboardTableResponse> responses = appointmentService.searchAppointment(create_date, status, status_accept, from_date, to_date, search_query);
+        Set<AppointmentHomeDashboardTableResponse> responses = appointmentService.searchAppointment(create_date, status_accept, from_date, to_date, search_query);
         if(responses.isEmpty()){
             return ResponseEntity.ok(new ApiResponse<>(2000, "No have Appointment", responses));
         }

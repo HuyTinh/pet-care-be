@@ -4,6 +4,7 @@ import com.pet_care.manager_service.dto.response.AppointmentHomeDashboardTableRe
 import com.pet_care.manager_service.dto.response.DashboardResponse;
 import com.pet_care.manager_service.entity.Appointment;
 
+import java.time.LocalDate;
 import java.util.Set;
 
 public interface DashboardService {

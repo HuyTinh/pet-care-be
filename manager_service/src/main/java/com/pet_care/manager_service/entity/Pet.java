@@ -32,7 +32,7 @@ public class Pet {
     @Column(name = "status", nullable = false)
     boolean status;
 
-    @Column(name = "note", columnDefinition = "note", nullable = true)
+    @Column(name = "note", columnDefinition = "text", nullable = true)
     String note;
 
     @ManyToOne

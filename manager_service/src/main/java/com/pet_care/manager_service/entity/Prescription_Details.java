@@ -20,6 +20,9 @@ public class Prescription_Details {
     @Column(name = "quantity", nullable = false)
     int quantity;
 
+    @Column(name = "price", nullable = false)
+    double price;
+
     @Column(name = "note", columnDefinition = "text", nullable = true)
     String note;
 

@@ -9,7 +9,8 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class AppointmentChartTodayResponse {
-    String hour_name;
-    Long appointment;
+public class InvoiceOfYearResponse {
+    Long month;
+    String monthName;
+    Double total;
 }

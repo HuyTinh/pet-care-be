@@ -2,6 +2,7 @@ package com.pet_care.manager_service.services;
 
 import com.pet_care.manager_service.dto.request.CreateAccountRequest;
 import com.pet_care.manager_service.dto.response.AccountResponse;
+import com.pet_care.manager_service.enums.RoleEnum;
 
 import java.util.List;
 
@@ -16,5 +17,5 @@ public interface AccountService {
 
     List<AccountResponse> getAllEmployeeTrue();
 
-    List<AccountResponse> getAllByRole(Long id);
+    List<AccountResponse> getAllByRole(RoleEnum role_name);
 }
