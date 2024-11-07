@@ -20,7 +20,7 @@ public class WebhookRequest {
     @FieldDefaults(level = AccessLevel.PRIVATE)
     public static class Data {
         private long id;
-        private long tid;
+        private String tid;
         private String description;
         private double amount;
         private double cusum_balance;
