@@ -25,6 +25,11 @@ public class PaymentController {
 
     SseService sseService;
 
+    /**
+     * @param webhookRequest
+     * @return
+     * @throws Exception
+     */
     @PostMapping()
     public APIResponse<CheckoutResponseData> getPaymentLink(@RequestBody PaymentRequest paymentRequest) throws Exception {
         return  APIResponse.<CheckoutResponseData>builder()
@@ -32,6 +37,11 @@ public class PaymentController {
                 .build();
     }
 
+    /**
+     * @param orderId
+     * @return
+     * @throws Exception
+     */
     @PostMapping("{orderId}/cancel")
     public APIResponse<?> cancelPayment(@PathVariable("orderId") Integer orderId) throws Exception {
       Integer cancelSuccess = payOSService.cancelPaymentLink(orderId);
@@ -44,15 +54,16 @@ public class PaymentController {
                 .build();
     }
 
+    /**
+     * @param webhookRequest
+     * @throws Exception
+     */
     @PostMapping("/confirm")
     public void checkOutSuccessfully(@RequestBody WebhookRequest webhookRequest) throws Exception {
-        System.out.println("Chào" + webhookRequest);
         sseService.sendEventToClient(
                 payOSService.getOrderCode(
                         webhookRequest
                 ), true);
     }
-
-
 
 }

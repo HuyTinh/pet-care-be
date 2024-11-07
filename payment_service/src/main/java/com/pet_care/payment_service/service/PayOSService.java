@@ -88,7 +88,7 @@ public class PayOSService {
         try {
             payOS.cancelPaymentLink(orderId,"");
         } catch (Exception e) {
-            log.error(e.getMessage());
+            System.out.println(e.getMessage());
             return 0;
         }
         return 1;
