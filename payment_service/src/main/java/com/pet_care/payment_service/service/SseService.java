@@ -14,7 +14,6 @@ public class SseService {
 
     public void sendEventToClient(Long orderId, boolean event) {
         SseEmitter emitter = emitters.get(orderId);
-        System.out.println(orderId);
         if (emitter != null) {
             try {
                 emitter.send(SseEmitter.event().name(String.valueOf(orderId)).data(event));
