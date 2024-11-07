@@ -1,6 +1,7 @@
 package com.pet_care.medicine_service.repository;
 
 import com.pet_care.medicine_service.enums.MedicineStatus;
+import com.pet_care.medicine_service.enums.MedicineTypes;
 import com.pet_care.medicine_service.model.Medicine;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -20,13 +21,16 @@ public interface MedicineRepository extends JpaRepository<Medicine, Long> {
             "AND (:manufacturingDate IS NULL OR m.manufacturingDate >= :manufacturingDate) " +
             "AND (:expiryDate IS NULL OR m.expiryDate <= :expiryDate) " +
             "AND (:status IS NULL OR m.status = :status) " +
+            "AND m.types = :types " +
             "AND (:minPrice IS NULL OR m.price >= :minPrice) " +
             "AND (:maxPrice IS NULL OR m.price <= :maxPrice)")
+
     Page<Medicine> findByFilters(
             @Param("searchTerm") String searchTerm,
             @Param("manufacturingDate") Date manufacturingDate,
             @Param("expiryDate") Date expiryDate,
             @Param("status") MedicineStatus status,
+            @Param("types") MedicineTypes types,
             @Param("minPrice") Double minPrice,
             @Param("maxPrice") Double maxPrice,
             Pageable pageable

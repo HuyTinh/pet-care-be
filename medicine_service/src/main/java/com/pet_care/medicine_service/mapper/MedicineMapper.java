@@ -14,6 +14,7 @@ public interface MedicineMapper {
      */
     @Mapping(target = "calculationUnits", ignore = true)
     @Mapping(target = "locations", ignore = true)
+    @Mapping(target ="manufacture", ignore = true)
     Medicine toEntity(MedicineCreateRequest medicineCreateRequest);
 
     /**

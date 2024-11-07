@@ -3,6 +3,7 @@ package com.pet_care.medicine_service.dto.response;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.pet_care.medicine_service.enums.MedicineStatus;
+import com.pet_care.medicine_service.enums.MedicineTypes;
 import com.pet_care.medicine_service.model.CalculationUnit;
 import com.pet_care.medicine_service.model.Location;
 import com.pet_care.medicine_service.model.Manufacture;
@@ -54,4 +55,6 @@ public class MedicineResponse {
 
     @Enumerated(EnumType.STRING)
     MedicineStatus status;
+
+    MedicineTypes types;
 }

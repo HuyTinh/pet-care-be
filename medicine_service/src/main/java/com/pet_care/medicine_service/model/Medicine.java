@@ -2,6 +2,7 @@ package com.pet_care.medicine_service.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.pet_care.medicine_service.enums.MedicineStatus;
+import com.pet_care.medicine_service.enums.MedicineTypes;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -55,12 +56,14 @@ public class Medicine {
     @Builder.Default
     MedicineStatus status = MedicineStatus.ACTIVE;
 
-    //
+    @Enumerated(EnumType.STRING)
+    MedicineTypes types;
+
     @Temporal(TemporalType.TIMESTAMP)
     @CreationTimestamp
     Date createdAt;
 
-    //
+
     @Temporal(TemporalType.TIMESTAMP)
     @UpdateTimestamp
     Date updatedAt;
