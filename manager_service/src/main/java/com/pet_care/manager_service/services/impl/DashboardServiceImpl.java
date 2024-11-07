@@ -44,6 +44,8 @@ public class DashboardServiceImpl implements DashboardService {
 
     @Autowired
     PrescriptionDetailRepository prescriptionDetailRepository;
+    @Autowired
+    private ServicesRepository servicesRepository;
 
     public CustomerHomeDashboardResponse getCountCustomer(LocalDate date){
         List<Object[]> listCustomer = invoiceRepository.getAllCustomerToday(date);
@@ -460,6 +462,27 @@ public class DashboardServiceImpl implements DashboardService {
                 .total((Double) row[2])
                 .build();
     }
+
+    public InvoiceOfMonthResponse invoiceOfMonthResponse(Object[] row){
+        return InvoiceOfMonthResponse.builder()
+                .day((Integer) row[0])
+                .total((Double) row[1])
+                .build();
+    }
+
+    public Set<InvoiceOfMonthResponse> invoiceOfMonthSet(Long year, Long month){
+        System.out.println("Check year: " + year);
+        System.out.println("Check month: " + month);
+
+        Set<Object[]> invoiceOfMonth = invoiceRepository.getRevenueOfMonthAnhYear( year,month);
+        Set<InvoiceOfMonthResponse> iofMonth = new HashSet<>();
+        iofMonth.addAll(invoiceOfMonth.stream().map(this::invoiceOfMonthResponse).collect(Collectors.toSet()));
+        Set<InvoiceOfMonthResponse> sortedInvoice = iofMonth.stream()
+                .sorted(Comparator.comparing(InvoiceOfMonthResponse::getDay))
+                .collect(Collectors.toCollection(LinkedHashSet::new));
+        return sortedInvoice;
+    }
+
     public Set<InvoiceOfYearResponse> invoiceOfYearSet(Long year){
         Set<Object[]> invoiceOfYear = invoiceRepository.getRevenueYear(year);
         Set<InvoiceOfYearResponse> iofSet = new HashSet<>();
@@ -503,12 +526,24 @@ public class DashboardServiceImpl implements DashboardService {
         if(year_first != null && year_second == null){
             year_second = year_first + 1;
         }
+        if(month == null){
+           month = (long) now.getMonthValue();
+            System.out.println("Check year: " + month);
+
+        }
+        if(year == null){
+            year = (long) now.getYear();
+            System.out.println("Check year: " + year);
+        }
         return InvoiceCountResponse.builder()
                 .appointments(getCountAppointment(now))
                 .customers(getCountCustomer(now))
                 .invoices(getCountInvoice(now))
                 .total(getTotalRevenueByDate(now))
                 .today_yesterday(today_yesterday)
+                .month(month)
+                .year(year)
+                .invoiceOfMonth(invoiceOfMonthSet( year,month))
                 .invoiceOfYears(invoiceOfYearSet(year))
                 .year_first(year_first)
                 .year_second(year_second)
@@ -535,5 +570,96 @@ public class DashboardServiceImpl implements DashboardService {
                 .sorted(Comparator.comparing(RevenueYearFirstAndYearSecondResponse::getMonth))
                 .collect(Collectors.toCollection(LinkedHashSet::new));
         return sortRevenue;
+    }
+
+    public ServiceOfMonthResponse serviceOfMonth (Object[] row){
+        return ServiceOfMonthResponse.builder()
+                .id((Long) row[0])
+                .name((String) row[1])
+                .count((Long) row[2])
+                .build();
+    }
+
+    public Set<ServiceOfMonthResponse> serviceOfMonthSortServiceCounts(Long month, Long year){
+        Set<Object[]> somResponses = servicesRepository.getTop10ServiceOfMonthSortCount(month, year);
+        Set<ServiceOfMonthResponse> somResponseSet = new HashSet<>();
+        somResponseSet.addAll(somResponses.stream().map(this::serviceOfMonth).collect(Collectors.toSet()));
+
+        Set<ServiceOfMonthResponse> sortServiceCount = somResponseSet.stream()
+                .sorted(Comparator.comparing(ServiceOfMonthResponse::getCount).reversed())
+                .collect(Collectors.toCollection(LinkedHashSet::new));
+        return sortServiceCount;
+    }
+
+    public ServiceRevenueOfMonthResponse serviceRevenueOfMonth (Object[] row){
+        return ServiceRevenueOfMonthResponse.builder()
+                .id((Long) row[0])
+                .name((String) row[1])
+                .total((Double) row[3])
+                .percent_revenue((Double) row[4])
+                .build();
+    }
+
+    public Set<ServiceRevenueOfMonthResponse> serviceRevenueOfMonthSortServiceCounts(Long month, Long year){
+        Set<Object[]> somResponses = servicesRepository.getTop10ServiceOfMonthSortCount(month, year);
+        Set<ServiceRevenueOfMonthResponse> somResponseSet = new HashSet<>();
+        somResponseSet.addAll(somResponses.stream().map(this::serviceRevenueOfMonth).collect(Collectors.toSet()));
+
+        Set<ServiceRevenueOfMonthResponse> sortServiceCount = somResponseSet.stream()
+                .sorted(Comparator.comparing(ServiceRevenueOfMonthResponse::getTotal).reversed())
+                .collect(Collectors.toCollection(LinkedHashSet::new));
+        return sortServiceCount;
+    }
+
+    public ServiceYearFirstAndYearSecondResponse serviceYearFirstAndYearSecond(Object[] row){
+        return ServiceYearFirstAndYearSecondResponse.builder()
+                .month((Long) row[0])
+                .monthName((String) row[1])
+                .service_year_first((Long) row[2])
+                .service_year_second((Long) row[3])
+                .percent_year_first((BigDecimal) row[4])
+                .percent_year_second((BigDecimal) row[5])
+                .build();
+    }
+
+    public Set<ServiceYearFirstAndYearSecondResponse> serviceYearFirstAndYearSecondResponseSet(Long year_first, Long year_second){
+        Set<Object[]> serviceYFAYS = servicesRepository.getServiceYearFirstAndYearSecond(year_first,year_second);
+        Set<ServiceYearFirstAndYearSecondResponse> serviceYearFirstAndYearSecond = new HashSet<>();
+        serviceYearFirstAndYearSecond.addAll(serviceYFAYS.stream().map(this::serviceYearFirstAndYearSecond).collect(Collectors.toSet()));
+        Set<ServiceYearFirstAndYearSecondResponse> sortService = serviceYearFirstAndYearSecond.stream()
+                .sorted(Comparator.comparing(ServiceYearFirstAndYearSecondResponse::getMonth))
+                .collect(Collectors.toCollection(LinkedHashSet::new));
+
+        return sortService;
+    }
+
+    public ServiceChartResponse getServiceChart(Long month, Long year, Long year_first, Long year_second){
+        LocalDate now = LocalDate.now();
+        if(month == null){
+            month = (long) now.getMonthValue();
+        }
+        if(year == null){
+            year = (long) now.getYear();
+        }
+        if(year_first == null && year_second == null){
+            year_second = (long) now.getYear();
+            year_first = year_second - 1;
+        }
+        if(year_first != null && year_second == null){
+            year_second = year_first + 1;
+        }
+        if(year_second != null && year_first == null){
+            year_first = year_second - 1;
+        }
+
+        return ServiceChartResponse.builder()
+                .month(month)
+                .year(year)
+                .serviceOfMonth(serviceOfMonthSortServiceCounts(month,year))
+                .serviceRevenueOfMonth(serviceRevenueOfMonthSortServiceCounts(month,year))
+                .year_first(year_first)
+                .year_second(year_second)
+                .serviceYearFirstAndYearSecond(serviceYearFirstAndYearSecondResponseSet(year_first,year_second))
+                .build();
     }
 }

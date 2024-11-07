@@ -96,11 +96,10 @@ public interface InvoiceRepository extends JpaRepository<Invoice, Long> {
             "ORDER BY m.Month  " , nativeQuery = true)
     List<Object[]> getInvoiceAndAppointmentByYear(@Param("years") Long year);
     
-    @Query(value = "SET @year = :year; " +
-            "SET @month = :month; " +
+    @Query(value = 
             "WITH dates AS ( " +
             "    SELECT " +
-            "        DATE(CONCAT(@year, '-', @month, '-01')) + INTERVAL (n) DAY AS date " +
+            "        DATE(CONCAT(:year, '-', :month, '-01')) + INTERVAL (n) DAY AS date " +
             "    FROM ( " +
             "             SELECT @row := @row + 1 AS n " +
             "             FROM (SELECT 0 UNION ALL SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3) a, " +
@@ -109,10 +108,10 @@ public interface InvoiceRepository extends JpaRepository<Invoice, Long> {
             "                  (SELECT 0 UNION ALL SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3) d, " +
             "                  (SELECT @row := -1) init " +
             "         ) numbers " +
-            "    WHERE DATE(CONCAT(@year, '-', @month, '-01')) + INTERVAL (n) DAY <= LAST_DAY(DATE(CONCAT(@year, '-', @month, '-01'))) " +
+            "    WHERE DATE(CONCAT(:year, '-', :month, '-01')) + INTERVAL (n) DAY <= LAST_DAY(DATE(CONCAT(:year, '-', :month, '-01'))) " +
             ") " +
             "SELECT " +
-            "    d.date AS DAY_INVOICE, " +
+            "    DAY(d.date) AS DAY_INVOICE, " +
             "    IFNULL(SUM(i.total), 0) AS REVENUE " +
             "FROM " +
             "    dates d " +
@@ -121,8 +120,8 @@ public interface InvoiceRepository extends JpaRepository<Invoice, Long> {
             "GROUP BY " +
             "    DAY_INVOICE " +
             "ORDER BY " +
-            "    d.date; ", nativeQuery = true)
-    List<Object[]> getRevenueOfMonthAnhYear(
+            "    DAY(d.date); ", nativeQuery = true)
+    Set<Object[]> getRevenueOfMonthAnhYear(
             @Param("year") Long year,
             @Param("month") Long month
     );

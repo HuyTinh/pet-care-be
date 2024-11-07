@@ -17,6 +17,9 @@ public class InvoiceCountResponse {
     InvoiceHomeDashboardResponse invoices;
     Double total;
     String today_yesterday;
+    Long month;
+    Long year;
+    Set<InvoiceOfMonthResponse> invoiceOfMonth;
     Set<InvoiceOfYearResponse> invoiceOfYears;
     Long year_first;
     Long year_second;

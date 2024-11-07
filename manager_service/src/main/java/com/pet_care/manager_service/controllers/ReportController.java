@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Provider;
 import java.time.LocalDate;
 import java.util.Set;
 
@@ -80,5 +81,16 @@ public class ReportController {
 
         InvoiceCountResponse invoiceCountResponse = dashboardService.invoiceCountResponse(month,year,today,year_first,year_second);
         return ResponseEntity.ok(new ApiResponse<>(2000, "Get Revenue Chart Success", invoiceCountResponse));
+    }
+
+    @GetMapping("/servcie")
+    public ResponseEntity<ApiResponse<ServiceChartResponse>> getService(
+            @RequestParam(required = false) Long month,
+            @RequestParam(required = false) Long year,
+            @RequestParam(required = false) Long year_first,
+            @RequestParam(required = false) Long year_second
+    ){
+        ServiceChartResponse serviceChartResponse = dashboardService.getServiceChart(month,year,year_first,year_second);
+        return ResponseEntity.ok(new ApiResponse<>(2000, "Get Service Chart Success", serviceChartResponse));
     }
 }

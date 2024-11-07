@@ -129,49 +129,41 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
             @Param("year") Long year
     );
     
-    @Query(value = " WITH Months AS (         " +
-            "                   SELECT 1 AS Month, 'Jan' AS MonthName UNION ALL         " +
-            "                   SELECT 2 AS Month, 'Feb' UNION ALL         " +
-            "                   SELECT 3 AS Month, 'Mar' UNION ALL         " +
-            "                   SELECT 4 AS Month, 'Apr' UNION ALL         " +
-            "                   SELECT 5 AS Month, 'May' UNION ALL         " +
-            "                   SELECT 6 AS Month, 'Jun' UNION ALL         " +
-            "                   SELECT 7 AS Month, 'Jul' UNION ALL         " +
-            "                   SELECT 8 AS Month, 'Aug' UNION ALL         " +
-            "                   SELECT 9 AS Month, 'Sep' UNION ALL         " +
-            "                   SELECT 10 AS Month, 'Oct' UNION ALL         " +
-            "                   SELECT 11 AS Month, 'Nov' UNION ALL         " +
-            "                   SELECT 12 AS Month, 'Dec'  )    " +
-            ", YEAR_FIRST AS (    " +
-            "    SELECT DATE_FORMAT(app.appointment_date, '%b') AS MonthName, count(app.id) as count_year_first    " +
-            "    FROM appointments app    " +
-            "    WHERE app.status = true    " +
-            "        AND year(app.appointment_date) = :year_first    " +
-            "    GROUP BY DATE_FORMAT(app.appointment_date, '%b')    " +
-            "),    " +
-            "    YEAR_SECOND AS (    " +
-            "        SELECT DATE_FORMAT(app.appointment_date, '%b') AS MonthName, count(app.id) as count_year_second    " +
-            "        FROM appointments app    " +
-            "        WHERE app.status = true    " +
-            "          AND year(app.appointment_date) = :year_second    " +
-            "        GROUP BY DATE_FORMAT(app.appointment_date, '%b')    " +
-            "    ),    " +
-            "    PERCENT_OF_YEAR AS(    " +
-            "        SELECT count(app.id) as count_year    " +
-            "            FROM appointments app    " +
-            "            WHERE app.status = true    " +
-            "              AND year(app.appointment_date) BETWEEN :year_first AND :year_second    " +
-            "            GROUP BY DATE_FORMAT(app.appointment_date, '%b')    " +
-            "    )    " +
-            "SELECT m.Month, m.MonthName    " +
-            "     , IFNULL(yf.count_year_first,0) as year_first    " +
-            "     ,IFNULL(ys.count_year_second,0) as year_second    " +
-            "     ,ROUND(IFNULL((yf.count_year_first/poy.count_year) * 100 , 0),2) as percent_year_first    " +
-            "     ,ROUND(IFNULL((ys.count_year_second/poy.count_year) * 100 , 0),2) as percent_year_second    " +
-            "    FROM Months m    " +
-            "    LEFT JOIN YEAR_FIRST yf on yf.MonthName = m.MonthName    " +
-            "    LEFT JOIN YEAR_SECOND ys on ys.MonthName = m.MonthName    " +
-            "    CROSS JOIN PERCENT_OF_YEAR poy ", nativeQuery = true)
+    @Query(value = " WITH Months AS ( " +
+            "                               SELECT 1 AS Month, 'Jan' AS MonthName UNION ALL " +
+            "                               SELECT 2 AS Month, 'Feb' UNION ALL " +
+            "                               SELECT 3 AS Month, 'Mar' UNION ALL " +
+            "                               SELECT 4 AS Month, 'Apr' UNION ALL " +
+            "                               SELECT 5 AS Month, 'May' UNION ALL " +
+            "                               SELECT 6 AS Month, 'Jun' UNION ALL " +
+            "                               SELECT 7 AS Month, 'Jul' UNION ALL " +
+            "                               SELECT 8 AS Month, 'Aug' UNION ALL " +
+            "                               SELECT 9 AS Month, 'Sep' UNION ALL " +
+            "                               SELECT 10 AS Month, 'Oct' UNION ALL " +
+            "                               SELECT 11 AS Month, 'Nov' UNION ALL " +
+            "                               SELECT 12 AS Month, 'Dec'  ) " +
+            "            , YEAR_FIRST AS ( " +
+            "                SELECT DATE_FORMAT(app.appointment_date, '%b') AS MonthName, count(app.id) as count_year_first " +
+            "                FROM appointments app " +
+            "                WHERE app.status = true " +
+            "                    AND year(app.appointment_date) = :year_first " +
+            "                GROUP BY DATE_FORMAT(app.appointment_date, '%b') " +
+            "            ), " +
+            "                YEAR_SECOND AS ( " +
+            "                    SELECT DATE_FORMAT(app.appointment_date, '%b') AS MonthName, count(app.id) as count_year_second " +
+            "                    FROM appointments app " +
+            "                    WHERE app.status = true " +
+            "                      AND year(app.appointment_date) = :year_second " +
+            "                    GROUP BY DATE_FORMAT(app.appointment_date, '%b') " +
+            "                ) " +
+            "        SELECT m.Month, m.MonthName " +
+            "             , IFNULL(yf.count_year_first,0) as year_first " +
+            "             ,IFNULL(ys.count_year_second,0) as year_second " +
+            "             ,ROUND(IFNULL((yf.count_year_first/( IFNULL(yf.count_year_first,0) + IFNULL(ys.count_year_second,0))) * 100 , 0),2) as percent_year_first " +
+            "             ,ROUND(IFNULL((ys.count_year_second/( IFNULL(yf.count_year_first,0) + IFNULL(ys.count_year_second,0))) * 100 , 0),2) as percent_year_second " +
+            "        FROM Months m " +
+            "                 LEFT JOIN YEAR_FIRST yf on yf.MonthName = m.MonthName " +
+            "                 LEFT JOIN YEAR_SECOND ys on ys.MonthName = m.MonthName ", nativeQuery = true)
     Set<Object[]> getAppointmentYearFirstAndYearSecond(
             @Param("year_first") Long year_first,
             @Param("year_second") Long year_second
