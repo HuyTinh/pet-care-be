@@ -24,6 +24,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -84,18 +85,18 @@ public class PrescriptionService {
     public List<PrescriptionResponse> getAllPrescriptions() {
         log.info("Fetching all prescriptions");
 
-        List<PrescriptionResponse> prescriptionResponseList =
-                (List<PrescriptionResponse>) cacheService.getCache("prescriptions");
-
-        if (prescriptionResponseList == null) {
-            prescriptionResponseList = prescriptionRepository.findAllCustom().parallelStream()
+//        List<PrescriptionResponse> prescriptionResponseList =
+//                (List<PrescriptionResponse>) cacheService.getCache("prescriptions");
+//
+//        if (prescriptionResponseList == null) {
+        List<PrescriptionResponse> prescriptionResponseList = prescriptionRepository.findAllCustom().parallelStream()
                     .map(this::toPrescriptionResponse)
                     .collect(Collectors.toList());
 
-            cacheService.saveCache("prescriptions", prescriptionResponseList);
-        } else {
-            log.info("Retrieved {} prescriptions", prescriptionResponseList.size());
-        }
+//            cacheService.saveCache("prescriptions", prescriptionResponseList);
+//        } else {
+//            log.info("Retrieved {} prescriptions", prescriptionResponseList.size());
+//        }
 
         return prescriptionResponseList;
     }
@@ -122,18 +123,20 @@ public class PrescriptionService {
 
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
 
-        ObjectMapper mapper = new ObjectMapper();
+//        ObjectMapper mapper = new ObjectMapper();
 
-        List<PrescriptionResponse> prescriptionResponseList = mapper.convertValue(cacheService.getCache("prescriptions"),List.class);
+        prescriptionRepository.findByCreatedAtBetween(sDate, eDate, pageable);
 
-        Page<PrescriptionResponse> prescriptionPage = PaginationUtil
-                .convertListToPage(prescriptionResponseList, pageable);
+        Page<PrescriptionResponse> prescriptionResponsePage = prescriptionRepository.findByCreatedAtBetween(sDate, eDate, pageable).map(this::toPrescriptionResponse);
+
+//        Page<PrescriptionResponse> prescriptionPage = PaginationUtil
+//                .convertListToPage(prescriptionResponseList, pageable);
 
         return PageableResponse.<PrescriptionResponse>builder()
-                .content(prescriptionPage.getContent())
-                .pageNumber(prescriptionPage.getPageable().getPageNumber())
-                .pageSize(prescriptionPage.getPageable().getPageSize())
-                .totalPages(prescriptionPage.getTotalPages())
+                .content(prescriptionResponsePage.getContent())
+                .pageNumber(prescriptionResponsePage.getPageable().getPageNumber())
+                .pageSize(prescriptionResponsePage.getPageable().getPageSize())
+                .totalPages(prescriptionResponsePage.getTotalPages())
                 .build();
 
     }
@@ -146,29 +149,29 @@ public class PrescriptionService {
     @Transactional(readOnly = true)
     public PrescriptionResponse getPrescriptionById(Long prescriptionId) throws JsonProcessingException {
 
-        ObjectMapper mapper = new ObjectMapper();
+//        ObjectMapper mapper = new ObjectMapper();
+//
+//        List<PrescriptionResponse> prescriptionResponseList =
+//                (List<PrescriptionResponse>) cacheService.getCache("prescriptions");
+//
+//       PrescriptionResponse prescriptionResponse = null;
+//
+//        for (int i = 0; i < prescriptionResponseList.size(); i++ ) {
+//            PrescriptionResponse pR = mapper.readValue(mapper.writeValueAsString(prescriptionResponseList.get(i)), PrescriptionResponse.class);
+//            if(pR.getId().equals(prescriptionId)){
+//                prescriptionResponse = pR;
+//                break;
+//            }
+//        }
 
-        List<PrescriptionResponse> prescriptionResponseList =
-                (List<PrescriptionResponse>) cacheService.getCache("prescriptions");
-
-       PrescriptionResponse prescriptionResponse = null;
-
-        for (int i = 0; i < prescriptionResponseList.size(); i++ ) {
-            PrescriptionResponse pR = mapper.readValue(mapper.writeValueAsString(prescriptionResponseList.get(i)), PrescriptionResponse.class);
-            if(pR.getId().equals(prescriptionId)){
-                prescriptionResponse = pR;
-                break;
-            }
-        }
-
-        if (prescriptionResponse == null) {
-            prescriptionResponse = PrescriptionRepository.findById(prescriptionId)
+//        if (prescriptionResponse == null) {
+            PrescriptionResponse prescriptionResponse = PrescriptionRepository.findById(prescriptionId)
                     .map(this::toPrescriptionResponse)
                     .orElseThrow(() -> {
                         log.error("Prescription with id {} not found", prescriptionId);
                         return new APIException(ErrorCode.PRESCRIPTION_NOT_FOUND);
                     });
-        }
+//        }
         return prescriptionResponse;
     }
 
@@ -181,7 +184,7 @@ public class PrescriptionService {
         Prescription newPrescription = prescriptionMapper
                 .toEntity(prescriptionCreateRequest);
 
-        List<PrescriptionResponse> objectList = (List<PrescriptionResponse>) redisTemplate.opsForValue().get("prescriptions");
+//        List<PrescriptionResponse> objectList = (List<PrescriptionResponse>) redisTemplate.opsForValue().get("prescriptions");
 
         Prescription savePrescription = prescriptionRepository.save(newPrescription);
 
@@ -221,10 +224,10 @@ public class PrescriptionService {
         prescriptionResponse.setAppointmentResponse(appointmentClient
                 .updateAppointmentService(prescriptionCreateRequest.getAppointmentId(), prescriptionCreateRequest.getServices()).getData());
 
-        if (objectList != null) {
-            objectList.add(prescriptionResponse);
-            cacheService.saveCache("prescriptions", objectList);
-        }
+//        if (objectList != null) {
+//            objectList.add(prescriptionResponse);
+//            cacheService.saveCache("prescriptions", objectList);
+//        }
 
         return prescriptionResponse;
     }

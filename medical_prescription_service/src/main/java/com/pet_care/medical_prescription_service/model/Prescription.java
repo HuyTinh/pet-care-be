@@ -25,7 +25,7 @@ public class Prescription {
 
     @Builder.Default
     @Enumerated(EnumType.STRING)
-    PrescriptionStatus status = PrescriptionStatus.APPROVED;
+    PrescriptionStatus status = PrescriptionStatus.PENDING_PAYMENT;
 
     Double totalMoney;
 
