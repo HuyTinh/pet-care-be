@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 @Service
-@FeignClient(name = "paymentClient", url = "http://localhost:8087/api/v1/payment-service")
+@FeignClient(name = "paymentClient", url = "http://localhost:8089/api/v1/payment-service")
 public interface PaymentClient {
 
     @PostMapping("payment")
