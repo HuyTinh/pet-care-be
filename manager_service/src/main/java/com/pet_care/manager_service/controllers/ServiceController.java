@@ -1,7 +1,10 @@
 package com.pet_care.manager_service.controllers;
 
+import com.pet_care.manager_service.dto.request.CreateAccountRequest;
+import com.pet_care.manager_service.dto.request.ServicesRequest;
 import com.pet_care.manager_service.dto.response.ApiResponse;
 import com.pet_care.manager_service.dto.response.ServiceCRUDResponse;
+import com.pet_care.manager_service.dto.response.ServiceResponse;
 import com.pet_care.manager_service.entity.Services;
 import com.pet_care.manager_service.services.impl.ServicesServiceImpl;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -33,17 +36,14 @@ public class ServiceController {
     }
 
     @PostMapping
-    public ResponseEntity<Services> create(@RequestBody Services service){
-        return ResponseEntity.ok(servicesService.save(service));
-    }
-
-    @PutMapping("{id}")
-    public ResponseEntity<Services> update(@PathVariable("id") int id,@RequestBody Services service){
-        return ResponseEntity.ok(new Services());
+    public ResponseEntity<ApiResponse<ServiceCRUDResponse>> create(@RequestBody ServicesRequest service){
+        ServiceCRUDResponse createService = servicesService.createService(service);
+        return ResponseEntity.ok(new ApiResponse<>(2000, "Create Service Successful ", createService));
     }
 
     @DeleteMapping("{id}")
-    public ResponseEntity<Services> delete(@PathVariable("id") int id){
-        return ResponseEntity.ok(new Services());
+    public ResponseEntity<ApiResponse<ServiceResponse>> delete(@PathVariable("id") Long id){
+        servicesService.deleteServiceById(id);
+        return ResponseEntity.ok(new ApiResponse<>(2000,"Delete Service Successful ", null));
     }
 }

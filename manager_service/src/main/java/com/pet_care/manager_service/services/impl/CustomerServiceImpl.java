@@ -11,6 +11,9 @@ import com.pet_care.manager_service.mapper.ServiceMapper;
 import com.pet_care.manager_service.repositories.*;
 import com.pet_care.manager_service.services.CustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -54,19 +57,6 @@ public class CustomerServiceImpl implements CustomerService {
     @Autowired
     private MedicineRepository medicineRepository;
 
-
-    public List<Customer> getAllCustomer(){
-        return customerRepository.findAll();
-    }
-
-    public <S extends Customer> S save(S entity) {
-        return customerRepository.save(entity);
-    }
-
-    public Customer findById(Long id) {
-        return customerRepository.findById(id).get();
-    }
-
     @Override
     public List<CustomerPetAndServiceResponse> getAllCustomers() {
 
@@ -81,16 +71,27 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public List<CustomerPetAndServiceResponse> getAllCustomersTrue() {
-        List<Object[]> listCustomers = customerRepository.getAllCustomerByStatusTrue();
-        System.out.println("Check list Customer : " + listCustomers);
+    public PageableResponse<CustomerPetAndServiceResponse> getAllCustomersTrue(
+            String search_query,
+            int page_number, int page_size
+    ) {
+        Pageable pageable = PageRequest.of(page_number, page_size);
+        Page<Object[]> listCustomers = customerRepository.getAllCustomerByStatusTrue(search_query,pageable);
 
-        if (listCustomers.isEmpty()) {
-            throw new AppException(ErrorCode.ACCOUNT_NOTFOUND);
-        }
-        return listCustomers.stream()
+        List<CustomerPetAndServiceResponse> listCustomerResponse = listCustomers
+                .getContent()
+                .stream()
                 .map(this::convertCustomerResponse)
-                .collect(Collectors.toList());
+                .toList();
+
+        PageableResponse<CustomerPetAndServiceResponse> response = PageableResponse.<CustomerPetAndServiceResponse>builder()
+                .content(listCustomerResponse)
+                .pageNumber(listCustomers.getNumber())
+                .pageSize(listCustomers.getSize())
+                .totalPages(listCustomers.getTotalPages())
+                .build();
+
+        return response;
     }
 
     @Override
@@ -134,18 +135,12 @@ public class CustomerServiceImpl implements CustomerService {
 
     public CustomerPetAndServiceResponse convertCustomerResponse(Object[] row){
         List<Object[]> listPet = petRepository.getPetByCustomerId((Long) row[0]);
-        System.out.println("Check listPet : " + listPet.size());
-        if(listPet.isEmpty()){
-            throw new AppException(ErrorCode.PET_NOTFOUND);
-        }
 //      Lấy pet
         Set<PetResponse> petResponses = new HashSet<>();
 
         for(Object[] obj : listPet) {
-            System.out.println("Check object : " + obj[0]);
             Long petId = ((Number) obj[0]).longValue();
             Pet pet = petRepository.findById(petId).get();
-            System.out.println("Check pets : " + pet);
             PetResponse petResponse = PetResponse.builder()
                     .id(pet.getId())
                     .name(pet.getName())
@@ -154,16 +149,11 @@ public class CustomerServiceImpl implements CustomerService {
                     .prescriptionResponses(convertPrescriptionByPetId(pet.getId())) // get Prescription
                     .speciesResponse(convertToSpeciesResponse(pet)) // get Species
                     .build();
-            System.out.println("Check pet Detail : " + petResponse);
             petResponses.add(petResponse);
         }
-        System.out.println("Check list Pet Response: " + petResponses);
-
         Set<ServiceResponse> service_set = new HashSet<>();
         List<Object[]> listServices = servicesRepository.findServicesByCustomerId( (Long) row[0]);
-        if(listServices.isEmpty()){
-            throw new AppException(ErrorCode.SERVICE_NOTFOUND);
-        }
+
 //        Lấy service
         for(Object[] obj : listServices){
             Services services = servicesRepository.findServicesByName((String) obj[0]).get();
@@ -183,6 +173,7 @@ public class CustomerServiceImpl implements CustomerService {
                 .phone_number((String) row[3])
                 .petResponses(petResponses)
                 .serviceResponses(service_set)
+                .email((String) row[4])
                 .build();
     }
 
@@ -230,6 +221,7 @@ public class CustomerServiceImpl implements CustomerService {
                 .phone_number(customer.getPhone_number())
                 .petResponses(petResponses)
                 .serviceResponses(service_set)
+                .email(customer.getEmail())
                 .build();
     }
 

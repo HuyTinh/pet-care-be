@@ -8,6 +8,9 @@ import com.pet_care.manager_service.exception.ErrorCode;
 import com.pet_care.manager_service.repositories.*;
 import com.pet_care.manager_service.services.AppointmentService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -52,19 +55,51 @@ public class AppointmentServiceImpl implements AppointmentService {
         }
         return responses;
     }
-    public Set<AppointmentHomeDashboardTableResponse> searchAppointment(LocalDate create_date, AppointmentStatus status_accept, LocalDate from_date, LocalDate to_date, String search_query ){
-        List<Appointment> appointments = appointmentRepository.searchAppointmentDashboard(create_date,status_accept, from_date, to_date, search_query);
-        Set<AppointmentHomeDashboardTableResponse> responses = new HashSet<>();
-        for (Appointment appointment: appointments) {
-            AppointmentHomeDashboardTableResponse response = appointmentHomeDashboardTableResponse(appointment);
-            responses.add(response);
-        }
+    /*
+    * Set<AppointmentHomeDashboardTableResponse>
+    * */
+//    public Set<AppointmentHomeDashboardTableResponse> searchAppointment(LocalDate create_date, AppointmentStatus status_accept, LocalDate from_date, LocalDate to_date, String search_query ){
+//        List<Appointment> appointments = appointmentRepository.searchAppointmentDashboard(create_date,status_accept, from_date, to_date, search_query);
+//        Set<AppointmentHomeDashboardTableResponse> responses = new HashSet<>();
+//        for (Appointment appointment: appointments) {
+//            AppointmentHomeDashboardTableResponse response = appointmentHomeDashboardTableResponse(appointment);
+//            responses.add(response);
+//        }
+//
+//        Set<AppointmentHomeDashboardTableResponse> sortedAppointment= responses.stream()
+//                .sorted(Comparator.comparing(AppointmentHomeDashboardTableResponse::getAppointmentId).reversed())
+//                .collect(Collectors.toCollection(LinkedHashSet::new));
+//
+//        return sortedAppointment;
+//    }
 
-        Set<AppointmentHomeDashboardTableResponse> sortedAppointment= responses.stream()
-                .sorted(Comparator.comparing(AppointmentHomeDashboardTableResponse::getAppointmentId).reversed())
-                .collect(Collectors.toCollection(LinkedHashSet::new));
+    /*
+    * LocalDate create_date : ngay` tao.
+    * AppointmentStatus status_accept : trang. thai' chap nhap cua lichj hen
+    * LocalDate from_date : tu ngay`
+    * LocalDate to_date : den ngay
+    * String search_query : search theo ten
+    *
+    * */
+    public PageableResponse<AppointmentHomeDashboardTableResponse> pageSearchAppointment(
+            LocalDate create_date, AppointmentStatus status_accept,
+            LocalDate from_date, LocalDate to_date, String search_query,
+            int page_number, int page_size ){
+        Pageable pageable = PageRequest.of(page_number,page_size);
+        Page<Appointment> appointments = appointmentRepository.pageSearchAppointmentDashboard(create_date,status_accept, from_date, to_date, search_query, pageable);
 
-        return sortedAppointment;
+        List<AppointmentHomeDashboardTableResponse> listAppointment = appointments.getContent()
+                .stream()
+                .map(this::appointmentHomeDashboardTableResponse)
+                .toList()
+                ;
+        PageableResponse<AppointmentHomeDashboardTableResponse> pageableResponse = PageableResponse.<AppointmentHomeDashboardTableResponse>builder()
+                .content(listAppointment)
+                .pageNumber(appointments.getNumber())
+                .pageSize(appointments.getSize())
+                .totalPages(appointments.getTotalPages())
+                .build();
+        return pageableResponse;
     }
     @Override
     public AppointmentHomeDashboardTableResponse getAppointmentById(Long id){

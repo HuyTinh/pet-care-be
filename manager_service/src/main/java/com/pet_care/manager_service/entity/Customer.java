@@ -31,6 +31,9 @@ public class Customer {
     @Column(name = "phone_number", nullable = false)
     String phone_number;
 
+    @Column(name = "email", nullable = false)
+    String email;
+
     @Column(name = "status", nullable = false)
     boolean status;
 

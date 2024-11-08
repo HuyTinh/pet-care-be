@@ -16,6 +16,7 @@ public class CustomerPetAndServiceResponse {
     String first_name;
     String last_name;
     String phone_number;
+    String email;
     Set<PetResponse> petResponses;
     Set<ServiceResponse> serviceResponses;
 }

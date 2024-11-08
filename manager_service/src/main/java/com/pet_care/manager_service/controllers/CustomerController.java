@@ -3,6 +3,7 @@ package com.pet_care.manager_service.controllers;
 
 import com.pet_care.manager_service.dto.response.ApiResponse;
 import com.pet_care.manager_service.dto.response.CustomerPetAndServiceResponse;
+import com.pet_care.manager_service.dto.response.PageableResponse;
 import com.pet_care.manager_service.entity.Customer;
 import com.pet_care.manager_service.services.impl.CustomerServiceImpl;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -20,9 +21,18 @@ public class CustomerController {
     @Autowired
     CustomerServiceImpl customerService;
 
+//    @GetMapping
+//    public ResponseEntity<ApiResponse<List<CustomerPetAndServiceResponse>>> getAllCustomersTrue(){
+//        List<CustomerPetAndServiceResponse> listCustomer = customerService.getAllCustomersTrue();
+//        return ResponseEntity.ok(new ApiResponse<>(2000, "Get All Customers", listCustomer));
+//    }
     @GetMapping
-    public ResponseEntity<ApiResponse<List<CustomerPetAndServiceResponse>>> getAllCustomersTrue(){
-        List<CustomerPetAndServiceResponse> listCustomer = customerService.getAllCustomersTrue();
+    public ResponseEntity<ApiResponse<PageableResponse<CustomerPetAndServiceResponse>>> getAllCustomersTrue(
+            @RequestParam(required = false) String search_query,
+            @RequestParam(defaultValue = "0") int page_number,
+            @RequestParam(defaultValue = "50") int page_size
+    ){
+        PageableResponse<CustomerPetAndServiceResponse> listCustomer = customerService.getAllCustomersTrue(search_query, page_number, page_size);
         return ResponseEntity.ok(new ApiResponse<>(2000, "Get All Customers", listCustomer));
     }
 

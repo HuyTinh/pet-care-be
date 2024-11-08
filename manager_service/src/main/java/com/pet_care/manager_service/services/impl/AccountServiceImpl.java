@@ -3,6 +3,7 @@ package com.pet_care.manager_service.services.impl;
 import com.pet_care.manager_service.dto.request.CreateAccountRequest;
 import com.pet_care.manager_service.dto.response.AccountResponse;
 import com.pet_care.manager_service.dto.response.EmployeeResponse;
+import com.pet_care.manager_service.dto.response.PageableResponse;
 import com.pet_care.manager_service.entity.Account;
 import com.pet_care.manager_service.entity.Profile;
 import com.pet_care.manager_service.entity.Role;
@@ -16,6 +17,9 @@ import com.pet_care.manager_service.repositories.RoleRepository;
 import com.pet_care.manager_service.services.AccountService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
@@ -48,7 +52,7 @@ public class AccountServiceImpl implements AccountService {
         return roleRepository.findByName(roleEnum);
     }
 
-    @Override
+//    @Override
     public AccountResponse createAccount(CreateAccountRequest request) {
         try {
             // Tạo account từ request
@@ -84,7 +88,7 @@ public class AccountServiceImpl implements AccountService {
         return null;
     }
 
-    @Override
+//    @Override
     public AccountResponse getAccountResponse(Long id) {
 
         Object[] redisObject ;
@@ -108,7 +112,7 @@ public class AccountServiceImpl implements AccountService {
         return account;
     }
 
-    @Override
+//    @Override
     public AccountResponse deleteAccount(Long id) {
 
         Object[] redisObject ;
@@ -139,7 +143,7 @@ public class AccountServiceImpl implements AccountService {
         return account;
     }
 
-    @Override
+//    @Override
     public List<AccountResponse> getAllEmployee() {
 //        List<Object[]> listEmployee = accountRepository.getAllEmployee();
 //        if (listEmployee.isEmpty()) {
@@ -176,43 +180,50 @@ public class AccountServiceImpl implements AccountService {
                 .collect(Collectors.toList());
     }
 
-    @Override
-    public List<AccountResponse> getAllEmployeeTrue() {
-//        List<Object[]> listEmployee = accountRepository.getAllEmployeeTrue();
-//        if (listEmployee.isEmpty()) {
-//            throw new AppException(ErrorCode.ACCOUNT_NOTFOUND);
-//        };
+//    @Override
+    public PageableResponse<AccountResponse> getAllEmployeeTrue(
+            String search_query,
+            int page_number, int page_size
+    ) {
+
         redisTemplate.getConnectionFactory().getConnection().flushAll();
-        List<Object> redisObjects = redisTemplate.opsForHash().values(HASH_KEY);
-
+//        List<Object> redisObjects = redisTemplate.opsForHash().values(HASH_KEY);
         // loc. va` ep' thành Object[]
-        List<Object[]> listEmployeeTrue = redisObjects.stream()
-                .filter(obj -> obj instanceof Object[]) // Ensure the object is an Object[]
-                .map(obj -> (Object[]) obj) // Cast to Object[]
-                .collect(Collectors.toList());
-
-        System.out.println(">> Check List Employee True : " + listEmployeeTrue);
-        if (listEmployeeTrue.isEmpty()) {
-            listEmployeeTrue = accountRepository.getAllEmployeeTrue();
-            System.out.println(">> Check List Employee True : " + listEmployeeTrue);
-
-            if (listEmployeeTrue.isEmpty()) {
-                throw new AppException(ErrorCode.ACCOUNT_NOTFOUND);
-            }
-            for(Object[] objects : listEmployeeTrue) {
-                redisTemplate.opsForHash().put(HASH_KEY, objects[0].toString(), objects);
-            }
-        }
-        System.out.println(">> Check List Employee True : " + listEmployeeTrue);
-        listEmployeeTrue.sort(Comparator.comparing(objects -> (Comparable) objects[0]));
-
-        return listEmployeeTrue.stream()
-                .map(this::employeeResponse)
+//        List<Object[]> listEmployeeTrue = redisObjects.stream()
+//                .filter(obj -> obj instanceof Object[]) // Ensure the object is an Object[]
+//                .map(obj -> (Object[]) obj) // Cast to Object[]
+//                .collect(Collectors.toList());
+//
+//        System.out.println(">> Check List Employee True : " + listEmployeeTrue);
+//        if (listEmployeeTrue.isEmpty()) {
+//            listEmployeeTrue = accountRepository.getAllEmployeeTrue();
+//            System.out.println(">> Check List Employee True : " + listEmployeeTrue);
+//
+//            if (listEmployeeTrue.isEmpty()) {
+//                throw new AppException(ErrorCode.ACCOUNT_NOTFOUND);
+//            }
+//            for(Object[] objects : listEmployeeTrue) {
+//                redisTemplate.opsForHash().put(HASH_KEY, objects[0].toString(), objects);
+//            }
+//        }
+//        System.out.println(">> Check List Employee True : " + listEmployeeTrue);
+//        listEmployeeTrue.sort(Comparator.comparing(objects -> (Comparable) objects[0]));
+        Pageable pageable = PageRequest.of(page_number,page_size);
+        Page<Account> accountPage = accountRepository.getAllEmployeeTrue(search_query,pageable);
+        List<AccountResponse> accountResponseList = accountPage.getContent()
+                .stream()
                 .map(this::convertToAccountResponse)
-                .collect(Collectors.toList());
+                .toList();
+        PageableResponse<AccountResponse> pageableResponse =  PageableResponse.<AccountResponse>builder()
+                .content(accountResponseList)
+                .pageNumber(accountPage.getNumber())
+                .pageSize(accountPage.getSize())
+                .totalPages(accountPage.getTotalPages())
+                .build();
+        return pageableResponse;
     }
 
-    @Override
+//    @Override
     public List<AccountResponse> getAllByRole(RoleEnum role_name) {
 //        List<Object[]> listEmployeeByRole = accountRepository.getAllByRole(id);
 //
@@ -273,6 +284,18 @@ public class AccountServiceImpl implements AccountService {
                 .email(employeeResponse.getEmail())
                 .password(employeeResponse.getPassword())
                 .status(employeeResponse.isStatus())
+                .profile(profile)
+                .build();
+    }
+
+    public AccountResponse convertToAccountResponse(Account account){
+
+        Profile profile = profileRepository.findByAccount(account);
+        return AccountResponse.builder()
+                .id(profile.getId())
+                .email(account.getEmail())
+                .password(account.getPassword())
+                .status(account.isStatus())
                 .profile(profile)
                 .build();
     }
