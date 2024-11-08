@@ -6,9 +6,7 @@ import com.pet_care.manager_service.exception.AppException;
 import com.pet_care.manager_service.exception.ErrorCode;
 import com.pet_care.manager_service.repositories.*;
 import com.pet_care.manager_service.services.DashboardService;
-import io.swagger.v3.oas.models.links.Link;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -591,8 +589,8 @@ public class DashboardServiceImpl implements DashboardService {
         return sortServiceCount;
     }
 
-    public ServiceRevenueOfMonthResponse serviceRevenueOfMonth (Object[] row){
-        return ServiceRevenueOfMonthResponse.builder()
+    public ServiceRevenueOfMonthAndYearResponse serviceRevenueOfMonth (Object[] row){
+        return ServiceRevenueOfMonthAndYearResponse.builder()
                 .id((Long) row[0])
                 .name((String) row[1])
                 .total((Double) row[3])
@@ -600,13 +598,13 @@ public class DashboardServiceImpl implements DashboardService {
                 .build();
     }
 
-    public Set<ServiceRevenueOfMonthResponse> serviceRevenueOfMonthSortServiceCounts(Long month, Long year){
+    public Set<ServiceRevenueOfMonthAndYearResponse> serviceRevenueOfMonthSortServiceCounts(Long month, Long year){
         Set<Object[]> somResponses = servicesRepository.getTop10ServiceOfMonthSortCount(month, year);
-        Set<ServiceRevenueOfMonthResponse> somResponseSet = new HashSet<>();
+        Set<ServiceRevenueOfMonthAndYearResponse> somResponseSet = new HashSet<>();
         somResponseSet.addAll(somResponses.stream().map(this::serviceRevenueOfMonth).collect(Collectors.toSet()));
 
-        Set<ServiceRevenueOfMonthResponse> sortServiceCount = somResponseSet.stream()
-                .sorted(Comparator.comparing(ServiceRevenueOfMonthResponse::getTotal).reversed())
+        Set<ServiceRevenueOfMonthAndYearResponse> sortServiceCount = somResponseSet.stream()
+                .sorted(Comparator.comparing(ServiceRevenueOfMonthAndYearResponse::getTotal).reversed())
                 .collect(Collectors.toCollection(LinkedHashSet::new));
         return sortServiceCount;
     }
@@ -662,4 +660,72 @@ public class DashboardServiceImpl implements DashboardService {
                 .serviceYearFirstAndYearSecond(serviceYearFirstAndYearSecondResponseSet(year_first,year_second))
                 .build();
     }
+
+    public MedicineOfMonthAndYearResponse medicineOfMonthAndYear(Object[] row){
+        return MedicineOfMonthAndYearResponse.builder()
+                .id((Long) row[0])
+                .name((String) row[1])
+                .quantity((BigDecimal) row[2])
+                .build();
+    }
+
+    public Set<MedicineOfMonthAndYearResponse> medicineOfMonthAndYearSets(Long month, Long year){
+        Set<Object[]> medicines = medicineRepository.getMedicineOfMonthAndYear(month,year);
+        Set<MedicineOfMonthAndYearResponse> medicineSet = new HashSet<>();
+        medicineSet.addAll(medicines.stream().map(this::medicineOfMonthAndYear).collect(Collectors.toSet()));
+
+        Set<MedicineOfMonthAndYearResponse> sortMedicine = medicineSet.stream()
+                .sorted(Comparator.comparing(MedicineOfMonthAndYearResponse::getQuantity).reversed())
+                .collect(Collectors.toCollection(LinkedHashSet::new));
+        return sortMedicine;
+    }
+
+    public MedicineYearFirstAndYearSecondResponse medicineYearFirstAndYearSecond(Object[] row){
+        return MedicineYearFirstAndYearSecondResponse.builder()
+                .month((Long) row[0])
+                .monthName((String) row[1])
+                .revenue_year_first((Double) row[2])
+                .revenue_year_second((Double) row[3])
+                .build();
+    }
+
+    public Set<MedicineYearFirstAndYearSecondResponse> medicineYearFirstAndYearSecondSets(Long year_first, Long year_second){
+        Set<Object[]> revenueMedicine = medicineRepository.getMedicineYearFirstAndYearSecond(year_first,year_second);
+        Set<MedicineYearFirstAndYearSecondResponse> medicineSet = new HashSet<>();
+        medicineSet.addAll(revenueMedicine.stream().map(this::medicineYearFirstAndYearSecond).collect(Collectors.toSet()));
+        Set<MedicineYearFirstAndYearSecondResponse> sortRevenueMedicine = medicineSet.stream()
+                .sorted(Comparator.comparing(MedicineYearFirstAndYearSecondResponse::getMonth))
+                .collect(Collectors.toCollection(LinkedHashSet::new));
+        return sortRevenueMedicine;
+    }
+
+    public MedicineChartResponse getMedicineChart(Long month, Long year, Long year_first, Long year_second){
+        LocalDate now = LocalDate.now();
+        if(month == null){
+            month = (long) now.getMonthValue();
+        }
+        if(year == null){
+            year = (long) now.getYear();
+        }
+        if(year_first == null && year_second == null){
+            year_second = (long) now.getYear();
+            year_first = year_second - 1;
+        }
+        if(year_first != null && year_second == null){
+            year_second = year_first + 1;
+        }
+        if(year_second != null && year_first == null){
+            year_first = year_second - 1;
+        }
+        return MedicineChartResponse.builder()
+                .month(month)
+                .year(year)
+                .medicineOfMonthAndYear(medicineOfMonthAndYearSets(month, year))
+                .year_first(year_first)
+                .year_second(year_second)
+                .medicineYearFirstAndYearSecond(medicineYearFirstAndYearSecondSets(year_first, year_second))
+                .build();
+    }
+
+
 }

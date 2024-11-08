@@ -11,12 +11,11 @@ import java.util.Set;
 @NoArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class ServiceChartResponse {
+public class MedicineChartResponse {
     Long month;
     Long year;
-    Set<ServiceOfMonthResponse> serviceOfMonth;
-    Set<ServiceRevenueOfMonthAndYearResponse> serviceRevenueOfMonth;
+    Set<MedicineOfMonthAndYearResponse> medicineOfMonthAndYear;
     Long year_first;
     Long year_second;
-    Set<ServiceYearFirstAndYearSecondResponse> serviceYearFirstAndYearSecond;
+    Set<MedicineYearFirstAndYearSecondResponse> medicineYearFirstAndYearSecond;
 }

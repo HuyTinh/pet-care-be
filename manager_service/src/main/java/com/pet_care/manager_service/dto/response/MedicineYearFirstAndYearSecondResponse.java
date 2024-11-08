@@ -9,9 +9,9 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class ServiceRevenueOfMonthResponse {
-    Long id;
-    String name;
-    Double total;
-    Double percent_revenue;
+public class MedicineYearFirstAndYearSecondResponse {
+    Long month;
+    String monthName;
+    Double revenue_year_first;
+    Double revenue_year_second;
 }

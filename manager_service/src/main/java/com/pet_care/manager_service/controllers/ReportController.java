@@ -93,4 +93,15 @@ public class ReportController {
         ServiceChartResponse serviceChartResponse = dashboardService.getServiceChart(month,year,year_first,year_second);
         return ResponseEntity.ok(new ApiResponse<>(2000, "Get Service Chart Success", serviceChartResponse));
     }
+
+    @GetMapping("/medicine")
+    public ResponseEntity<ApiResponse<MedicineChartResponse>> getMedicine(
+            @RequestParam(required = false) Long month,
+            @RequestParam(required = false) Long year,
+            @RequestParam(required = false) Long year_first,
+            @RequestParam(required = false) Long year_second
+    ){
+        MedicineChartResponse medicineChartResponse = dashboardService.getMedicineChart(month,year,year_first,year_second);
+        return ResponseEntity.ok(new ApiResponse<>(2000, "Get Medicine Success", medicineChartResponse));
+    }
 }
