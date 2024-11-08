@@ -37,7 +37,7 @@ public class PrescriptionController {
     @GetMapping
     public APIResponse<List<PrescriptionResponse>> getAllPrescription() {
         return APIResponse.<List<PrescriptionResponse>>builder()
-                .data(prescriptionService.getAllPrescriptions().subList(0, 10))
+                .data(prescriptionService.getAllPrescriptions())
                 .build();
     }
 
@@ -47,7 +47,7 @@ public class PrescriptionController {
             @RequestParam(value = "size", required = false, defaultValue = "50") int size,
             @RequestParam(value = "startDate", required = false) LocalDate startDate,
             @RequestParam(value = "endDate", required = false) LocalDate endDate,
-            @RequestParam(value = "statues", required = false)  String prescriptionStatus
+            @RequestParam(value = "statues", required = false, defaultValue = "APPROVED")  String prescriptionStatus
     ) throws JsonProcessingException {
 
         return APIResponse.<PageableResponse<PrescriptionResponse>>builder()

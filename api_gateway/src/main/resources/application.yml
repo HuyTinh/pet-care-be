@@ -37,7 +37,7 @@ spring:
               - Path=/api/v1/medical-prescription-service/**
 
           - id: payment_service
-            uri: http://localhost:8087
+            uri: http://localhost:8089
             predicates:
               - Path=/api/v1/payment-service/**
 
