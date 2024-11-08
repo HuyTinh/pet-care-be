@@ -34,12 +34,20 @@ public interface PetDetailMapper
         List<PrescriptionResponse> prescriptionResponses = PrescriptionMapper.INSTANCE.mapPrescriptionToPrescriptionResponse(pet.getPrescriptions());
 
         // Tính tổng totalPrice từ PrescriptionResponse
-        double totalPrice = prescriptionResponses.stream()
+        double totalPricePrescription = prescriptionResponses.stream()
                 .mapToDouble(PrescriptionResponse::getTotalPriceInPrescription)  // Lấy trường totalPrice từ PrescriptionResponse
                 .sum();
 
-        // Gán giá trị tổng vào PetResponse
-        petResponse.setTotalPriceInPetDetail(totalPrice);
+        // gan tong tien vao total price pet detail nhung chua tinh service
+        petResponse.setTotalPriceInPetDetail(totalPricePrescription);
+
+        // tong tien toa thuoc
+        petResponse.setTotalPriceInPrescription(totalPricePrescription);
+
+        // tong tien service
+        // chua tinh
+
+        // prescription response
         petResponse.setPrescriptionResponses(prescriptionResponses);
     }
 

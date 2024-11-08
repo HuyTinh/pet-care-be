@@ -33,4 +33,8 @@ public class PetDetailResponse
 
     double totalPriceInPetDetail;
 
+    double totalPriceInService;
+
+    double totalPriceInPrescription;
+
 }

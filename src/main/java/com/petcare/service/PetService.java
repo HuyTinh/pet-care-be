@@ -1,5 +1,6 @@
 package com.petcare.service;
 
+import com.petcare.dto.request.SearchRequest;
 import com.petcare.dto.response.PetDetailResponse;
 import com.petcare.dto.response.PetResponse;
 import com.petcare.entity.Pet;
@@ -10,11 +11,13 @@ import com.petcare.mapper.PetDetailMapper;
 import com.petcare.mapper.PetMapper;
 import com.petcare.repository.PetRepository;
 import com.petcare.utils.ExcelExport;
+import com.petcare.utils.PetSpecification;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayInputStream;
@@ -56,11 +59,18 @@ public class PetService {
 
         List<Pet> pets = getAllPetsNoPage();
         List<PetResponse> petResponses = PetMapper.INSTANCE.mapperPetsToPetsResponse(pets);
-        System.out.println(1);
         ByteArrayInputStream inputStream = ExcelExport.exportExcel(petResponses);
-        System.out.println(3);
 
         return inputStream;
+    }
+
+    public List<Pet> searchPets(SearchRequest searchRequest) {
+
+        Specification<Pet> searchSpec = PetSpecification
+                                        .findPetByAny(searchRequest.getFieldSearch(), searchRequest.getValueSearch());
+        List<Pet> pets = petRepository.findAll(searchSpec);
+
+        return pets;
     }
 
 }
