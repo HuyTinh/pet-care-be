@@ -17,7 +17,7 @@ public class SseService {
 
     BillClient billClient;
 
-    Map<Long, SseEmitter> emitters;
+    public final Map<Long, SseEmitter> emitters;
 
     public void sendEventToClient(Long orderId, boolean event) {
         SseEmitter emitter = emitters.get(orderId);

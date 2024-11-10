@@ -15,6 +15,7 @@ import com.pet_care.identity_service.client.FacebookClient;
 import com.pet_care.identity_service.dto.request.*;
 import com.pet_care.identity_service.dto.response.AuthenticationResponse;
 import com.pet_care.identity_service.dto.response.IntrospectResponse;
+import com.pet_care.identity_service.enums.Gender;
 import com.pet_care.identity_service.enums.Provide;
 import com.pet_care.identity_service.exception.APIException;
 import com.pet_care.identity_service.exception.ErrorCode;
@@ -148,7 +149,7 @@ public class AuthenticationService {
      * @param account
      * @return
      */
-    private AuthenticationResponse authenticationResponse( Account account) {
+    private AuthenticationResponse authenticationResponse(Account account) {
         var token = generateToken(account);
 
         return AuthenticationResponse.builder()
@@ -163,8 +164,8 @@ public class AuthenticationService {
      * @throws ParseException
      * @throws JOSEException
      */
-    @Transactional(readOnly = true)
-    public AuthenticationResponse refreshToken( RefreshRequest request) throws ParseException, JOSEException {
+    @Transactional
+    public AuthenticationResponse refreshToken(RefreshRequest request) throws ParseException, JOSEException {
         var signJWT = verifyToken(request.getToken());
 
         var jit = signJWT.getJWTClaimsSet().getJWTID();
@@ -192,7 +193,7 @@ public class AuthenticationService {
      * @throws ParseException
      * @throws JOSEException
      */
-    public void logout( LogoutRequest request) throws ParseException, JOSEException {
+    public void logout(LogoutRequest request) throws ParseException, JOSEException {
         var signToken = verifyToken(request.getToken());
 
         String jit = signToken.getJWTClaimsSet().getJWTID();
@@ -217,7 +218,7 @@ public class AuthenticationService {
      * @throws ParseException
      */
     
-    private SignedJWT verifyToken( String token) throws JOSEException, ParseException {
+    private SignedJWT verifyToken(String token) throws JOSEException, ParseException {
         JWSVerifier verifier = new MACVerifier(SIGNER_KEY);
 
         SignedJWT signedJWT = SignedJWT.parse(token);
@@ -241,7 +242,7 @@ public class AuthenticationService {
      * @param account
      * @return
      */
-    private String buildScope( Account account) {
+    private String buildScope(Account account) {
         StringJoiner stringJoiner = new StringJoiner(" ");
         if (!CollectionUtils.isEmpty((account.getRoles()))) {
             account.getRoles().forEach(
@@ -260,7 +261,7 @@ public class AuthenticationService {
      * @param accessToken
      * @return
      */
-    @Transactional(readOnly = true)
+    @Transactional
     public AuthenticationResponse authenticateWithGoogle(String accessToken) {
 
         try {
@@ -293,10 +294,11 @@ public class AuthenticationService {
                         .email(userInfo.getEmail())
                         .firstName(userInfo.getFamilyName())
                         .lastName(userInfo.getGivenName())
+                        .gender(Gender.valueOf(userInfo.getGender().toUpperCase()))
                         .imageUrl(userInfo.getPicture())
                         .build();
 
-                messageService.sendMessageQueue("customer-createPermission-queue", objectMapper.writeValueAsString(customerCreateRequest));
+                messageService.sendMessageQueue("customer-create-queue", objectMapper.writeValueAsString(customerCreateRequest));
             }
 
             return authenticationResponse(account);
@@ -309,10 +311,10 @@ public class AuthenticationService {
      * @param accessToken
      * @return
      */
-    @Transactional(readOnly = true)
+    @Transactional
     public AuthenticationResponse authenticateWithFacebook(String accessToken) {
         try {
-            FacebookUserInfo facebookUserInfo = facebookClient.getUserProfile("name, email,first_name,last_name,gender,picture{url}", accessToken);
+            FacebookUserInfo facebookUserInfo = facebookClient.getUserProfile("name, email, first_name, last_name, gender, picture{url}", accessToken);
 
             Account account = accountRepository.findByEmail(facebookUserInfo.getEmail()).orElse(null);
 
@@ -328,11 +330,12 @@ public class AuthenticationService {
                 CustomerCreateRequest customerCreateRequest = CustomerCreateRequest.builder()
                         .accountId(saveAccount.getId())
                         .email(facebookUserInfo.getEmail())
+                        .gender(Gender.valueOf(facebookUserInfo.getGender().toUpperCase()))
                         .firstName(facebookUserInfo.getFirstName())
                         .lastName(facebookUserInfo.getLastName())
                         .build();
 
-                messageService.sendMessageQueue("customer-createPermission-queue", objectMapper.writeValueAsString(customerCreateRequest));
+                messageService.sendMessageQueue("customer-create-queue", objectMapper.writeValueAsString(customerCreateRequest));
             }
 
             return authenticationResponse(account);

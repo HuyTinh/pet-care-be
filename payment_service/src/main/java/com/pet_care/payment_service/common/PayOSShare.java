@@ -26,7 +26,7 @@ public class PayOSShare {
     }
 
     @Bean
-    public final Map<Long, SseEmitter> getPayOS() {
+    public final Map<Long, SseEmitter> getMapSseEmitter() {
         return new ConcurrentHashMap<>();
     }
 

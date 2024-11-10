@@ -6,7 +6,7 @@ import com.pet_care.customer_service.client.UploadImageClient;
 import com.pet_care.customer_service.dto.request.AppointmentCreateRequest;
 import com.pet_care.customer_service.dto.request.CustomerCreateRequest;
 import com.pet_care.customer_service.dto.request.CustomerUpdateRequest;
-import com.pet_care.customer_service.dto.request.sub.AppointmentRequest;
+import com.pet_care.customer_service.dto.request.AppointmentRequest;
 import com.pet_care.customer_service.dto.response.CustomerResponse;
 import com.pet_care.customer_service.exception.APIException;
 import com.pet_care.customer_service.exception.ErrorCode;
@@ -16,7 +16,6 @@ import com.pet_care.customer_service.repository.CustomerRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.jms.annotation.JmsListener;
 import org.springframework.stereotype.Service;
@@ -55,7 +54,7 @@ public class CustomerService {
      */
     @Transactional(readOnly = true)
     public CustomerResponse getCustomerById( Long id) {
-        return customerRepository.findById(id).map(customerMapper::toDto).orElseThrow(() -> new RuntimeException(("")));
+        return customerRepository.findById(id).map(customerMapper::toDto).orElseThrow(() -> new APIException(ErrorCode.CUSTOMER_NOT_FOUND));
     }
 
     /**
@@ -68,21 +67,12 @@ public class CustomerService {
     }
 
     /**
-     * @param customerRequest
-     * @throws JsonProcessingException
-     */
-    @JmsListener(destination = "customer-create-queue")
-    @Transactional
-    public void addCustomerFromMessageQueue(String customerRequest) throws JsonProcessingException {
-        customerRepository.save(customerMapper.toEntity(objectMapper.readValue(customerRequest, CustomerCreateRequest.class)));
-    }
-
-    /**
      * @param request
      * @param notification
      * @return
      * @throws JsonProcessingException
      */
+    @Transactional
     public CustomerResponse createAppointment( AppointmentCreateRequest request, Boolean notification) throws JsonProcessingException {
         Customer customerSave = customerRepository.findByAccountId(request.getAccountId()).orElse(null);
 
@@ -104,6 +94,16 @@ public class CustomerService {
         return customerMapper.toDto(customerRepository.save(customerSave));
     }
 
+    /**
+     * @param customerRequest
+     * @throws JsonProcessingException
+     */
+    @JmsListener(destination = "customer-create-queue")
+    @Transactional
+    public void addCustomerFromMessageQueue(String customerRequest) throws JsonProcessingException {
+        customerRepository.save(customerMapper.toEntity(objectMapper.readValue(customerRequest, CustomerCreateRequest.class)));
+    }
+
 
     /**
      * @param accountId
@@ -111,6 +111,7 @@ public class CustomerService {
      * @param files
      * @return
      */
+    @Transactional
     public CustomerResponse updateCustomer(Long accountId, CustomerUpdateRequest customerRequest, @Nullable List<MultipartFile> files) {
         Customer existingCustomer = customerRepository
                 .findByAccountId(accountId)
@@ -128,6 +129,7 @@ public class CustomerService {
     /**
      * @param id
      */
+    @Transactional
     public void deleteCustomer( Long id) {
         customerRepository.deleteById(id);
     }

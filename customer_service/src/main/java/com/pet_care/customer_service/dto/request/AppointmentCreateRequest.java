@@ -1,7 +1,6 @@
 package com.pet_care.customer_service.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.pet_care.customer_service.dto.request.sub.AppointmentRequest;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 

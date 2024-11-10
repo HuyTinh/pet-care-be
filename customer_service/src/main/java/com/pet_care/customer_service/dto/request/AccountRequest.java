@@ -1,4 +1,4 @@
-package com.pet_care.customer_service.dto.request.sub;
+package com.pet_care.customer_service.dto.request;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
