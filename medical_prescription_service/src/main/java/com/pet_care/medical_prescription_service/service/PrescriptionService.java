@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pet_care.medical_prescription_service.client.AppointmentClient;
 import com.pet_care.medical_prescription_service.client.MedicineClient;
+import com.pet_care.medical_prescription_service.dto.request.MedicineUpdateQtyRequest;
 import com.pet_care.medical_prescription_service.dto.request.PrescriptionCreateRequest;
 import com.pet_care.medical_prescription_service.dto.request.PrescriptionUpdateRequest;
 import com.pet_care.medical_prescription_service.dto.response.*;
@@ -190,7 +191,7 @@ public class PrescriptionService {
 
         appointmentClient.approvedAppointment(prescriptionCreateRequest.getAppointmentId());
 
-        List<PetPrescription> newPetPrescriptionList = prescriptionCreateRequest.getDetails().stream().map(petPrescriptionCreateRequest ->
+        List<PetPrescription> newPetPrescriptionList = prescriptionCreateRequest.getDetails().parallelStream().map(petPrescriptionCreateRequest ->
                 {
                     PetPrescription petPrescription = petPrescriptionMapper.toEntity(petPrescriptionCreateRequest);
 
@@ -201,7 +202,14 @@ public class PrescriptionService {
                     return petPrescriptionRepository.save(petPrescription);
                 })
                 .peek(petPrescription -> {
-                    prescriptionDetailRepository.saveAll(petPrescription.getMedicines());
+                    List<PrescriptionDetail> prescriptionDetails = prescriptionDetailRepository.saveAll(petPrescription.getMedicines());
+                    prescriptionDetails.forEach(prescriptionDetail -> {
+                        MedicineUpdateQtyRequest medicineUpdateQtyRequest = MedicineUpdateQtyRequest.builder()
+                                .medicineId(prescriptionDetail.getMedicineId())
+                                .qty(prescriptionDetail.getQuantity())
+                                .build();
+                        medicineClient.updateQuantity(medicineUpdateQtyRequest);
+                    });
                 }).toList();
 
 
@@ -219,7 +227,6 @@ public class PrescriptionService {
         }
 
         PrescriptionResponse prescriptionResponse = toPrescriptionResponse(newPrescription);
-
 
         prescriptionResponse.setAppointmentResponse(appointmentClient
                 .updateAppointmentService(prescriptionCreateRequest.getAppointmentId(), prescriptionCreateRequest.getServices()).getData());

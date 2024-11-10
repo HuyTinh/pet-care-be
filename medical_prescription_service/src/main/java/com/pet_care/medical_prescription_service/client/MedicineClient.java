@@ -1,5 +1,6 @@
 package com.pet_care.medical_prescription_service.client;
 
+import com.pet_care.medical_prescription_service.dto.request.MedicineUpdateQtyRequest;
 import com.pet_care.medical_prescription_service.dto.response.APIResponse;
 import com.pet_care.medical_prescription_service.dto.response.CalculationUnitResponse;
 import com.pet_care.medical_prescription_service.dto.response.MedicineResponse;
@@ -7,6 +8,8 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 import java.util.Set;
@@ -29,10 +32,25 @@ public interface MedicineClient {
     APIResponse<List<MedicineResponse>> getMedicineInIds(@PathVariable("medicineIds") Set<Long> medicineIds);
 
 
+    /**
+     * @param calculationUnitId
+     * @return
+     */
     @GetMapping("/calculation-unit/{calculationUnitId}")
     APIResponse<CalculationUnitResponse> getCalculationUnitById(@PathVariable("calculationUnitId") Long calculationUnitId);
 
+    /**
+     * @param calculationUnitIds
+     * @return
+     */
     @GetMapping("/calculation-unit/in/{calculationUnitIds}")
     APIResponse<List<CalculationUnitResponse>> getCalculationUnitByIds(@PathVariable("calculationUnitIds") Set<Long> calculationUnitIds);
+
+    /**
+     * @param medicineUpdateQtyRequest
+     * @return
+     */
+    @PutMapping("update-qty")
+    APIResponse<?> updateQuantity(@RequestBody MedicineUpdateQtyRequest medicineUpdateQtyRequest);
 }
 

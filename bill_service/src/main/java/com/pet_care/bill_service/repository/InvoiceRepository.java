@@ -19,15 +19,15 @@ public interface InvoiceRepository extends JpaRepository<Invoice, Long> {
      */
     @Modifying
     @Transactional
-    @Query(value = "UPDATE invoices set payosid = :payOsId Where id = :invoiceId", nativeQuery = true)
+    @Query(value = "UPDATE invoices set payOSId = :payOsId Where id = :invoiceId")
     int updatePaymentPayOSId(@Param("payOsId") String payOsId, @Param("invoiceId") Long invoiceId);
 
-    @Query(value = "SELECT id from invoices where payosid = :payOsId", nativeQuery = true)
+    @Query(value = "SELECT id from invoices where payOSId = :payOsId")
     Long getInvoiceIdByPayOSId(@Param("payOsId") String payOsId);
 
     @Modifying
     @Transactional
-    @Query(value = "UPDATE invoices set status = :status Where id = :invoiceId", nativeQuery = true)
+    @Query(value = "UPDATE invoices set status = :status Where id = :invoiceId")
     int changeStatus(@Param("invoiceId") Long invoiceId, @Param("status") InvoiceStatus status);
 
 }

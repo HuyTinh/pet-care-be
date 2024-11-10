@@ -3,7 +3,11 @@ package com.pet_care.payment_service.common;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 import vn.payos.PayOS;
+
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Component
 public class PayOSShare {
@@ -17,7 +21,16 @@ public class PayOSShare {
     String checksumKey;
 
     @Bean
-    public final PayOS getPayOS() {
+    public final PayOS payOS() {
         return new PayOS(clientId, apiKey, checksumKey);
     }
+
+    @Bean
+    public final Map<Long, SseEmitter> getPayOS() {
+        return new ConcurrentHashMap<>();
+    }
+
+
+
+
 }

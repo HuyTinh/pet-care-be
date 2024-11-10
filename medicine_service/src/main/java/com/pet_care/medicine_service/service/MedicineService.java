@@ -2,6 +2,7 @@ package com.pet_care.medicine_service.service;
 
 import com.pet_care.medicine_service.client.UploadImageClient;
 import com.pet_care.medicine_service.dto.request.MedicineCreateRequest;
+import com.pet_care.medicine_service.dto.request.MedicineUpdateQtyRequest;
 import com.pet_care.medicine_service.dto.request.MedicineUpdateRequest;
 import com.pet_care.medicine_service.dto.response.MedicineResponse;
 import com.pet_care.medicine_service.dto.response.PageableResponse;
@@ -246,6 +247,21 @@ public class MedicineService {
             log.error("Invalid date format: {}", dateStr);
             return null;
         }
+    }
+
+    /**
+     * @param medicineUpdateQtyRequest
+     * @return
+     */
+    public Integer updateQuantity(MedicineUpdateQtyRequest medicineUpdateQtyRequest) {
+       Medicine existingMedicine  = medicineRepository.findById(medicineUpdateQtyRequest.getMedicineId())
+               .orElseThrow(() -> new APIException(ErrorCode.MEDICINE_NOT_FOUND));
+
+       Integer isUpdateQty = medicineRepository.updateQuantity(medicineUpdateQtyRequest.getMedicineId(), existingMedicine.getQuantity() - medicineUpdateQtyRequest.getQty());
+
+       log.info("Update medicine {} successful", medicineUpdateQtyRequest.getMedicineId());
+
+       return isUpdateQty;
     }
 
 }

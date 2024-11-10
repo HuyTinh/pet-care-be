@@ -9,7 +9,6 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.io.IOException;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 @RequiredArgsConstructor
@@ -18,7 +17,7 @@ public class SseService {
 
     BillClient billClient;
 
-    public final Map<Long, SseEmitter> emitters = new ConcurrentHashMap<>();
+    Map<Long, SseEmitter> emitters;
 
     public void sendEventToClient(Long orderId, boolean event) {
         SseEmitter emitter = emitters.get(orderId);
