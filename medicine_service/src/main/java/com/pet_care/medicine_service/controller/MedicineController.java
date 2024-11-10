@@ -1,6 +1,7 @@
 package com.pet_care.medicine_service.controller;
 
 import com.pet_care.medicine_service.dto.request.MedicineCreateRequest;
+import com.pet_care.medicine_service.dto.request.MedicineUpdateQtyRequest;
 import com.pet_care.medicine_service.dto.request.MedicineUpdateRequest;
 import com.pet_care.medicine_service.dto.response.APIResponse;
 import com.pet_care.medicine_service.dto.response.MedicineResponse;
@@ -145,4 +146,23 @@ public class MedicineController {
                 .build();
     }
 
+    /**
+     * @param medicineUpdateQtyRequest
+     * @return
+     */
+    @PutMapping("update-qty")
+    public APIResponse<?> updateQuantity(@RequestBody MedicineUpdateQtyRequest medicineUpdateQtyRequest) {
+
+        Integer isUpdateQty = medicineService.updateQuantity(medicineUpdateQtyRequest);
+
+        String message = "Update medicine " + medicineUpdateQtyRequest.getMedicineId() + " successful";
+
+        if(isUpdateQty == 0) {
+            message = "Update medicine failed";
+        }
+
+        return APIResponse.builder()
+                .message(message)
+                .build();
+    }
 }

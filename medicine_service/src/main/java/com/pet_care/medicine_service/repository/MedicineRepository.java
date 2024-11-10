@@ -6,9 +6,11 @@ import com.pet_care.medicine_service.model.Medicine;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.List;
@@ -39,5 +41,10 @@ public interface MedicineRepository extends JpaRepository<Medicine, Long> {
 
     @Query("select me from medicines me where me.types = 'MEDICINE'")
     List<Medicine> getAllMedicines();
+
+    @Modifying
+    @Transactional
+    @Query(value = "UPDATE medicines set quantity = :newQuantity where id = :medicineId")
+    int updateQuantity(@Param("medicineId") Long medicineId, @Param("newQuantity") Long newQuantity);
 
 }
