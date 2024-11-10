@@ -8,6 +8,7 @@ import com.pet_care.bill_service.dto.request.PaymentRequest;
 import com.pet_care.bill_service.dto.response.CheckoutResponseData;
 import com.pet_care.bill_service.dto.response.InvoiceResponse;
 import com.pet_care.bill_service.dto.response.MedicinePrescriptionResponse;
+import com.pet_care.bill_service.enums.InvoiceStatus;
 import com.pet_care.bill_service.enums.PaymentMethod;
 import com.pet_care.bill_service.exception.APIException;
 import com.pet_care.bill_service.exception.ErrorCode;
@@ -41,6 +42,7 @@ public class InvoiceService {
     /**
      * @return
      */
+    @Transactional(readOnly = true)
     public List<InvoiceResponse> getAllInvoice() {
 
         List<InvoiceResponse> invoiceResponseList = invoiceRepository.findAll().stream().map(invoiceMapper::toDto).toList();
@@ -54,6 +56,7 @@ public class InvoiceService {
      * @param id
      * @return
      */
+    @Transactional(readOnly = true)
     public InvoiceResponse getInvoiceById(Long id) {
         InvoiceResponse invoiceResponse = invoiceRepository.findById(id).map(invoiceMapper::toDto).orElseThrow(() -> new APIException(ErrorCode.INVOICE_NOT_FOUND));
 
@@ -115,7 +118,6 @@ public class InvoiceService {
         return null;
     }
 
-
     /**
      * @param payOSId
      * @return
@@ -125,4 +127,11 @@ public class InvoiceService {
         return invoiceRepository.getInvoiceIdByPayOSId(payOSId);
     }
 
+    public Integer approvedInvoice(Long invoiceId) {
+        return invoiceRepository.changeStatus(invoiceId, InvoiceStatus.SUCCESS);
+    }
+
+    public Integer canceledInvoice(Long invoiceId) {
+        return invoiceRepository.changeStatus(invoiceId, InvoiceStatus.CANCELLED);
+    }
 }

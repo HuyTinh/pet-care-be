@@ -35,10 +35,8 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -56,6 +54,18 @@ public class MedicineService {
     MedicineMapper medicineMapper;
 
     UploadImageClient uploadImageClient;
+
+    /**
+     * @return
+     */
+    public List<MedicineResponse> getAllMedicines() {
+       List<MedicineResponse> medicineResponses = medicineRepository.getAllMedicines()
+               .stream().map(medicineMapper::toDto).toList();
+
+        log.info("Get all medicines successful");
+
+        return medicineResponses;
+    }
 
     /**
      * @return
@@ -217,7 +227,7 @@ public class MedicineService {
             // Upload the new image and update the existing medicine's image URL
             String imageUrl = uploadImageClient
                     .uploadImage(List.of(imageFile)).get(0);
-            medicine.setImage_url(imageUrl);
+            medicine.setImageUrl(imageUrl);
         }
     }
 

@@ -43,4 +43,18 @@ public interface BillClient {
      */
     @GetMapping("{payOSId}/payOSId")
     APIResponse<Long> getInvoiceIdByOSId(@PathVariable("payOSId") String payOSId);
+
+    /**
+     * @param invoiceId
+     * @return
+     */
+    @PutMapping("{invoiceId}/approved")
+    APIResponse<?> approveInvoice(@PathVariable("invoiceId") Long invoiceId);
+
+    /**
+     * @param invoiceId
+     * @return
+     */
+    @PutMapping("{invoiceId}/canceled")
+    APIResponse<?> cancelInvoice(@PathVariable("invoiceId") Long invoiceId);
 }

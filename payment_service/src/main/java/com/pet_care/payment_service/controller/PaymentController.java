@@ -26,7 +26,7 @@ public class PaymentController {
     SseService sseService;
 
     /**
-     * @param webhookRequest
+     * @param paymentRequest
      * @return
      * @throws Exception
      */

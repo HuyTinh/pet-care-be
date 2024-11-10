@@ -31,20 +31,32 @@ public class MedicineController {
     MedicineService medicineService;
 
     /**
-     * @param pageNumber        số trang (bắt đầu từ 0)
-     * @param pageSize          kích thước trang
-     * @param searchTerm        từ khóa tìm kiếm
-     * @param manufacturingDate lọc theo ngày sản xuất
-     * @param expiryDate        lọc theo ngày hết hạn
-     * @param status            lọc theo trạng thái
-     * @param minPrice          giá tối thiểu
-     * @param maxPrice          giá tối đa
-     * @param sortBy            trường để sắp xếp
-     * @param sortOrder         hướng sắp xếp (asc hoặc desc)
      * @return
      */
     @GetMapping
-    public APIResponse<PageableResponse<MedicineResponse>> getAllMedicine(
+    public APIResponse<List<MedicineResponse>> getAllMedicine() {
+        return APIResponse.<List<MedicineResponse>>builder()
+                .data(medicineService.getAllMedicines())
+                .build();
+    }
+
+
+    /**
+     * @param pageNumber
+     * @param pageSize
+     * @param types
+     * @param searchTerm
+     * @param manufacturingDate
+     * @param expiryDate
+     * @param status
+     * @param minPrice
+     * @param maxPrice
+     * @param sortBy
+     * @param sortOrder
+     * @return
+     */
+    @GetMapping("/filter")
+    public APIResponse<PageableResponse<MedicineResponse>> filterMedicines(
             @RequestParam(defaultValue = "0") int pageNumber,
             @RequestParam(defaultValue = "10") int pageSize,
             @RequestParam(defaultValue = "MEDICINE") MedicineTypes types ,

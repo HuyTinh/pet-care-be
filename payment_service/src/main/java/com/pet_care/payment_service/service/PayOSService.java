@@ -87,6 +87,7 @@ public class PayOSService {
     public Integer cancelPaymentLink(Integer orderId) throws Exception {
         try {
             payOS.cancelPaymentLink(orderId,"");
+            billClient.cancelInvoice((long) orderId);
         } catch (Exception e) {
             System.out.println(e.getMessage());
             return 0;
