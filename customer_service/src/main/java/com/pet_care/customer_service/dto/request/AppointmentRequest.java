@@ -1,4 +1,4 @@
-package com.pet_care.customer_service.dto.request.sub;
+package com.pet_care.customer_service.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;

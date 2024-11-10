@@ -9,5 +9,3 @@ services:
       MYSQL_PASSWORD: root
     ports:
       - "3307:3306"
-    volumes:
-      - ./database/mysql:/var/lib/mysql
