@@ -35,7 +35,8 @@ public class Medicine {
     @JsonProperty("date_import")
     Date dateImport;
 
-    String image_url;
+    @JsonProperty("image_url")
+    String imageUrl;
 
     Integer quantity;
 

@@ -1,6 +1,10 @@
 spring:
   application:
     name: search_service
+  docker:
+    compose:
+      file:
+
 
 server:
   port: 8088

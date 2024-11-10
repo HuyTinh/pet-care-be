@@ -13,6 +13,7 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -74,6 +75,42 @@ public class InvoiceController {
     public APIResponse<Long> getInvoiceIdByOSId(@PathVariable("payOSId") String payOSId){
         return  APIResponse.<Long>builder()
                 .data(invoiceService.getInvoiceIdByPayOSId(payOSId))
+                .build();
+    }
+
+    /**
+     * @param invoiceId
+     * @return
+     */
+    @PutMapping("{invoiceId}/approved")
+    public  APIResponse<?> approveInvoice(@PathVariable("invoiceId") Long invoiceId) {
+        String message = "Approve Invoice Id: " + invoiceId + " fail";
+
+        Integer isApproved = invoiceService.approvedInvoice(invoiceId);
+        if(isApproved == 1){
+            message = "Approve Invoice Id: " + invoiceId + " success";
+        }
+
+        return APIResponse.builder()
+                .message(message)
+                .build();
+    }
+
+    /**
+     * @param invoiceId
+     * @return
+     */
+    @PutMapping("{invoiceId}/canceled")
+    public  APIResponse<?> cancelInvoice(@PathVariable("invoiceId") Long invoiceId) {
+        String message = "Cancel Invoice Id: " + invoiceId + " fail";
+
+        Integer isApproved = invoiceService.canceledInvoice(invoiceId);
+        if(isApproved == 1){
+            message = "Cancel Invoice Id: " + invoiceId + " success";
+        }
+
+        return APIResponse.builder()
+                .message(message)
                 .build();
     }
 }
