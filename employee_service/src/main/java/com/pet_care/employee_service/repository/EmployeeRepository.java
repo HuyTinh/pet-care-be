@@ -13,4 +13,10 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
      * @return
      */
     Optional<Employee> getEmployeeByEmail(String email);
+
+    /**
+     * @param accountId
+     * @return
+     */
+    Optional<Employee> findByAccountId(Long accountId);
 }
