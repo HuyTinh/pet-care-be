@@ -3,6 +3,7 @@ package com.pet_care.employee_service.dto.response;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.pet_care.employee_service.enums.Gender;
+import com.pet_care.employee_service.enums.Role;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import lombok.*;
@@ -33,6 +34,9 @@ public class EmployeeResponse {
 
     @Enumerated(EnumType.STRING)
     Gender gender;
+
+    @Enumerated(EnumType.STRING)
+    Role role;
 
     @JsonProperty("account_id")
     Long accountId;
