@@ -69,7 +69,7 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
      * @param appointmentDate2
      * @return
      */
-    List<Appointment> getByAppointmentDateBetweenAndStatus(Date appointmentDate, Date appointmentDate2, String statues);
+    List<Appointment> getByAppointmentDateBetweenAndStatus(Date appointmentDate, Date appointmentDate2, AppointmentStatus statues);
 
 
     /**
