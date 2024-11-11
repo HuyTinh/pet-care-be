@@ -64,4 +64,15 @@ public class EmployeeController {
     public APIResponse<EmployeeResponse> deleteEmployee() {
         return APIResponse.<EmployeeResponse>builder().message("Delete employee successful!").build();
     }
+
+    /**
+     * @param accountId
+     * @return
+     */
+    @GetMapping("/account/{accountId}")
+    public APIResponse<EmployeeResponse> getCustomerByAccountId(@PathVariable("accountId") Long accountId) {
+        return APIResponse.<EmployeeResponse>builder()
+                .data(employeeService.getEmployeeByAccountId(accountId))
+                .build();
+    }
 }

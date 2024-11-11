@@ -377,6 +377,12 @@ public class AppointmentService {
         }).join();
     }
 
+    @Transactional(readOnly = true)
+    public List<AppointmentResponse> getAllAppointmentUpComing() {
+        return appointmentRepository
+                .getByAppointmentDateBetweenAndStatus(new Date(), DateUtil.plusDate(new Date(), 3), "SCHEDULED").stream().map(appointmentMapper::toDto).collect(toList());
+    }
+
     /**
      * @param appointment
      * @return

@@ -188,6 +188,16 @@ public class AppointmentController {
         return APIResponse.builder()
                 .data(Map.of("isCheckIn:", appointmentService.checkInAppointment(appointmentId) == 1))
                 .build();
+    }
 
+
+    /**
+     * @return
+     */
+    @GetMapping("/up-coming")
+    public APIResponse<List<AppointmentResponse>> getAllAppointmentUpComing() {
+        return APIResponse.<List<AppointmentResponse>>builder()
+                .data(appointmentService.getAllAppointmentUpComing())
+                .build();
     }
 }

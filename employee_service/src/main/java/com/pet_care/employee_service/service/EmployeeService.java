@@ -114,4 +114,13 @@ public class EmployeeService {
                 .save(existingEmployee));
 
     }
+
+    /**
+     * @param accountId
+     * @return
+     */
+    @Transactional(readOnly = true)
+    public EmployeeResponse getEmployeeByAccountId(Long accountId) {
+        return employeeRepository.findByAccountId(accountId).map(employeeMapper::toDto).orElseThrow(() -> new APIException(ErrorCode.EMPLOYEE_NOT_FOUND));
+    }
 }
