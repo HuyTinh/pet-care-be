@@ -128,7 +128,7 @@ public class AuthenticationService {
                         Instant.now().plus(10, ChronoUnit.MINUTES).toEpochMilli()
                 ))
                 .claim("scope", buildScope(account))
-                .claim("userId", account.getId())
+                .claim("user_id", account.getId())
                 .build();
 
 
