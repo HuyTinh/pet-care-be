@@ -10,33 +10,47 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
-@Getter
-@Setter
-@AllArgsConstructor
-@Builder
+/**
+ * Data Transfer Object (DTO) class used for updating existing employee records.
+ * This class is used to receive updated employee data from the client side (e.g., API requests).
+ */
+@Getter  // Generates getter methods for all fields
+@Setter  // Generates setter methods for all fields
+@AllArgsConstructor  // Generates a constructor with all fields
+@Builder  // Generates a builder pattern for object creation
 public class EmployeeUpdateRequest {
-    @JsonProperty("first_name")
-    String firstName;
 
-    @JsonProperty("last_name")
-    String lastName;
+    // First name of the employee
+    @JsonProperty("first_name")  // Maps the "first_name" JSON field to the "firstName" Java field
+            String firstName;
 
-    @JsonProperty("image_url")
-    String imageUrl;
+    // Last name of the employee
+    @JsonProperty("last_name")  // Maps the "last_name" JSON field to the "lastName" Java field
+            String lastName;
 
+    // URL for the employee's image
+    @JsonProperty("image_url")  // Maps the "image_url" JSON field to the "imageUrl" Java field
+            String imageUrl;
+
+    // Employee's email address
     String email;
 
+    // Employee's physical address
     String address;
 
-    @Enumerated(EnumType.STRING)
-    Gender gender;
+    // Employee's gender, represented as an Enum (e.g., Male, Female)
+    @Enumerated(EnumType.STRING)  // Maps the Enum to its String representation in the database
+            Gender gender;
 
-    @Enumerated(EnumType.STRING)
-    Role role;
+    // Role assigned to the employee (e.g., Admin, Manager, User)
+    @Enumerated(EnumType.STRING)  // Maps the Enum to its String representation in the database
+            Role role;
 
-    @JsonProperty("account_id")
-    Long accountId;
+    // The account ID associated with the employee
+    @JsonProperty("account_id")  // Maps the "account_id" JSON field to the "accountId" Java field
+            Long accountId;
 
-    @JsonProperty("phone_number")
-    String phoneNumber;
+    // Employee's phone number
+    @JsonProperty("phone_number")  // Maps the "phone_number" JSON field to the "phoneNumber" Java field
+            String phoneNumber;
 }

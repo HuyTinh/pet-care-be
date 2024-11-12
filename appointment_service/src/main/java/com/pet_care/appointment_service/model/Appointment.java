@@ -18,51 +18,50 @@ import java.util.Set;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity(name = "appointments")
-@FieldDefaults(level = AccessLevel.PRIVATE)
+@Entity(name = "appointments") // Marks the class as an entity to be mapped to the "appointments" table in the database
+@FieldDefaults(level = AccessLevel.PRIVATE) // Makes all fields private by default (for better encapsulation)
 public class Appointment {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
 
-    @JsonProperty("account_id")
-    Long accountId;
+    @Id // Specifies that this field is the primary key
+    @GeneratedValue(strategy = GenerationType.IDENTITY) // Automatically generates the ID value (auto-increment)
+    Long id; // The ID of the appointment
 
-    @JsonProperty("first_name")
-    String firstName;
+    @JsonProperty("account_id") // Specifies the name of this field when serialized to/from JSON
+    Long accountId; // Account ID associated with the appointment
 
-    @JsonProperty("last_name")
-    String lastName;
+    @JsonProperty("first_name") // Specifies the name of this field when serialized to/from JSON
+    String firstName; // First name of the customer
 
-    @JsonProperty("email")
-    String email;
+    @JsonProperty("last_name") // Specifies the name of this field when serialized to/from JSON
+    String lastName; // Last name of the customer
 
-    @JsonProperty("phone_number")
-    String phoneNumber;
+    @JsonProperty("email") // Specifies the name of this field when serialized to/from JSON
+    String email; // Email address of the customer
 
-    @JsonProperty("appointment_date")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-    @Temporal(TemporalType.DATE)
-    Date appointmentDate;
+    @JsonProperty("phone_number") // Specifies the name of this field when serialized to/from JSON
+    String phoneNumber; // Phone number of the customer
 
-    @JsonProperty("appointment_time")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm")
-    @Temporal(TemporalType.TIME)
-    Date appointmentTime;
+    @JsonProperty("appointment_date") // Specifies the name of this field when serialized to/from JSON
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd") // Customizes the date format for JSON
+    @Temporal(TemporalType.DATE) // Maps the field to store only the date part (not time) in the database
+    Date appointmentDate; // The date of the appointment
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    Set<HospitalServiceEntity> services;
+    @JsonProperty("appointment_time") // Specifies the name of this field when serialized to/from JSON
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm") // Customizes the time format for JSON
+    @Temporal(TemporalType.TIME) // Maps the field to store only the time part (not date) in the database
+    Date appointmentTime; // The time of the appointment
 
-    @Enumerated(EnumType.STRING)
-    AppointmentStatus status;
+    @ManyToMany(fetch = FetchType.EAGER) // Defines a many-to-many relationship with the HospitalServiceEntity
+    Set<HospitalServiceEntity> services; // Set of services associated with the appointment
 
-    
-    @CreationTimestamp
-    @Temporal(TemporalType.TIMESTAMP)
-    Date createdAt;
+    @Enumerated(EnumType.STRING) // Specifies that the enum value should be stored as a string in the database
+    AppointmentStatus status; // The status of the appointment (e.g., scheduled, completed)
 
-    
-    @UpdateTimestamp
-    @Temporal(TemporalType.TIMESTAMP)
-    Date updatedAt;
+    @CreationTimestamp // Automatically sets this field to the current timestamp when the entity is created
+    @Temporal(TemporalType.TIMESTAMP) // Maps the field to store both date and time in the database
+    Date createdAt; // The creation timestamp of the appointment
+
+    @UpdateTimestamp // Automatically sets this field to the current timestamp whenever the entity is updated
+    @Temporal(TemporalType.TIMESTAMP) // Maps the field to store both date and time in the database
+    Date updatedAt; // The last update timestamp of the appointment
 }

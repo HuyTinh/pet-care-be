@@ -18,17 +18,24 @@ import java.text.ParseException;
 import java.time.LocalDate;
 import java.util.*;
 
+/**
+ * AppointmentController handles all the HTTP requests related to appointments, including
+ * creating, updating, fetching, and managing appointments.
+ */
 @RestController
 @RequestMapping("appointment")
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class AppointmentController {
 
-     AppointmentService appointmentService;
+    // The AppointmentService is used to handle the business logic related to appointments
+    AppointmentService appointmentService;
 
     /**
-     * @return
-     * @throws JsonProcessingException
+     * Retrieves all appointments from the system.
+     *
+     * @return A response containing the list of all appointments.
+     * @throws JsonProcessingException If there is an error processing the data into JSON format.
      */
     @GetMapping
     public APIResponse<List<AppointmentResponse>> getAllAppointment() throws JsonProcessingException {
@@ -38,15 +45,19 @@ public class AppointmentController {
     }
 
     /**
-     * @param startDate
-     * @param endDate
-     * @param statues
-     * @return
-     * @throws JsonProcessingException
+     * Retrieves appointments based on filter parameters like date range and status.
+     *
+     * @param page The page number to fetch (default is 0).
+     * @param size The number of appointments per page (default is 50).
+     * @param startDate The start date for the appointment filter.
+     * @param endDate The end date for the appointment filter.
+     * @param statues The set of appointment statuses to filter by.
+     * @return A paginated response of filtered appointments.
+     * @throws JsonProcessingException If there is an error processing the data into JSON format.
      */
     @GetMapping("/filter")
     public APIResponse<PageableResponse<AppointmentResponse>> getAllAppointmentByStartDateAndEndDate(
-            @RequestParam(value = "page",required = false, defaultValue = "0") int page,
+            @RequestParam(value = "page", required = false, defaultValue = "0") int page,
             @RequestParam(value = "size", required = false, defaultValue = "50") int size,
             @RequestParam(value = "startDate", required = false) LocalDate startDate,
             @RequestParam(value = "endDate", required = false) LocalDate endDate,
@@ -58,21 +69,25 @@ public class AppointmentController {
     }
 
     /**
-     * @param appointmentId
-     * @return
-     * @throws JsonProcessingException
+     * Retrieves an appointment by its ID.
+     *
+     * @param appointmentId The ID of the appointment to retrieve.
+     * @return A response containing the appointment details.
+     * @throws JsonProcessingException If there is an error processing the data into JSON format.
      */
     @GetMapping("/{appointmentId}")
-    public APIResponse<AppointmentResponse> getAppointmentById( @PathVariable("appointmentId") Long appointmentId) throws JsonProcessingException {
+    public APIResponse<AppointmentResponse> getAppointmentById(@PathVariable("appointmentId") Long appointmentId) throws JsonProcessingException {
         return APIResponse.<AppointmentResponse>builder()
                 .data(appointmentService.getAppointmentById(appointmentId))
                 .build();
     }
 
     /**
-     * @return
-     * @throws JsonProcessingException
-     * @throws ParseException
+     * Retrieves appointments scheduled for the current day.
+     *
+     * @return A response containing the list of appointments for today.
+     * @throws JsonProcessingException If there is an error processing the data into JSON format.
+     * @throws ParseException If there is an error parsing the date.
      */
     @GetMapping("present")
     public APIResponse<List<AppointmentResponse>> getAllAppointmentPresent() throws JsonProcessingException, ParseException {
@@ -82,47 +97,53 @@ public class AppointmentController {
     }
 
     /**
-     * @param appointmentCreateRequest
-     * @param emailNotification
-     * @return
-     * @throws JsonProcessingException
+     * Creates a new appointment and optionally sends an email notification.
+     *
+     * @param appointmentCreateRequest The request body containing appointment details.
+     * @param emailNotification Whether to send an email notification.
+     * @return A response containing the created appointment details.
+     * @throws JsonProcessingException If there is an error processing the data into JSON format.
      */
     @PostMapping
-    public APIResponse<AppointmentResponse> createAppointment( @RequestBody AppointmentCreateRequest appointmentCreateRequest, @RequestParam(value = "emailNotification") boolean emailNotification) throws JsonProcessingException {
+    public APIResponse<AppointmentResponse> createAppointment(@RequestBody AppointmentCreateRequest appointmentCreateRequest, @RequestParam(value = "emailNotification") boolean emailNotification) throws JsonProcessingException {
         return APIResponse.<AppointmentResponse>builder()
                 .data(appointmentService.createAppointment(appointmentCreateRequest, emailNotification))
                 .build();
     }
 
     /**
-     * @param appointmentId
-     * @param appointmentUpdateRequest
-     * @return
-     * @throws JsonProcessingException
+     * Updates an existing appointment.
+     *
+     * @param appointmentId The ID of the appointment to update.
+     * @param appointmentUpdateRequest The request body containing updated appointment details.
+     * @return A response containing the updated appointment details.
+     * @throws JsonProcessingException If there is an error processing the data into JSON format.
      */
     @PutMapping("/{appointmentId}")
-    public APIResponse<AppointmentResponse> updateAppointment( @PathVariable("appointmentId") Long appointmentId,  @RequestBody AppointmentUpdateRequest appointmentUpdateRequest) throws JsonProcessingException {
-        System.out.println(appointmentUpdateRequest);
+    public APIResponse<AppointmentResponse> updateAppointment(@PathVariable("appointmentId") Long appointmentId, @RequestBody AppointmentUpdateRequest appointmentUpdateRequest) throws JsonProcessingException {
         return APIResponse.<AppointmentResponse>builder()
                 .data(appointmentService.updateAppointment(appointmentId, appointmentUpdateRequest))
                 .build();
     }
 
     /**
-     * @param appointmentId
-     * @return
+     * Marks an appointment as checked in.
+     *
+     * @param appointmentId The ID of the appointment to check in.
+     * @return A response indicating the success of the check-in operation.
      */
     @PostMapping("/check-in/{appointmentId}")
     public APIResponse<Integer> checkInAppointment(@PathVariable("appointmentId") Long appointmentId) {
-
         return APIResponse.<Integer>builder()
                 .data(appointmentService.checkInAppointment(appointmentId))
                 .build();
     }
 
     /**
-     * @param appointmentId
-     * @return
+     * Cancels an appointment.
+     *
+     * @param appointmentId The ID of the appointment to cancel.
+     * @return A response indicating the success of the cancellation.
      */
     @PostMapping("/cancel/{appointmentId}")
     public APIResponse<Integer> cancelAppointment(@PathVariable Long appointmentId) {
@@ -132,8 +153,10 @@ public class AppointmentController {
     }
 
     /**
-     * @param appointmentId
-     * @return
+     * Approves an appointment.
+     *
+     * @param appointmentId The ID of the appointment to approve.
+     * @return A response indicating the success of the approval.
      */
     @PostMapping("/approved/{appointmentId}")
     public APIResponse<Integer> approvedAppointment(@PathVariable Long appointmentId) {
@@ -143,10 +166,12 @@ public class AppointmentController {
     }
 
     /**
-     * @param accountId
-     * @param status
-     * @return
-     * @throws JsonProcessingException
+     * Retrieves appointments by account ID and status.
+     *
+     * @param accountId The account ID to filter appointments by.
+     * @param status The status of the appointments to filter.
+     * @return A response containing the filtered list of appointments.
+     * @throws JsonProcessingException If there is an error processing the data into JSON format.
      */
     @GetMapping("/account/{accountId}")
     public APIResponse<List<AppointmentResponse>> getAppointmentsByStatusAndAccountId(@PathVariable("accountId") Long accountId, @RequestParam("status") String status) throws JsonProcessingException {
@@ -156,8 +181,10 @@ public class AppointmentController {
     }
 
     /**
-     * @param status
-     * @return
+     * Retrieves appointments by status.
+     *
+     * @param status The status to filter appointments by.
+     * @return A response containing the filtered list of appointments.
      */
     @GetMapping("/status/{status}")
     public APIResponse<List<AppointmentResponse>> getByStatus(@PathVariable("status") String status) {
@@ -167,10 +194,12 @@ public class AppointmentController {
     }
 
     /**
-     * @param appointmentId
-     * @param services
-     * @return
-     * @throws JsonProcessingException
+     * Updates the services associated with an appointment.
+     *
+     * @param appointmentId The ID of the appointment to update.
+     * @param services The set of services to associate with the appointment.
+     * @return A response containing the updated appointment details.
+     * @throws JsonProcessingException If there is an error processing the data into JSON format.
      */
     @PutMapping("/{appointmentId}/service")
     public APIResponse<AppointmentResponse> updateAppointmentService(@PathVariable("appointmentId") Long appointmentId, @RequestBody Set<String> services) throws JsonProcessingException {
@@ -180,8 +209,10 @@ public class AppointmentController {
     }
 
     /**
-     * @param appointmentId
-     * @return
+     * Checks whether an appointment is checked in.
+     *
+     * @param appointmentId The ID of the appointment to check.
+     * @return A response indicating whether the appointment is checked in.
      */
     @GetMapping("/isCheckin/{appointmentId}")
     public APIResponse<?> getAppointment(@PathVariable("appointmentId") Long appointmentId) {
@@ -190,9 +221,10 @@ public class AppointmentController {
                 .build();
     }
 
-
     /**
-     * @return
+     * Retrieves upcoming appointments.
+     *
+     * @return A response containing the list of upcoming appointments.
      */
     @GetMapping("/up-coming")
     public APIResponse<List<AppointmentResponse>> getAllAppointmentUpComing() {

@@ -6,7 +6,6 @@ import com.pet_care.appointment_service.service.SpecieService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -14,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 /**
- *
+ * SpecieController handles HTTP requests related to species.
  */
 @RestController
 @RequestMapping("specie")
@@ -22,13 +21,17 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class SpecieController {
 
-     SpecieService specieService;
+    // The SpecieService is used to handle the business logic related to species.
+    SpecieService specieService;
 
     /**
-     * @return
+     * Retrieves a list of all species.
+     *
+     * @return A response containing the list of all species.
      */
     @GetMapping
     public APIResponse<List<Specie>> getAllSpecie() {
+        // Calls the service layer to get all species and returns the response.
         return APIResponse.<List<Specie>>builder().data(specieService.getAll()).build();
     }
 
