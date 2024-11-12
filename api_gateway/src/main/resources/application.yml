@@ -60,33 +60,6 @@ spring:
             predicates:
               - Path=/api/v1/bill-service/**
 
-      # Cấu hình chung cho các filter mặc định
-      default-filters:
-          # Retry filter: Cấu hình retry khi gặp lỗi kết nối hoặc timeout từ service
-          - name: Retry
-            args:
-              retries: 3 # Số lần thử lại khi gặp lỗi
-              statuses: BAD_GATEWAY, GATEWAY_TIMEOUT # Chỉ retry khi gặp các lỗi này
-
-          # Request Timeout: Thiết lập thời gian chờ tối đa cho các request
-          - name: RequestTimeout
-            args:
-              timeout: 2000 # Timeout (ms), tăng giảm tuỳ theo yêu cầu
-
-      # Cấu hình CORS để cho phép các domain nhất định truy cập Gateway
-      globalcors:
-        corsConfigurations:
-          '[/**]':
-            allowedOrigins: "*" # Cho phép domain truy cập, hoặc "*" để cho phép tất cả
-            allowedMethods:
-              - GET
-              - POST
-              - PUT
-              - DELETE
-            allowedHeaders:
-              - "*" # Cho phép tất cả các header
-            allowCredentials: true # Cho phép gửi cookie nếu cần
-
 server:
   port: 8888 # Cổng của API Gateway
 
