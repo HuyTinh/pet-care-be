@@ -23,7 +23,9 @@ public class CalculationUnitController {
     CalculationUnitService calculationUnitService;
 
     /**
-     * @return
+     * Retrieves all calculation units.
+     *
+     * @return A response containing the list of all calculation units.
      */
     @GetMapping
     public APIResponse<List<CalculationUnitResponse>> getAllCalculationUnits() {
@@ -33,8 +35,10 @@ public class CalculationUnitController {
     }
 
     /**
-     * @param calculationUnitId
-     * @return
+     * Retrieves a calculation unit by its ID.
+     *
+     * @param calculationUnitId The ID of the calculation unit to retrieve.
+     * @return A response containing the calculation unit details.
      */
     @GetMapping("/{calculationUnitId}")
     public APIResponse<CalculationUnitResponse> getCalculationUnitById(@PathVariable("calculationUnitId") Long calculationUnitId) {
@@ -43,10 +47,11 @@ public class CalculationUnitController {
                 .build();
     }
 
-
     /**
-     * @param calculationUnitIds
-     * @return
+     * Retrieves calculation units by their IDs.
+     *
+     * @param calculationUnitIds A set of calculation unit IDs to retrieve.
+     * @return A response containing the list of calculation units matching the provided IDs.
      */
     @GetMapping("/in/{calculationUnitIds}")
     public APIResponse<List<CalculationUnitResponse>> getCalculationUnitByIds(@PathVariable("calculationUnitIds") Set<Long> calculationUnitIds) {

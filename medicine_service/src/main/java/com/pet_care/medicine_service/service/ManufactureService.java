@@ -19,32 +19,39 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class ManufactureService {
 
-    ManufactureRepository manufactureRepository;
-
-    ManufactureMapper manufactureMapper;
+    ManufactureRepository manufactureRepository;  // Repository to interact with the database for Manufacture data
+    ManufactureMapper manufactureMapper;  // Mapper to convert entities to DTOs
 
     /**
-     * @return
+     * Retrieves all manufacture records from the repository and maps them to ManufactureResponse DTOs.
+     *
+     * @return List of ManufactureResponse DTOs
      */
     public List<ManufactureResponse> getAllManufacture() {
+        // Fetches all manufacture records from the repository, maps them to DTOs and collects them into a list
         List<ManufactureResponse> manufactureResponseList = manufactureRepository.findAll().stream().map(manufactureMapper::toDto).toList();
 
+        // Logs the operation and the result
         log.info("Manufacture List: {}", manufactureResponseList);
 
+        // Returns the list of ManufactureResponse DTOs
         return manufactureResponseList;
     }
 
     /**
-     * @param id
-     * @return
+     * Retrieves a manufacture record by its ID. Throws an APIException if the manufacture is not found.
+     *
+     * @param id The ID of the manufacture record to retrieve
+     * @return The ManufactureResponse DTO of the found manufacture record
      */
     public ManufactureResponse getManufactureById(Long id) {
+        // Fetches the manufacture record by ID, throws an exception if not found, and maps it to a DTO
         ManufactureResponse manufactureResponse = manufactureMapper.toDto(manufactureRepository.findById(id).orElseThrow(() -> new APIException(ErrorCode.MANUFACTURE_NOT_FOUND)));
 
+        // Logs the operation and the result
         log.info("Manufacture Response: {}", manufactureResponse);
 
+        // Returns the ManufactureResponse DTO
         return manufactureResponse;
     }
-
-
 }

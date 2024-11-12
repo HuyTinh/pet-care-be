@@ -21,7 +21,9 @@ public class LocationController {
     LocationService locationService;
 
     /**
-     * @return
+     * Retrieves all locations.
+     *
+     * @return A response containing the list of all locations.
      */
     @GetMapping
     public APIResponse<List<LocationResponse>> getAllLocation() {
@@ -31,8 +33,10 @@ public class LocationController {
     }
 
     /**
-     * @param locationId
-     * @return
+     * Retrieves a location by its ID.
+     *
+     * @param locationId The ID of the location to retrieve.
+     * @return A response containing the location details.
      */
     @GetMapping("/{locationId}")
     public APIResponse<LocationResponse> getLocationById(@PathVariable("locationId") Long locationId) {

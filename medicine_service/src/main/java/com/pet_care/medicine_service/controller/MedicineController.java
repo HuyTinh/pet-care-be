@@ -32,7 +32,9 @@ public class MedicineController {
     MedicineService medicineService;
 
     /**
-     * @return
+     * Retrieves all medicines.
+     *
+     * @return A response containing the list of all medicines.
      */
     @GetMapping
     public APIResponse<List<MedicineResponse>> getAllMedicine() {
@@ -41,26 +43,27 @@ public class MedicineController {
                 .build();
     }
 
-
     /**
-     * @param pageNumber
-     * @param pageSize
-     * @param types
-     * @param searchTerm
-     * @param manufacturingDate
-     * @param expiryDate
-     * @param status
-     * @param minPrice
-     * @param maxPrice
-     * @param sortBy
-     * @param sortOrder
-     * @return
+     * Filters medicines based on various parameters.
+     *
+     * @param pageNumber Page number for pagination.
+     * @param pageSize Number of items per page.
+     * @param types Type of medicine.
+     * @param searchTerm Search term for filtering.
+     * @param manufacturingDate Manufacturing date filter.
+     * @param expiryDate Expiry date filter.
+     * @param status Medicine status filter.
+     * @param minPrice Minimum price filter.
+     * @param maxPrice Maximum price filter.
+     * @param sortBy Sorting field.
+     * @param sortOrder Sorting order (asc/desc).
+     * @return A paginated response containing filtered medicines.
      */
     @GetMapping("/filter")
     public APIResponse<PageableResponse<MedicineResponse>> filterMedicines(
             @RequestParam(defaultValue = "0") int pageNumber,
             @RequestParam(defaultValue = "10") int pageSize,
-            @RequestParam(defaultValue = "MEDICINE") MedicineTypes types ,
+            @RequestParam(defaultValue = "MEDICINE") MedicineTypes types,
             @RequestParam(required = false) String searchTerm,
             @RequestParam(required = false)
             @DateTimeFormat(pattern = "yyyy-MM-dd") Date manufacturingDate,
@@ -89,8 +92,10 @@ public class MedicineController {
     }
 
     /**
-     * @param medicineId
-     * @return
+     * Retrieves a medicine by its ID.
+     *
+     * @param medicineId The ID of the medicine to retrieve.
+     * @return A response containing the medicine details.
      */
     @GetMapping("{medicineId}")
     public APIResponse<Medicine> getMedicineById(@PathVariable("medicineId") Long medicineId) {
@@ -100,8 +105,10 @@ public class MedicineController {
     }
 
     /**
-     * @param medicineIds
-     * @return
+     * Retrieves medicines by their IDs.
+     *
+     * @param medicineIds The IDs of the medicines to retrieve.
+     * @return A response containing the list of medicines.
      */
     @GetMapping("/in/{medicineIds}")
     public APIResponse<List<Medicine>> getMedicineInIds(@PathVariable("medicineIds") Set<Long> medicineIds) {
@@ -111,8 +118,11 @@ public class MedicineController {
     }
 
     /**
-     * @param medicineCreateRequest
-     * @return
+     * Creates a new medicine.
+     *
+     * @param medicineCreateRequest The details of the medicine to create.
+     * @param imageFile The image of the medicine.
+     * @return A response containing the created medicine.
      */
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public APIResponse<?> createMedicine(@ModelAttribute MedicineCreateRequest medicineCreateRequest, @RequestPart("image_url") MultipartFile imageFile) throws IOException {
@@ -122,9 +132,12 @@ public class MedicineController {
     }
 
     /**
-     * @param medicineId
-     * @param medicineUpdateRequest
-     * @return
+     * Updates an existing medicine.
+     *
+     * @param medicineId The ID of the medicine to update.
+     * @param medicineUpdateRequest The updated details of the medicine.
+     * @param imageFile The updated image of the medicine.
+     * @return A response containing the updated medicine.
      */
     @PutMapping(value = "/{medicineId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public APIResponse<Medicine> updateMedicine(@PathVariable("medicineId") Long medicineId, @ModelAttribute MedicineUpdateRequest medicineUpdateRequest, @RequestPart(value = "image_url", required = false) MultipartFile imageFile) throws IOException {
@@ -134,9 +147,11 @@ public class MedicineController {
     }
 
     /**
-     * @param medicineId
-     * @param medicineUpdateRequest
-     * @return
+     * Deletes a medicine.
+     *
+     * @param medicineId The ID of the medicine to delete.
+     * @param medicineUpdateRequest The request to update medicine.
+     * @return A response indicating the result of the delete operation.
      */
     @DeleteMapping("/{medicineId}")
     public APIResponse<Medicine> deleteMedicine(@PathVariable("medicineId") Long medicineId, @RequestBody MedicineUpdateRequest medicineUpdateRequest) {
@@ -147,8 +162,10 @@ public class MedicineController {
     }
 
     /**
-     * @param medicineUpdateQtyRequest
-     * @return
+     * Updates the quantity of a medicine.
+     *
+     * @param medicineUpdateQtyRequest The request to update medicine quantity.
+     * @return A response indicating the result of the quantity update.
      */
     @PutMapping("update-qty")
     public APIResponse<?> updateQuantity(@RequestBody MedicineUpdateQtyRequest medicineUpdateQtyRequest) {
