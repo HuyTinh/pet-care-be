@@ -22,7 +22,9 @@ public class ManufactureController {
     ManufactureService manufactureService;
 
     /**
-     * @return
+     * Retrieves all manufactures.
+     *
+     * @return A response containing the list of all manufactures.
      */
     @GetMapping
     public APIResponse<List<ManufactureResponse>> getAllManufacture() {
@@ -32,8 +34,10 @@ public class ManufactureController {
     }
 
     /**
-     * @param manufactureId
-     * @return
+     * Retrieves a manufacture by its ID.
+     *
+     * @param manufactureId The ID of the manufacture to retrieve.
+     * @return A response containing the manufacture details.
      */
     @GetMapping("/{manufactureId}")
     public APIResponse<ManufactureResponse> getManufactureById(@PathVariable("manufactureId") Long manufactureId) {
@@ -41,5 +45,4 @@ public class ManufactureController {
                 .data(manufactureService.getManufactureById(manufactureId))
                 .build();
     }
-
 }

@@ -11,7 +11,16 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class MedicineUpdateQtyRequest {
+
+    /**
+     * The ID of the medicine to update.
+     */
     @JsonProperty("medicine_id")
     Long medicineId;
+
+    /**
+     * The new quantity for the medicine.
+     */
     Long qty;
+
 }

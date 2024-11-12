@@ -8,19 +8,28 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Service;
 
+/**
+ * Service class for handling message sending via JMS (Java Message Service).
+ * It provides functionality to send messages to the queue.
+ */
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class MessageService {
-     JmsTemplate jmsTemplate;
 
-     ObjectMapper objectMapper;
+    // JMS Template for sending messages
+    JmsTemplate jmsTemplate;
+
+    // ObjectMapper to process JSON data
+    ObjectMapper objectMapper;
 
     /**
-     * @param destination
-     * @param appointment
+     * Sends a message to the specified JMS queue.
+     *
+     * @param destination the destination queue to send the message
+     * @param appointment the message content, typically an appointment object in JSON format
      */
-    public void sendMessageQueue( String destination,  String appointment) {
+    public void sendMessageQueue(String destination, String appointment) {
         jmsTemplate.convertAndSend(destination, appointment);
     }
 }

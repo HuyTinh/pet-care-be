@@ -25,41 +25,58 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Service class for handling customer-related operations.
+ * It includes functionality for managing customer data, appointments, and updates.
+ */
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class CustomerService {
-     CustomerRepository customerRepository;
 
-     CustomerMapper customerMapper;
+    // Repository for accessing customer data in the database
+    CustomerRepository customerRepository;
 
-     MessageService messageService;
+    // Mapper to convert between entity and DTO objects
+    CustomerMapper customerMapper;
 
-     ObjectMapper objectMapper;
+    // Service to send messages for customer-related tasks
+    MessageService messageService;
 
-     UploadImageClient uploadImageClient;
+    // ObjectMapper to process JSON data
+    ObjectMapper objectMapper;
+
+    // Client for uploading images
+    UploadImageClient uploadImageClient;
 
     /**
-     * @return
+     * Fetches all customers and returns them as a list of CustomerResponse DTOs.
+     *
+     * @return a list of CustomerResponse DTOs representing all customers
      */
-    
     @Transactional(readOnly = true)
     public List<CustomerResponse> getAllCustomer() {
         return customerRepository.findAll().stream().map(customerMapper::toDto).collect(Collectors.toList());
     }
 
     /**
-     * @param id
-     * @return
+     * Fetches a customer by ID and returns their data as a CustomerResponse DTO.
+     *
+     * @param id the ID of the customer
+     * @return a CustomerResponse DTO containing customer data
+     * @throws APIException if the customer with the specified ID is not found
      */
     @Transactional(readOnly = true)
-    public CustomerResponse getCustomerById( Long id) {
+    public CustomerResponse getCustomerById(Long id) {
         return customerRepository.findById(id).map(customerMapper::toDto).orElseThrow(() -> new APIException(ErrorCode.CUSTOMER_NOT_FOUND));
     }
 
     /**
-     * @param accountId
-     * @return
+     * Fetches a customer by their account ID and returns their data as a CustomerResponse DTO.
+     *
+     * @param accountId the account ID of the customer
+     * @return a CustomerResponse DTO containing customer data
+     * @throws APIException if the customer with the specified account ID is not found
      */
     @Transactional(readOnly = true)
     public CustomerResponse getCustomerByAccountId(Long accountId) {
@@ -67,13 +84,15 @@ public class CustomerService {
     }
 
     /**
-     * @param request
-     * @param notification
-     * @return
-     * @throws JsonProcessingException
+     * Creates an appointment for a customer and sends a notification if requested.
+     *
+     * @param request the AppointmentCreateRequest DTO containing appointment details
+     * @param notification whether a notification should be sent
+     * @return a CustomerResponse DTO containing the updated customer data
+     * @throws JsonProcessingException if there is an error processing JSON data
      */
     @Transactional
-    public CustomerResponse createAppointment( AppointmentCreateRequest request, Boolean notification) throws JsonProcessingException {
+    public CustomerResponse createAppointment(AppointmentCreateRequest request, Boolean notification) throws JsonProcessingException {
         Customer customerSave = customerRepository.findByAccountId(request.getAccountId()).orElse(null);
 
         if (customerSave == null) {
@@ -81,7 +100,6 @@ public class CustomerService {
         }
 
         AppointmentRequest appointment = request.getAppointment();
-
         appointment.setCustomerId(customerSave.getId());
 
         String notify = "";
@@ -95,8 +113,10 @@ public class CustomerService {
     }
 
     /**
-     * @param customerRequest
-     * @throws JsonProcessingException
+     * Processes a message from the queue and adds a new customer to the repository.
+     *
+     * @param customerRequest the customer data received from the queue
+     * @throws JsonProcessingException if there is an error processing JSON data
      */
     @JmsListener(destination = "customer-create-queue")
     @Transactional
@@ -104,12 +124,13 @@ public class CustomerService {
         customerRepository.save(customerMapper.toEntity(objectMapper.readValue(customerRequest, CustomerCreateRequest.class)));
     }
 
-
     /**
-     * @param accountId
-     * @param customerRequest
-     * @param files
-     * @return
+     * Updates an existing customer's information and uploads a new profile image if provided.
+     *
+     * @param accountId the account ID of the customer to update
+     * @param customerRequest the updated customer data
+     * @param files optional files to upload (e.g., profile image)
+     * @return a CustomerResponse DTO containing the updated customer data
      */
     @Transactional
     public CustomerResponse updateCustomer(Long accountId, CustomerUpdateRequest customerRequest, @Nullable List<MultipartFile> files) {
@@ -127,10 +148,12 @@ public class CustomerService {
     }
 
     /**
-     * @param id
+     * Deletes a customer by their ID.
+     *
+     * @param id the ID of the customer to delete
      */
     @Transactional
-    public void deleteCustomer( Long id) {
+    public void deleteCustomer(Long id) {
         customerRepository.deleteById(id);
     }
 }
