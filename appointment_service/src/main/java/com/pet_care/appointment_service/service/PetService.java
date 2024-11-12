@@ -16,28 +16,37 @@ import java.util.List;
 
 import static java.util.stream.Collectors.toList;
 
-@Service
-@RequiredArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@Service // Marks this class as a service component for Spring to manage
+@RequiredArgsConstructor // Lombok annotation to automatically generate a constructor with required fields
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true) // Lombok annotation to set fields to private and final
 public class PetService {
-     PetRepository petRepository;
-     PetMapper petMapper;
+    PetRepository petRepository; // Repository for interacting with the Pet data model
+    PetMapper petMapper; // Mapper for converting Pet entities to PetResponse DTOs
 
     /**
-     * @return
+     * Retrieves all pets from the repository and maps them to PetResponse DTOs.
+     * @return A list of PetResponse DTOs.
      */
-    @Transactional(readOnly = true)
-    public  List<PetResponse> getAllPet() {
+    @Transactional(readOnly = true) // Marks this method as read-only for the transaction to optimize performance
+    public List<PetResponse> getAllPet() {
+        // Fetch all pets from the repository, map them to PetResponse DTOs, and return the list
         return petRepository.findAll().stream()
-                .map(petMapper::toDto).collect(toList());
+                .map(petMapper::toDto) // Convert each pet entity to PetResponse DTO
+                .collect(toList()); // Collect results into a list
     }
 
     /**
-     * @param petId
-     * @return
+     * Retrieves a pet by its ID and returns its PetResponse DTO.
+     * Throws an exception if the pet is not found.
+     * @param petId The ID of the pet to retrieve.
+     * @return The PetResponse DTO of the pet.
+     * @throws APIException if the pet with the given ID is not found.
      */
-    @Transactional(readOnly = true)
-    public PetResponse getPetById( Long petId) {
-        return petRepository.findById(petId).map(petMapper::toDto).orElseThrow(() -> new APIException(ErrorCode.PET_NOT_FOUND));
+    @Transactional(readOnly = true) // Marks this method as read-only for the transaction to optimize performance
+    public PetResponse getPetById(Long petId) {
+        // Try to find the pet by its ID and map it to a PetResponse DTO, or throw an exception if not found
+        return petRepository.findById(petId)
+                .map(petMapper::toDto) // If found, convert the pet entity to PetResponse DTO
+                .orElseThrow(() -> new APIException(ErrorCode.PET_NOT_FOUND)); // If not found, throw an exception with an error code
     }
 }

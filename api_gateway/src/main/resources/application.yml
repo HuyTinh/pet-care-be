@@ -6,49 +6,94 @@ spring:
     gateway:
       mvc:
         routes:
+          # Manage Service route
           - id: manage_service
             uri: http://localhost:8092
             predicates:
               - Path=/api/v1/manage-service/**
 
+          # Identity Service route
           - id: identity_service
             uri: http://localhost:8091
             predicates:
               - Path=/api/v1/identity-service/**
 
+          # Appointment Service route
           - id: appointment_service
             uri: http://localhost:8082
             predicates:
               - Path=/api/v1/appointment-service/**
 
+          # Customer Service route
           - id: customer_service
             uri: http://localhost:8083
             predicates:
               - Path=/api/v1/customer-service/**
 
+          # Employee Service route
           - id: employee_service
             uri: http://localhost:8084
             predicates:
               - Path=/api/v1/employee-service/**
 
+          # Medicine Service route
           - id: medicine_service
             uri: http://localhost:8085
             predicates:
               - Path=/api/v1/medicine-service/**
 
+          # Medical Prescription Service route
           - id: medical_prescription_service
             uri: http://localhost:8086
             predicates:
               - Path=/api/v1/medical-prescription-service/**
 
+          # Payment Service route
           - id: payment_service
             uri: http://localhost:8089
             predicates:
               - Path=/api/v1/payment-service/**
 
+          # Bill Service route
           - id: bill_service
             uri: http://localhost:8088
             predicates:
               - Path=/api/v1/bill-service/**
+
+      # Cấu hình chung cho các filter mặc định
+      default-filters:
+          # Retry filter: Cấu hình retry khi gặp lỗi kết nối hoặc timeout từ service
+          - name: Retry
+            args:
+              retries: 3 # Số lần thử lại khi gặp lỗi
+              statuses: BAD_GATEWAY, GATEWAY_TIMEOUT # Chỉ retry khi gặp các lỗi này
+
+          # Request Timeout: Thiết lập thời gian chờ tối đa cho các request
+          - name: RequestTimeout
+            args:
+              timeout: 2000 # Timeout (ms), tăng giảm tuỳ theo yêu cầu
+
+      # Cấu hình CORS để cho phép các domain nhất định truy cập Gateway
+      globalcors:
+        corsConfigurations:
+          '[/**]':
+            allowedOrigins: "*" # Cho phép domain truy cập, hoặc "*" để cho phép tất cả
+            allowedMethods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+            allowedHeaders:
+              - "*" # Cho phép tất cả các header
+            allowCredentials: true # Cho phép gửi cookie nếu cần
+
 server:
-  port: 8888
+  port: 8888 # Cổng của API Gateway
+
+# Logging để ghi log các yêu cầu và phản hồi, hữu ích cho việc debug
+logging:
+  level:
+    org.springframework.cloud.gateway: DEBUG
+
+
+

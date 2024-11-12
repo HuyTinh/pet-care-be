@@ -1,37 +1,36 @@
 spring:
   application:
-    name: appointment_service
+    name: appointment_service  # Name of the application
 
   datasource:
-    url: "jdbc:mysql://localhost:3308/appointment_service"
-    password: root
-    username: root
+    url: "jdbc:mysql://localhost:3308/appointment_service"  # JDBC URL for the MySQL database
+    password: root  # Database password for MySQL
+    username: root  # Database username for MySQL
 
   jpa:
-    show-sql: false
+    show-sql: false  # Disable showing SQL queries in the logs
     hibernate:
-      ddl-auto: update
+      ddl-auto: update  # Automatically update the database schema (use 'update' for development)
 
   activemq:
-    broker-url: tcp://localhost:61616
-    user: admin
-    password: admin
+    broker-url: tcp://localhost:61616  # URL of the ActiveMQ broker for messaging
+    user: admin  # ActiveMQ user
+    password: admin  # ActiveMQ password
 
   flyway:
-    enabled: false
-    url: jdbc:mysql://localhost:3308/appointment_service
-    user: root
-    password: root
-    locations: classpath:db/migrations
+    enabled: false  # Disable Flyway migrations (set to true if migrations are to be applied)
+    url: jdbc:mysql://localhost:3308/appointment_service  # Database URL for Flyway
+    user: root  # Database user for Flyway
+    password: root  # Database password for Flyway
+    locations: classpath:db/migrations  # Path to Flyway migration files
 
 server:
   servlet:
-    context-path: /api/v1/appointment-service
-  port: 8082
-
+    context-path: /api/v1/appointment-service  # Base path for all API endpoints
+  port: 8082  # Port on which the Spring Boot application will run
 
 springdoc:
   api-docs:
-    path: /api-docs
+    path: /api-docs  # Path where Swagger API docs will be available
   swagger-ui:
-    path: /swagger-ui.html
+    path: /swagger-ui.html  # Path for Swagger UI (the frontend for API documentation)

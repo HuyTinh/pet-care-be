@@ -12,30 +12,29 @@ import java.util.Date;
 
 @Getter
 @Setter
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor
-@Entity(name = "Hospital_Services")
-@FieldDefaults(level = AccessLevel.PRIVATE)
+@Builder // Generates a builder for constructing objects with optional fields
+@AllArgsConstructor // Generates a constructor with all fields
+@NoArgsConstructor // Generates a no-argument constructor
+@Entity(name = "hospital_services") // Marks this class as a JPA entity and specifies the table name
+@FieldDefaults(level = AccessLevel.PRIVATE) // Makes all fields private by default (for better encapsulation)
 public class HospitalServiceEntity {
-    @Id
-    String name;
 
-    String description;
+    @Id // Marks this field as the primary key of the entity
+    String name; // Name of the hospital service, which is also the primary key
 
-    @Enumerated(EnumType.STRING)
-    @Builder.Default
-    HospitalServiceStatus status = HospitalServiceStatus.ACTIVE;
+    String description; // A description of the hospital service
 
-    Double price;
+    @Enumerated(EnumType.STRING) // Specifies that the enum will be stored as a string in the database
+    @Builder.Default // Sets the default value for the status field when using the builder
+    HospitalServiceStatus status = HospitalServiceStatus.ACTIVE; // Status of the service, default is ACTIVE
 
-    
-    @CreationTimestamp
-    @Temporal(TemporalType.TIMESTAMP)
-    Date createdAt;
+    Double price; // Price of the hospital service
 
-    
-    @UpdateTimestamp
-    @Temporal(TemporalType.TIMESTAMP)
-    Date updatedAt;
+    @CreationTimestamp // Automatically sets this field to the current timestamp when the entity is created
+    @Temporal(TemporalType.TIMESTAMP) // Maps the field to store both date and time in the database
+    Date createdAt; // Timestamp for when the hospital service was created
+
+    @UpdateTimestamp // Automatically sets this field to the current timestamp whenever the entity is updated
+    @Temporal(TemporalType.TIMESTAMP) // Maps the field to store both date and time in the database
+    Date updatedAt; // Timestamp for when the hospital service was last updated
 }

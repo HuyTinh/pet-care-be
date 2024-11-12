@@ -9,38 +9,54 @@ import jakarta.persistence.Enumerated;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-@Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
-@Builder
-@FieldDefaults(level = AccessLevel.PRIVATE)
-@JsonInclude(JsonInclude.Include.NON_NULL)
+/**
+ * Data Transfer Object (DTO) for employee response.
+ * This class is used to structure the data that will be returned as part of an employee response.
+ * It contains details of an employee, such as their ID, name, gender, role, and contact information.
+ */
+@Getter  // Lombok annotation to automatically generate getter methods for all fields
+@Setter  // Lombok annotation to automatically generate setter methods for all fields
+@AllArgsConstructor  // Lombok annotation to generate a constructor with all fields
+@NoArgsConstructor   // Lombok annotation to generate a no-argument constructor
+@Builder  // Lombok annotation to implement the builder pattern for object creation
+@FieldDefaults(level = AccessLevel.PRIVATE)  // Lombok annotation to set all fields to private by default
+@JsonInclude(JsonInclude.Include.NON_NULL)  // Jackson annotation to exclude null values from the JSON response
 public class EmployeeResponse {
+
+    // Unique identifier for the employee
     Long id;
 
-    @JsonProperty("first_name")
-    String firstName;
+    // First name of the employee
+    @JsonProperty("first_name")  // Custom JSON property name for the field
+            String firstName;
 
-    @JsonProperty("last_name")
-    String lastName;
+    // Last name of the employee
+    @JsonProperty("last_name")  // Custom JSON property name for the field
+            String lastName;
 
-    @JsonProperty("image_url")
-    String imageUrl;
+    // URL for the employee's profile image
+    @JsonProperty("image_url")  // Custom JSON property name for the field
+            String imageUrl;
 
+    // Employee's email address
     String email;
 
+    // Employee's address
     String address;
 
-    @Enumerated(EnumType.STRING)
-    Gender gender;
+    // Employee's gender, represented using an enumerated type
+    @Enumerated(EnumType.STRING)  // Persist gender as a string value in the database
+            Gender gender;
 
-    @Enumerated(EnumType.STRING)
-    Role role;
+    // Employee's role, represented using an enumerated type
+    @Enumerated(EnumType.STRING)  // Persist role as a string value in the database
+            Role role;
 
-    @JsonProperty("account_id")
-    Long accountId;
+    // Account ID associated with the employee
+    @JsonProperty("account_id")  // Custom JSON property name for the field
+            Long accountId;
 
-    @JsonProperty("phone_number")
-    String phoneNumber;
+    // Employee's phone number
+    @JsonProperty("phone_number")  // Custom JSON property name for the field
+            String phoneNumber;
 }

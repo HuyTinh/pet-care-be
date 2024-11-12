@@ -13,41 +13,56 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 /**
- *
+ * HospitalServiceController handles all HTTP requests related to hospital services,
+ * including creating, retrieving, and managing hospital services.
  */
 @RestController
 @RequestMapping("hospital-service")
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class HospitalServiceController {
-     HospitalService hospitalService;
+
+    // The HospitalService is used to handle the business logic related to hospital services
+    HospitalService hospitalService;
 
     /**
-     * @param hospitalServiceRequest
-     * @return
+     * Creates a new hospital service based on the provided request data.
+     *
+     * @param hospitalServiceRequest The request body containing the details of the new hospital service.
+     * @return A response containing the created hospital service details.
      */
     @PostMapping
-    APIResponse<HospitalServiceResponse> createHospitalService(@RequestBody HospitalServiceRequest hospitalServiceRequest) {
+    public APIResponse<HospitalServiceResponse> createHospitalService(@RequestBody HospitalServiceRequest hospitalServiceRequest) {
+        // Calls the service layer to create a new hospital service and returns the response.
         return APIResponse.<HospitalServiceResponse>builder()
                 .data(hospitalService.createHospitalService(hospitalServiceRequest))
                 .build();
     }
 
     /**
-     * @return
+     * Retrieves all hospital services from the system.
+     *
+     * @return A response containing the list of all hospital services.
      */
     @GetMapping
-    APIResponse<List<HospitalServiceResponse>> getAllHospitalService() {
+    public APIResponse<List<HospitalServiceResponse>> getAllHospitalService() {
+        // Calls the service layer to get all hospital services and returns the response.
         return APIResponse.<List<HospitalServiceResponse>>builder()
-                .data(hospitalService.getAllHospitalService()).build();
+                .data(hospitalService.getAllHospitalService())
+                .build();
     }
 
     /**
-     * @param service
-     * @return
+     * Retrieves a hospital service by its ID (service name).
+     *
+     * @param service The ID (or name) of the hospital service to retrieve.
+     * @return A response containing the details of the requested hospital service.
      */
     @GetMapping("{service}")
-    APIResponse<HospitalServiceResponse> getHospitalServiceById( @PathVariable("service") String service) {
-        return APIResponse.<HospitalServiceResponse>builder().data(hospitalService.getHospitalServiceById(service)).build();
+    public APIResponse<HospitalServiceResponse> getHospitalServiceById(@PathVariable("service") String service) {
+        // Calls the service layer to get a hospital service by its ID and returns the response.
+        return APIResponse.<HospitalServiceResponse>builder()
+                .data(hospitalService.getHospitalServiceById(service))
+                .build();
     }
 }

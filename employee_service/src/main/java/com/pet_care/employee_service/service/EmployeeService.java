@@ -28,18 +28,31 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class EmployeeService {
-     EmployeeRepository employeeRepository;
-
-     EmployeeMapper employeeMapper;
-
-     UploadImageClient uploadImageClient;
-
-     AccountClient accountClient;
 
     /**
-     * @return
+     * Repository for employee operations.
      */
-    
+    EmployeeRepository employeeRepository;
+
+    /**
+     * Mapper for converting between Employee entity and DTOs.
+     */
+    EmployeeMapper employeeMapper;
+
+    /**
+     * Client for handling image uploads.
+     */
+    UploadImageClient uploadImageClient;
+
+    /**
+     * Client for interacting with the account service.
+     */
+    AccountClient accountClient;
+
+    /**
+     * Retrieves all employees from the repository.
+     * @return A list of EmployeeResponse DTOs.
+     */
     @Transactional(readOnly = true)
     public List<EmployeeResponse> getAllEmployee() {
         return employeeRepository
@@ -49,8 +62,9 @@ public class EmployeeService {
     }
 
     /**
-     * @param id
-     * @return
+     * Retrieves an employee by their ID.
+     * @param id The employee ID.
+     * @return An EmployeeResponse DTO containing the employee details.
      */
     @Transactional(readOnly = true)
     public EmployeeResponse getEmployeeById(long id) {
@@ -60,28 +74,32 @@ public class EmployeeService {
     }
 
     /**
-     * @param employeeCreateRequest
-     * @param files
-     * @return
+     * Creates a new employee.
+     * @param employeeCreateRequest The employee data to create.
+     * @param files A list of files to upload (e.g., profile image).
+     * @return The created EmployeeResponse DTO.
      */
     @Transactional
-    public EmployeeResponse createEmployee( EmployeeCreateRequest employeeCreateRequest, List<MultipartFile> files) {
+    public EmployeeResponse createEmployee(EmployeeCreateRequest employeeCreateRequest, List<MultipartFile> files) {
         if (employeeRepository
                 .getEmployeeByEmail(employeeCreateRequest.getEmail())
-                .isEmpty()
-        ) {
+                .isEmpty()) {
+            // Upload image if provided
             if (!CollectionUtils.isEmpty(files)) {
                 employeeCreateRequest.setImageUrl(uploadImageClient.uploadImage(files).get(0));
             }
 
             Employee employee = employeeMapper.toEntity(employeeCreateRequest);
 
+            // Set account ID from the account service
             employee.setAccountId(accountClient
                     .createAccount(employeeCreateRequest)
                     .getData().getId());
 
+            // Set the first role from the provided roles
             employee.setRole(employeeCreateRequest.getRoles().stream().toList().get(0));
 
+            // Save employee to the repository
             Employee savedEmployee = employeeRepository.save(employee);
 
             log.info("Employee saved: {}", savedEmployee);
@@ -89,38 +107,43 @@ public class EmployeeService {
             return employeeMapper.toDto(savedEmployee);
 
         }
-        throw new APIException(ErrorCode.EMAIl_EXIST);
+        throw new APIException(ErrorCode.EMAIL_EXIST);
     }
 
     /**
-     * @param employeeId
-     * @param employeeUpdateRequest
-     * @param files
-     * @return
+     * Updates an existing employee's details.
+     * @param employeeId The ID of the employee to update.
+     * @param employeeUpdateRequest The new employee data.
+     * @param files A list of files to upload (e.g., profile image).
+     * @return The updated EmployeeResponse DTO.
      */
     @Transactional
-    public EmployeeResponse updateEmployee( Long employeeId,  EmployeeUpdateRequest employeeUpdateRequest, List<MultipartFile> files) {
+    public EmployeeResponse updateEmployee(Long employeeId, EmployeeUpdateRequest employeeUpdateRequest, List<MultipartFile> files) {
         Employee existingEmployee = employeeRepository
                 .findById(employeeId)
                 .orElseThrow(() -> new APIException(ErrorCode.EMPLOYEE_NOT_FOUND));
 
+        // Upload image if provided
         if (!CollectionUtils.isEmpty(files)) {
             employeeUpdateRequest.setImageUrl(uploadImageClient.uploadImage(files).get(0));
         }
 
+        // Apply partial updates to the existing employee
         employeeMapper.partialUpdate(employeeUpdateRequest, existingEmployee);
 
         return employeeMapper.toDto(employeeRepository
                 .save(existingEmployee));
-
     }
 
     /**
-     * @param accountId
-     * @return
+     * Retrieves an employee by their associated account ID.
+     * @param accountId The account ID of the employee.
+     * @return An EmployeeResponse DTO containing the employee details.
      */
     @Transactional(readOnly = true)
     public EmployeeResponse getEmployeeByAccountId(Long accountId) {
-        return employeeRepository.findByAccountId(accountId).map(employeeMapper::toDto).orElseThrow(() -> new APIException(ErrorCode.EMPLOYEE_NOT_FOUND));
+        return employeeRepository.findByAccountId(accountId)
+                .map(employeeMapper::toDto)
+                .orElseThrow(() -> new APIException(ErrorCode.EMPLOYEE_NOT_FOUND));
     }
 }

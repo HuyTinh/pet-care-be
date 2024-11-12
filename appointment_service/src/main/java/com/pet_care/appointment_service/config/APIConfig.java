@@ -7,14 +7,16 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 /**
- *
+ * Configuration class for API-related beans and settings.
  */
 @Configuration
 public class APIConfig implements WebMvcConfigurer {
+
     /**
-     * @return
+     * Bean to configure the ObjectMapper used for JSON serialization and deserialization.
+     *
+     * @return A new instance of ObjectMapper.
      */
-    
     @Bean
     public ObjectMapper objectMapper() {
         return new ObjectMapper();

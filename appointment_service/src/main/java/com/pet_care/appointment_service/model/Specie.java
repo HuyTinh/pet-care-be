@@ -14,24 +14,23 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Date;
 
-@Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
-@Entity(name = "species")
+@Getter // Generates getter methods for all fields
+@Setter // Generates setter methods for all fields
+@AllArgsConstructor // Generates a constructor with all fields
+@NoArgsConstructor // Generates a no-argument constructor
+@Entity(name = "species") // Marks this class as a JPA entity and maps it to the "species" table
 public class Specie {
-    @Id
-    String name;
 
-    Boolean status;
+    @Id // Specifies that the "name" field is the primary key for this entity
+    String name; // The name of the species (e.g., "Dog", "Cat")
 
-    
-    @CreationTimestamp
-    @Temporal(TemporalType.TIMESTAMP)
-    Date createdAt;
+    Boolean status; // Represents whether the species is active (true) or inactive (false)
 
-    
-    @UpdateTimestamp
-    @Temporal(TemporalType.TIMESTAMP)
-    Date updatedAt;
+    @CreationTimestamp // Automatically sets the creation timestamp when the entity is created
+    @Temporal(TemporalType.TIMESTAMP) // Maps the field to a timestamp column in the database
+    Date createdAt; // Timestamp indicating when this record was created
+
+    @UpdateTimestamp // Automatically sets the update timestamp when the entity is modified
+    @Temporal(TemporalType.TIMESTAMP) // Maps the field to a timestamp column in the database
+    Date updatedAt; // Timestamp indicating the last time this record was updated
 }
