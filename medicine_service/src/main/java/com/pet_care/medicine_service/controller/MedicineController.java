@@ -125,8 +125,8 @@ public class MedicineController {
      * @return A response containing the created medicine.
      */
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public APIResponse<?> createMedicine(@ModelAttribute MedicineCreateRequest medicineCreateRequest, @RequestPart("image_url") MultipartFile imageFile) throws IOException {
-        return APIResponse.builder()
+    public APIResponse<Medicine> createMedicine(@ModelAttribute MedicineCreateRequest medicineCreateRequest, @RequestPart("image_url") MultipartFile imageFile) throws IOException {
+        return APIResponse.<Medicine>builder()
                 .data(medicineService.createMedicine(medicineCreateRequest, imageFile))
                 .build();
     }
