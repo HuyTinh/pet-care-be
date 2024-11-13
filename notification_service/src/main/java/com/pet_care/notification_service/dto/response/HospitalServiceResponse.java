@@ -1,5 +1,6 @@
 package com.pet_care.notification_service.dto.response;
 
+// Import necessary Lombok annotations for generating methods and configuring fields
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -8,12 +9,12 @@ import lombok.experimental.FieldDefaults;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE)
-public class HospitalServiceResponse {
-    String name;
+@FieldDefaults(level = AccessLevel.PRIVATE) // Sets all fields to private access level by default
+public class HospitalServiceResponse { // Class to represent hospital service details in a response
 
-    String description;
+    String name; // Name of the hospital service
 
-    Double price;
+    String description; // Description of the hospital service
 
+    Double price; // Price of the hospital service
 }
