@@ -2,6 +2,7 @@ package com.pet_care.employee_service.controller;
 
 import com.pet_care.employee_service.dto.request.EmployeeCreateRequest;
 import com.pet_care.employee_service.dto.request.EmployeeUpdateRequest;
+import com.pet_care.employee_service.dto.request.SoftEmployeeUpdateRequest;
 import com.pet_care.employee_service.dto.response.APIResponse;
 import com.pet_care.employee_service.dto.response.EmployeeResponse;
 import com.pet_care.employee_service.service.EmployeeService;
@@ -107,4 +108,20 @@ public class EmployeeController {
                 .data(employeeService.getEmployeeByAccountId(accountId))  // Fetches data from the service layer
                 .build();  // Returns the response in APIResponse format
     }
+
+    /**
+     * Endpoint to perform a soft update on an employee's information.
+     *
+     * @param employeeId The unique identifier of the employee to update.
+     * @param softEmployeeUpdateRequest The request object containing fields for the employee's soft update.
+     * @return APIResponse containing the updated EmployeeResponse data.
+     */
+    @PutMapping("/account/{accountId}/soft-update")
+    public APIResponse<EmployeeResponse> softUpdateEmployee(@PathVariable("accountId") Long accountId, @RequestBody SoftEmployeeUpdateRequest softEmployeeUpdateRequest) {
+        // Fetches employee based on the account ID and returns it wrapped in an APIResponse object
+        return APIResponse.<EmployeeResponse>builder()
+                .data(employeeService.softUpdateEmployee(accountId, softEmployeeUpdateRequest))
+                .build();
+    }
+
 }

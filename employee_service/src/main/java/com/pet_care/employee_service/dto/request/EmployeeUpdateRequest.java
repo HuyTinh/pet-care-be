@@ -5,10 +5,8 @@ import com.pet_care.employee_service.enums.Gender;
 import com.pet_care.employee_service.enums.Role;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
+import lombok.experimental.FieldDefaults;
 
 /**
  * Data Transfer Object (DTO) class used for updating existing employee records.
@@ -16,8 +14,11 @@ import lombok.Setter;
  */
 @Getter  // Generates getter methods for all fields
 @Setter  // Generates setter methods for all fields
-@AllArgsConstructor  // Generates a constructor with all fields
 @Builder  // Generates a builder pattern for object creation
+@AllArgsConstructor  // Generates a constructor with all fields
+@NoArgsConstructor  // Generates a default no-argument constructor
+@FieldDefaults(level = AccessLevel.PRIVATE)  // All fields are private by default
+@ToString  // Generates the toString method for easy debugging and logging
 public class EmployeeUpdateRequest {
 
     // First name of the employee
