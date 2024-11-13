@@ -21,11 +21,6 @@ public class CustomerController {
     @Autowired
     CustomerServiceImpl customerService;
 
-//    @GetMapping
-//    public ResponseEntity<ApiResponse<List<CustomerPetAndServiceResponse>>> getAllCustomersTrue(){
-//        List<CustomerPetAndServiceResponse> listCustomer = customerService.getAllCustomersTrue();
-//        return ResponseEntity.ok(new ApiResponse<>(2000, "Get All Customers", listCustomer));
-//    }
     @GetMapping
     public ResponseEntity<ApiResponse<PageableResponse<CustomerPetAndServiceResponse>>> getAllCustomersTrue(
             @RequestParam(required = false) String search_query,
@@ -33,12 +28,6 @@ public class CustomerController {
             @RequestParam(defaultValue = "50") int page_size
     ){
         PageableResponse<CustomerPetAndServiceResponse> listCustomer = customerService.getAllCustomersTrue(search_query, page_number, page_size);
-        return ResponseEntity.ok(new ApiResponse<>(2000, "Get All Customers", listCustomer));
-    }
-
-    @GetMapping("/getAllCustomer")
-    public ResponseEntity<ApiResponse<List<CustomerPetAndServiceResponse>>> getAllCustomers(){
-        List<CustomerPetAndServiceResponse> listCustomer = customerService.getAllCustomers();
         return ResponseEntity.ok(new ApiResponse<>(2000, "Get All Customers", listCustomer));
     }
 

@@ -7,6 +7,9 @@ import com.pet_care.manager_service.exception.ErrorCode;
 import com.pet_care.manager_service.repositories.*;
 import com.pet_care.manager_service.services.DashboardService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -168,17 +171,28 @@ public class DashboardServiceImpl implements DashboardService {
     }
 
     @Override
-    public Set<AppointmentHomeDashboardTableResponse> listAppointmentHomeDashboard(){
+    public PageableResponse<AppointmentHomeDashboardTableResponse> listAppointmentHomeDashboard( int page_number, int page_size){
         LocalDate now = LocalDate.now();
-        List<Appointment> listApp = appointmentRepository.getAllAppointmentToDay(now);
-        Set<AppointmentHomeDashboardTableResponse> listAppointment = new HashSet<>();
-        for(Appointment appointment : listApp){
-            listAppointment.add(appointmentHomeDashboardTable(appointment));
-        }
-        Set<AppointmentHomeDashboardTableResponse> sordAppointment = listAppointment.stream()
-                .sorted(Comparator.comparing(AppointmentHomeDashboardTableResponse::getAppointmentId).reversed())
-                .collect(Collectors.toCollection(LinkedHashSet::new));
-        return sordAppointment;
+        Pageable pageable = PageRequest.of(page_number, page_size);
+        Page<Appointment> listApp = appointmentRepository.getAllAppointmentToDay(now, pageable);
+        List<AppointmentHomeDashboardTableResponse> listAppointment = listApp.getContent()
+                .stream()
+                .map(this::appointmentHomeDashboardTable)
+                .toList();
+        PageableResponse<AppointmentHomeDashboardTableResponse> pageAppointment = PageableResponse.<AppointmentHomeDashboardTableResponse>builder()
+                .content(listAppointment)
+                .pageNumber(listApp.getNumber())
+                .pageSize(listApp.getSize())
+                .totalPages(listApp.getTotalPages())
+                .build();
+//        Set<AppointmentHomeDashboardTableResponse> listAppointment = new HashSet<>();
+//        for(Appointment appointment : listApp){
+//            listAppointment.add(appointmentHomeDashboardTable(appointment));
+//        }
+//        Set<AppointmentHomeDashboardTableResponse> sordAppointment = listAppointment.stream()
+//                .sorted(Comparator.comparing(AppointmentHomeDashboardTableResponse::getAppointmentId).reversed())
+//                .collect(Collectors.toCollection(LinkedHashSet::new));
+        return pageAppointment;
     }
 
     public AppointmentHomeDashboardTableResponse appointmentHomeDashboardTable(Appointment appointment) {

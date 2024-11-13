@@ -35,13 +35,13 @@ public class ReportController {
         return ResponseEntity.ok(new ApiResponse<>(2000,"Get Revenue", invoiceReportResponse));
     }
 
-    @GetMapping("/revenueByYear")
-    public ResponseEntity<ApiResponse<Set<RevenueAndAppointmentResponse>>> getRevenueAndAppointmentByYear(
-            @RequestParam(required = false) Long years
-    ){
-        Set<RevenueAndAppointmentResponse> revenueAndAppointment = invoiceService.getRevenueAndAppointment(years);
-        return ResponseEntity.ok(new ApiResponse<>(2000,"Get Revenue And Appointment ", revenueAndAppointment));
-    }
+//    @GetMapping("/revenueByYear")
+//    public ResponseEntity<ApiResponse<Set<RevenueAndAppointmentResponse>>> getRevenueAndAppointmentByYear(
+//            @RequestParam(required = false) Long years
+//    ){
+//        Set<RevenueAndAppointmentResponse> revenueAndAppointment = invoiceService.getRevenueAndAppointment(years);
+//        return ResponseEntity.ok(new ApiResponse<>(2000,"Get Revenue And Appointment ", revenueAndAppointment));
+//    }
 
     @GetMapping("/invoice/{id}")
     public ResponseEntity<ApiResponse<InvoiceResponse>> getInvoiceById(@PathVariable("id") Long id){

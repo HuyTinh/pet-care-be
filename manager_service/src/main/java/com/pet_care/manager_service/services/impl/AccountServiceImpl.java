@@ -143,42 +143,6 @@ public class AccountServiceImpl implements AccountService {
         return account;
     }
 
-//    @Override
-    public List<AccountResponse> getAllEmployee() {
-//        List<Object[]> listEmployee = accountRepository.getAllEmployee();
-//        if (listEmployee.isEmpty()) {
-//            throw new AppException(ErrorCode.ACCOUNT_NOTFOUND);
-//        };
-        redisTemplate.getConnectionFactory().getConnection().flushAll();
-        List<Object> redisObjects = redisTemplate.opsForHash().values(HASH_KEY);
-
-        // loc. va` ep' thành Object[]
-        List<Object[]> listEmployee = redisObjects.stream()
-                .filter(obj -> obj instanceof Object[]) // Ensure the object is an Object[]
-                .map(obj -> (Object[]) obj) // Cast to Object[]
-                .collect(Collectors.toList());
-//        Clear Data Redis
-
-        System.out.println(">> Check List Employee True : " + listEmployee);
-        if (listEmployee.isEmpty()) {
-            listEmployee = accountRepository.getAllEmployee();
-            System.out.println(">> Check List Employee True : " + listEmployee);
-
-            if (listEmployee.isEmpty()) {
-                throw new AppException(ErrorCode.ACCOUNT_NOTFOUND);
-            }
-            for(Object[] objects : listEmployee) {
-                redisTemplate.opsForHash().put(HASH_KEY, objects[0].toString(), objects);
-            }
-        }
-        System.out.println(">> Check List Employee True : " + listEmployee);
-        listEmployee.sort(Comparator.comparing(objects -> (Comparable) objects[0]));
-
-        return listEmployee.stream()
-                .map(this::employeeResponse)
-                .map(this::convertToAccountResponse)
-                .collect(Collectors.toList());
-    }
 
 //    @Override
     public PageableResponse<AccountResponse> getAllEmployeeTrue(
@@ -189,25 +153,6 @@ public class AccountServiceImpl implements AccountService {
         redisTemplate.getConnectionFactory().getConnection().flushAll();
 //        List<Object> redisObjects = redisTemplate.opsForHash().values(HASH_KEY);
         // loc. va` ep' thành Object[]
-//        List<Object[]> listEmployeeTrue = redisObjects.stream()
-//                .filter(obj -> obj instanceof Object[]) // Ensure the object is an Object[]
-//                .map(obj -> (Object[]) obj) // Cast to Object[]
-//                .collect(Collectors.toList());
-//
-//        System.out.println(">> Check List Employee True : " + listEmployeeTrue);
-//        if (listEmployeeTrue.isEmpty()) {
-//            listEmployeeTrue = accountRepository.getAllEmployeeTrue();
-//            System.out.println(">> Check List Employee True : " + listEmployeeTrue);
-//
-//            if (listEmployeeTrue.isEmpty()) {
-//                throw new AppException(ErrorCode.ACCOUNT_NOTFOUND);
-//            }
-//            for(Object[] objects : listEmployeeTrue) {
-//                redisTemplate.opsForHash().put(HASH_KEY, objects[0].toString(), objects);
-//            }
-//        }
-//        System.out.println(">> Check List Employee True : " + listEmployeeTrue);
-//        listEmployeeTrue.sort(Comparator.comparing(objects -> (Comparable) objects[0]));
         Pageable pageable = PageRequest.of(page_number,page_size);
         Page<Account> accountPage = accountRepository.getAllEmployeeTrue(search_query,pageable);
         List<AccountResponse> accountResponseList = accountPage.getContent()
@@ -224,46 +169,25 @@ public class AccountServiceImpl implements AccountService {
     }
 
 //    @Override
-    public List<AccountResponse> getAllByRole(RoleEnum role_name) {
-//        List<Object[]> listEmployeeByRole = accountRepository.getAllByRole(id);
-//
-//        if (listEmployeeByRole.isEmpty()) {
-//            throw new AppException(ErrorCode.ACCOUNT_NOTFOUND);
-//        };
+    public PageableResponse<AccountResponse> getAllByRole(
+            RoleEnum role_name,
+            int page_number, int page_size
+    ) {
         redisTemplate.getConnectionFactory().getConnection().flushAll();
-
-        if (role_name != null) {
-            List<Object[]> accounts = accountRepository.getAllByRole(role_name);
-        }
-        List<Object> redisObjects = redisTemplate.opsForHash().values(HASH_KEY);
-        // loc. va` ep' thành Object[]
-        List<Object[]> listEmployeeByRole = redisObjects.stream()
-                .filter(obj -> obj instanceof Object[]) // Ensure the object is an Object[]
-                .map(obj -> (Object[]) obj) // Cast to Object[]
-                .collect(Collectors.toList());
-
-        System.out.println(">> Check List Employee True : " + listEmployeeByRole);
-        if (listEmployeeByRole.isEmpty()) {
-            if (role_name != null) {
-                listEmployeeByRole = accountRepository.getAllByRole(role_name);
-            }
-//            listEmployeeByRole = accountRepository.getAllByRole(role_name + "%");
-            System.out.println(">> Check List Employee True : " + listEmployeeByRole);
-
-            if (listEmployeeByRole.isEmpty()) {
-                throw new AppException(ErrorCode.ACCOUNT_NOTFOUND);
-            }
-            for(Object[] objects : listEmployeeByRole) {
-                redisTemplate.opsForHash().put(HASH_KEY, objects[0].toString(), objects);
-            }
-        }
-        System.out.println(">> Check List Employee True : " + listEmployeeByRole);
-        listEmployeeByRole.sort(Comparator.comparing(objects -> (Comparable) objects[0]));
-
-        return listEmployeeByRole.stream()
-                .map(this::employeeResponse)
+        Pageable pageable = PageRequest.of(page_number,page_size);
+        Page<Account> pageAccount = accountRepository.getAllByRole(role_name,pageable);
+        List<AccountResponse> listAccount = pageAccount.getContent()
+                .stream()
                 .map(this::convertToAccountResponse)
-                .collect(Collectors.toList());
+                .toList();
+        PageableResponse<AccountResponse> pageableResponse = PageableResponse.<AccountResponse>builder()
+                .content(listAccount)
+                .pageNumber(pageAccount.getNumber())
+                .pageSize(pageAccount.getSize())
+                .totalPages(pageAccount.getTotalPages())
+                .build();
+
+        return pageableResponse;
     }
 
     public EmployeeResponse employeeResponse(Object[] row){

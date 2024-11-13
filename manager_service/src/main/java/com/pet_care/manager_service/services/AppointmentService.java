@@ -6,7 +6,6 @@ import com.pet_care.manager_service.entity.Appointment;
 import java.util.Set;
 
 public interface AppointmentService {
-    Set<AppointmentHomeDashboardTableResponse> searchAppointmentYesterday();
 
     AppointmentHomeDashboardTableResponse deleteAppointment(Long id);
 

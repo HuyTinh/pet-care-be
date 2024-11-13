@@ -57,18 +57,6 @@ public class CustomerServiceImpl implements CustomerService {
     @Autowired
     private MedicineRepository medicineRepository;
 
-    @Override
-    public List<CustomerPetAndServiceResponse> getAllCustomers() {
-
-        List<Object[]> listCustomers = customerRepository.getAllCustomer();
-        System.out.println("Check list Customer : " + listCustomers);
-        if (listCustomers.isEmpty()) {
-            throw new AppException(ErrorCode.ACCOUNT_NOTFOUND);
-        }
-        return listCustomers.stream()
-                .map(this::convertCustomerResponse)
-                .collect(Collectors.toList());
-    }
 
     @Override
     public PageableResponse<CustomerPetAndServiceResponse> getAllCustomersTrue(
@@ -157,14 +145,12 @@ public class CustomerServiceImpl implements CustomerService {
 //        Lấy service
         for(Object[] obj : listServices){
             Services services = servicesRepository.findServicesByName((String) obj[0]).get();
-            System.out.println("Check services : " + services);
             service_set.add(ServiceResponse.builder()
                         .id(services.getId())
                         .name(services.getName())
                         .price(services.getPrice())
                         .build());
         }
-        System.out.println("Check customer : " + row[0]);
 
         return CustomerPetAndServiceResponse.builder()
                 .id( (Long) row[0])

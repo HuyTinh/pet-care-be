@@ -7,8 +7,6 @@ import java.util.List;
 
 public interface CustomerService {
 
-    List<CustomerPetAndServiceResponse> getAllCustomers();
-
     PageableResponse<CustomerPetAndServiceResponse> getAllCustomersTrue(String search_query,int page_number, int page_size);
 
     CustomerPetAndServiceResponse deleteCustomer(Long id);

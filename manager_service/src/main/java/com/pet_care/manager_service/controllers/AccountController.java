@@ -21,9 +21,12 @@ public class AccountController {
 
     @Autowired
     AccountServiceImpl accountService;
-
-    @GetMapping("/employee/{employeeId}")
-    public ResponseEntity<ApiResponse<AccountResponse>> getById(@PathVariable("employeeId") Long accountId){
+    /**
+     * @param accountId
+     * @return
+     */
+    @GetMapping("/employee/{accountId}")
+    public ResponseEntity<ApiResponse<AccountResponse>> getById(@PathVariable("accountId") Long accountId){
         AccountResponse accountResponse = accountService.getAccountResponse(accountId);
         return ResponseEntity.ok(new ApiResponse<>(2000, "Get Successful",accountResponse));
     }
@@ -40,29 +43,21 @@ public class AccountController {
      */
     @DeleteMapping("{id}")
     public ResponseEntity<ApiResponse<AccountResponse>> delete(@PathVariable Long id){
-        AccountResponse deleteAccount = accountService.deleteAccount(id);
+        accountService.deleteAccount(id);
         return ResponseEntity.ok(new ApiResponse<>(2000, "Delete Employee Successful",null));
-    }
-    /**
-     * getAllEmployee
-     * @return
-     */
-    @GetMapping("/employee/all")
-    public ResponseEntity<ApiResponse<List<AccountResponse>>> getAllEmployee(){
-        List<AccountResponse> allEmployee = accountService.getAllEmployee();
-        return ResponseEntity.ok(new ApiResponse<>(2000, "Get All Employee Successful",allEmployee));
     }
     /**
      * @param role_name
      * @return
      */
     @GetMapping("/employee/role/{role_name}")
-    public ResponseEntity<ApiResponse<List<AccountResponse>>> getAllEmployeeRole(
-            @RequestParam(required = false) RoleEnum role_name
+    public ResponseEntity<ApiResponse<PageableResponse<AccountResponse>>> getAllEmployeeRole(
+            @RequestParam(required = false) RoleEnum role_name,
+            @RequestParam(defaultValue = "0") int page_number,
+            @RequestParam(defaultValue = "50") int page_size
     ){
-        List<AccountResponse> listEmployeeByRole = accountService.getAllByRole(role_name );
-        AccountResponse accountResponse = listEmployeeByRole.get(0);
-        return ResponseEntity.ok(new ApiResponse<>(2000, "Get All "+ accountResponse.getProfile().getRole().getName() +" Successful",listEmployeeByRole));
+        PageableResponse<AccountResponse> listEmployeeByRole = accountService.getAllByRole(role_name, page_number, page_size);
+        return ResponseEntity.ok(new ApiResponse<>(2000, "Get All "+ role_name +" Successful",listEmployeeByRole));
     }
     /**
      * getAllEmployeeTrue : với status = true

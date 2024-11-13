@@ -2,6 +2,7 @@ package com.pet_care.manager_service.services;
 
 import com.pet_care.manager_service.dto.response.AppointmentHomeDashboardTableResponse;
 import com.pet_care.manager_service.dto.response.DashboardResponse;
+import com.pet_care.manager_service.dto.response.PageableResponse;
 import com.pet_care.manager_service.entity.Appointment;
 
 import java.time.LocalDate;
@@ -10,5 +11,5 @@ import java.util.Set;
 public interface DashboardService {
     DashboardResponse getDashboardHome();
 
-    Set<AppointmentHomeDashboardTableResponse> listAppointmentHomeDashboard();
+    PageableResponse<AppointmentHomeDashboardTableResponse> listAppointmentHomeDashboard(int page_number, int page_size);
 }

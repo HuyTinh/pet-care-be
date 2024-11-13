@@ -13,32 +13,19 @@ import java.util.List;
 import java.util.Set;
 
 public interface AccountRepository extends JpaRepository<Account, Long> {
-//      Get All Employee
-    @Query(value = "SELECT a.id, a.email, a.password, a.status" +
-            "   FROM Account a " +
-            "   JOIN a.profile p " +
-            "   JOIN p.role r" +
-            " WHERE r.id NOT IN (1, 6) " +
-            " ORDER BY a.id ")
-    List<Object[]> getAllEmployee();
 
 //    Get All By Role
-    @Query(value = "SELECT a.id, a.email, a.password, a.status" +
+    @Query(value = "SELECT a " +
             "   FROM Account a " +
             "   JOIN a.profile p " +
-            "   JOIN p.role r" +
+            "   JOIN p.role r " +
             " WHERE  (:role_name IS NULL OR r.name = :role_name) and r.status = true" +
             " ORDER BY a.id ")
-    List<Object[]> getAllByRole(@Param("role_name") RoleEnum name);
+    Page<Account> getAllByRole(
+            @Param("role_name") RoleEnum name,
+            Pageable pageable
+    );
 
-    //      Get All Employee True
-//    @Query(value = "SELECT a.id, a.email, a.password, a.status" +
-//            "   FROM Account a " +
-//            "   JOIN a.profile p " +
-//            "   JOIN p.role r" +
-//            " WHERE r.id NOT IN (1, 6) AND a.status = true " +
-//            " ORDER BY a.id ")
-//    List<Object[]> getAllEmployeeTrue();
     @Query(value = "SELECT a " +
             "   FROM Account a " +
             "   JOIN a.profile p " +

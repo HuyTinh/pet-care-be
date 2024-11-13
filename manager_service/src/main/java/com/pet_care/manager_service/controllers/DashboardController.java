@@ -8,10 +8,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Set;
@@ -34,8 +31,11 @@ public class DashboardController {
     }
 
     @GetMapping("/appointment-today")
-    public ResponseEntity<ApiResponse<Set<AppointmentHomeDashboardTableResponse>>> getAppointmentToday() {
-        Set<AppointmentHomeDashboardTableResponse> listApp = dashboardService.listAppointmentHomeDashboard();
+    public ResponseEntity<ApiResponse<PageableResponse<AppointmentHomeDashboardTableResponse>>> getAppointmentToday(
+            @RequestParam(defaultValue = "0") int page_number,
+            @RequestParam(defaultValue = "50") int page_size
+    ) {
+        PageableResponse<AppointmentHomeDashboardTableResponse> listApp = dashboardService.listAppointmentHomeDashboard(page_number, page_size);
         return ResponseEntity.ok(new ApiResponse<>(2000, "Get Dashboard Success", listApp));
     }
 

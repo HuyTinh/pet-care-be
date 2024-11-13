@@ -89,23 +89,23 @@ public class InvoiceServiceImpl implements InvoiceService {
                 .build();
     }
 
-    @Override
-    public Set<RevenueAndAppointmentResponse> getRevenueAndAppointment(Long id) {
-        List<Object[]> listRevenueAndAppointment = invoiceRepository.getInvoiceAndAppointmentByYear(id);
-        Set<RevenueAndAppointmentResponse> revenueAndAppointmentSet = new HashSet<>();
-        for (Object[] objects : listRevenueAndAppointment) {
-            RevenueAndAppointmentResponse response = new RevenueAndAppointmentResponse();
-            response.setMonth((Long) objects[0]);
-            response.setMonthName((String) objects[1]);
-            response.setTotal((Double) objects[2]);
-            response.setAppointments((Long) objects[3]);
-            revenueAndAppointmentSet.add(response);
-        }
-        Set<RevenueAndAppointmentResponse> sortRevenueAndAppointment = revenueAndAppointmentSet.stream()
-                .sorted(Comparator.comparing(RevenueAndAppointmentResponse::getMonth))
-                .collect(Collectors.toCollection(LinkedHashSet::new));
-        return sortRevenueAndAppointment;
-    }
+//    @Override
+//    public Set<RevenueAndAppointmentResponse> getRevenueAndAppointment(Long id) {
+//        List<Object[]> listRevenueAndAppointment = invoiceRepository.getInvoiceAndAppointmentByYear(id);
+//        Set<RevenueAndAppointmentResponse> revenueAndAppointmentSet = new HashSet<>();
+//        for (Object[] objects : listRevenueAndAppointment) {
+//            RevenueAndAppointmentResponse response = new RevenueAndAppointmentResponse();
+//            response.setMonth((Long) objects[0]);
+//            response.setMonthName((String) objects[1]);
+//            response.setTotal((Double) objects[2]);
+//            response.setAppointments((Long) objects[3]);
+//            revenueAndAppointmentSet.add(response);
+//        }
+//        Set<RevenueAndAppointmentResponse> sortRevenueAndAppointment = revenueAndAppointmentSet.stream()
+//                .sorted(Comparator.comparing(RevenueAndAppointmentResponse::getMonth))
+//                .collect(Collectors.toCollection(LinkedHashSet::new));
+//        return sortRevenueAndAppointment;
+//    }
 
     @Override
     public InvoiceResponse deleteInvoice(Long id) {

@@ -14,8 +14,6 @@ public interface InvoiceService {
 
     InvoiceResponse getInvoice(Long id);
 
-    Set<RevenueAndAppointmentResponse> getRevenueAndAppointment(Long id);
-
     InvoiceResponse deleteInvoice(Long id);
 
 }

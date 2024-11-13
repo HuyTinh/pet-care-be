@@ -44,34 +44,6 @@ public class AppointmentServiceImpl implements AppointmentService {
     @Autowired
     PrescriptionDetailRepository prescriptionDetailRepository;
 
-    @Override
-    public Set<AppointmentHomeDashboardTableResponse> searchAppointmentYesterday(){
-        LocalDate yesterday = LocalDate.now().minusDays(1);
-        List<Appointment> appointments = appointmentRepository.findByAppointmentYesterday(yesterday);
-        Set<AppointmentHomeDashboardTableResponse> responses = new HashSet<>();
-        for (Appointment appointment: appointments) {
-            AppointmentHomeDashboardTableResponse response = appointmentHomeDashboardTableResponse(appointment);
-            responses.add(response);
-        }
-        return responses;
-    }
-    /*
-    * Set<AppointmentHomeDashboardTableResponse>
-    * */
-//    public Set<AppointmentHomeDashboardTableResponse> searchAppointment(LocalDate create_date, AppointmentStatus status_accept, LocalDate from_date, LocalDate to_date, String search_query ){
-//        List<Appointment> appointments = appointmentRepository.searchAppointmentDashboard(create_date,status_accept, from_date, to_date, search_query);
-//        Set<AppointmentHomeDashboardTableResponse> responses = new HashSet<>();
-//        for (Appointment appointment: appointments) {
-//            AppointmentHomeDashboardTableResponse response = appointmentHomeDashboardTableResponse(appointment);
-//            responses.add(response);
-//        }
-//
-//        Set<AppointmentHomeDashboardTableResponse> sortedAppointment= responses.stream()
-//                .sorted(Comparator.comparing(AppointmentHomeDashboardTableResponse::getAppointmentId).reversed())
-//                .collect(Collectors.toCollection(LinkedHashSet::new));
-//
-//        return sortedAppointment;
-//    }
 
     /*
     * LocalDate create_date : ngay` tao.
@@ -82,9 +54,31 @@ public class AppointmentServiceImpl implements AppointmentService {
     *
     * */
     public PageableResponse<AppointmentHomeDashboardTableResponse> pageSearchAppointment(
-            LocalDate create_date, AppointmentStatus status_accept,
+             AppointmentStatus status_accept,
             LocalDate from_date, LocalDate to_date, String search_query,
-            int page_number, int page_size ){
+            int page_number, int page_size , Boolean today){
+        LocalDate create_date = LocalDate.now(); ;
+        LocalDate now = LocalDate.now();
+        if(from_date == null && to_date == null){
+            from_date = now.withDayOfMonth(1);
+            to_date = now.withDayOfMonth(now.lengthOfMonth());
+        }
+        if(from_date != null && to_date == null){
+            to_date = from_date.withDayOfMonth(from_date.lengthOfMonth());
+        }
+        if(from_date == null && to_date != null){
+            from_date = to_date.withDayOfMonth(1);
+        }
+
+        if(today == null){
+            today = true;
+        }
+        if(today == true) {
+            create_date = now;
+        }
+        if(today == false){
+            create_date = now.minusDays(1);
+        }
         Pageable pageable = PageRequest.of(page_number,page_size);
         Page<Appointment> appointments = appointmentRepository.pageSearchAppointmentDashboard(create_date,status_accept, from_date, to_date, search_query, pageable);
 

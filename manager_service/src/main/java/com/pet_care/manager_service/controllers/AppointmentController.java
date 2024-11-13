@@ -24,27 +24,20 @@ public class AppointmentController {
 
     @GetMapping
     public ResponseEntity<ApiResponse<PageableResponse<AppointmentHomeDashboardTableResponse>>> searchAppointment(
-            @RequestParam(required = false) LocalDate create_date,
             @RequestParam(required = false) AppointmentStatus status_accept,
             @RequestParam(required = false) LocalDate from_date,
             @RequestParam(required = false) LocalDate to_date,
             @RequestParam(required = false) String search_query,
             @RequestParam(defaultValue = "0") int pageNumber,
-            @RequestParam(defaultValue = "50") int pageSize
+            @RequestParam(defaultValue = "50") int pageSize,
+            @RequestParam(required = false) Boolean today
     ) {
-        PageableResponse<AppointmentHomeDashboardTableResponse> responses = appointmentService.pageSearchAppointment(create_date, status_accept, from_date, to_date, search_query, pageNumber, pageSize);
+        PageableResponse<AppointmentHomeDashboardTableResponse> responses = appointmentService.pageSearchAppointment( status_accept, from_date, to_date, search_query, pageNumber, pageSize, today);
 
         return ResponseEntity.ok(new ApiResponse<>(2000, "Find get Appointment", responses));
     }
 
-    @GetMapping("/yesterday")
-    public ResponseEntity<ApiResponse<Set<AppointmentHomeDashboardTableResponse>>> searchAppointmentYesterday() {
-        Set<AppointmentHomeDashboardTableResponse> responses = appointmentService.searchAppointmentYesterday();
-        if(responses.isEmpty()){
-            return ResponseEntity.ok(new ApiResponse<>(2000, "No have Appointment", responses));
-        }
-        return ResponseEntity.ok(new ApiResponse<>(2000, "Find get Appointment", responses));
-    }
+
     @GetMapping("{id}")
     public ResponseEntity<ApiResponse<AppointmentHomeDashboardTableResponse>> getAppointmentByID(@PathVariable Long id) {
         AppointmentHomeDashboardTableResponse appointment = appointmentService.getAppointmentById(id);
