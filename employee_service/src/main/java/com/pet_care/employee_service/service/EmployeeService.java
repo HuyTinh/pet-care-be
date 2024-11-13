@@ -4,6 +4,7 @@ import com.pet_care.employee_service.client.AccountClient;
 import com.pet_care.employee_service.client.UploadImageClient;
 import com.pet_care.employee_service.dto.request.EmployeeCreateRequest;
 import com.pet_care.employee_service.dto.request.EmployeeUpdateRequest;
+import com.pet_care.employee_service.dto.request.SoftEmployeeUpdateRequest;
 import com.pet_care.employee_service.dto.response.EmployeeResponse;
 import com.pet_care.employee_service.exception.APIException;
 import com.pet_care.employee_service.exception.ErrorCode;
@@ -145,5 +146,26 @@ public class EmployeeService {
         return employeeRepository.findByAccountId(accountId)
                 .map(employeeMapper::toDto)
                 .orElseThrow(() -> new APIException(ErrorCode.EMPLOYEE_NOT_FOUND));
+    }
+
+    /**
+     * @param accountId
+     * @param softEmployeeUpdateRequest
+     * @return
+     */
+    public EmployeeResponse softUpdateEmployee(Long accountId, SoftEmployeeUpdateRequest softEmployeeUpdateRequest) {
+
+        employeeRepository.softUpdateEmployee(
+                accountId,
+                softEmployeeUpdateRequest.getFirstName(),
+                softEmployeeUpdateRequest.getLastName(),
+                softEmployeeUpdateRequest.getPhoneNumber(),
+                softEmployeeUpdateRequest.getGender()
+                );
+
+        return employeeMapper
+                .toDto(employeeRepository
+                        .findByAccountId(accountId)
+                        .orElseThrow(() -> new APIException(ErrorCode.EMPLOYEE_NOT_FOUND)));
     }
 }
