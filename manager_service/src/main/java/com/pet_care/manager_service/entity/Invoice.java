@@ -47,4 +47,8 @@ public class Invoice {
     @OneToMany(mappedBy = "invoice")
     @JsonIgnore
     Set<Invoice_Service_Detail> invoice_service_detail;
+
+    @ManyToOne
+    @JoinColumn(name = "pet_id", nullable = false)
+    Pet pet;
 }

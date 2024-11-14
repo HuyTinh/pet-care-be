@@ -46,4 +46,8 @@ public class Pet {
     @OneToOne(mappedBy = "pet")
     @JsonIgnore
     Prescription prescriptions;
+
+    @OneToMany(mappedBy = "pet")
+    @JsonIgnore
+    Set<Invoice> invoices;
 }
