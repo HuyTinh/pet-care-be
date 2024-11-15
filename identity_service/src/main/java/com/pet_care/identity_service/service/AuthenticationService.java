@@ -280,6 +280,8 @@ public class AuthenticationService {
             Userinfo userInfo = oauth2.userinfo().get().execute();
             Account account = accountRepository.findByEmail(userInfo.getEmail()).orElse(null);
 
+
+
             if (account == null) {
                 account = Account.builder()
                         .email(userInfo.getEmail())
@@ -294,7 +296,6 @@ public class AuthenticationService {
                         .email(userInfo.getEmail())
                         .firstName(userInfo.getFamilyName())
                         .lastName(userInfo.getGivenName())
-                        .gender(Gender.valueOf(userInfo.getGender().toUpperCase()))
                         .imageUrl(userInfo.getPicture())
                         .build();
 

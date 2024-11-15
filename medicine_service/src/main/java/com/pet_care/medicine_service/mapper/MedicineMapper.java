@@ -33,6 +33,7 @@ public interface MedicineMapper {
      * @return a MedicineResponse DTO populated with data from the Medicine entity
      */
     @Mapping(target = "manufacture", source = "manufacture")  // Maps the manufacture field from the entity to the DTO
+    @Mapping(target = "image_url", source = "imageUrl")
     MedicineResponse toDto(Medicine medicine);
 
     /**
