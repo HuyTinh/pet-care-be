@@ -90,6 +90,7 @@ public class CustomerController {
             @ModelAttribute CustomerUpdateRequest customerRequest,
             @RequestPart(value = "files", required = false) List<MultipartFile> files
     ) {
+        System.out.println(customerRequest);
         return APIResponse.<CustomerResponse>builder()
                 .data(customerService.updateCustomer(accountId, customerRequest, files))
                 .build();

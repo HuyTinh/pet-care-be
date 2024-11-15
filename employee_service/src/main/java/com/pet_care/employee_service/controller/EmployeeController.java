@@ -112,7 +112,7 @@ public class EmployeeController {
     /**
      * Endpoint to perform a soft update on an employee's information.
      *
-     * @param employeeId The unique identifier of the employee to update.
+     * @param accountId The unique identifier of the employee to update.
      * @param softEmployeeUpdateRequest The request object containing fields for the employee's soft update.
      * @return APIResponse containing the updated EmployeeResponse data.
      */
