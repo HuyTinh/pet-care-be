@@ -30,4 +30,7 @@ public class SoftEmployeeUpdateRequest {
     // Employee's phone number
     @JsonProperty("phone_number")  // Maps the "phone_number" JSON field to the "phoneNumber" Java field
             String phoneNumber;
+
+    @JsonProperty("image_url")
+    String imageUrl;
 }

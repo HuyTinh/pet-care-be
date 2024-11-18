@@ -33,13 +33,14 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
 
     @Modifying // Indicates that this is a modifying query, as it updates data
     @Transactional // Ensures the query executes within a transaction for rollback support if needed
-    @Query(value = "UPDATE employees SET firstName = :firstName, lastName = :lastName, phoneNumber = :phoneNumber, gender = :gender WHERE accountId = :accountId")
+    @Query(value = "UPDATE employees SET firstName = :firstName, lastName = :lastName, phoneNumber = :phoneNumber, gender = :gender, imageUrl = :imageUrl WHERE accountId = :accountId")
         // Defines a custom SQL query to update specific employee details where the id matches employeeId
     void softUpdateEmployee(
             @Param("accountId") Long accountId, // Maps method parameter employeeId to the query's :employeeId placeholder
             @Param("firstName") String firstName, // Maps method parameter firstName to the query's :firstName placeholder
             @Param("lastName") String lastName, // Maps method parameter lastName to the query's :lastName placeholder
             @Param("phoneNumber") String phoneNumber, // Maps method parameter phoneNumber to the query's :phoneNumber placeholder
-            @Param("gender") Gender gender // Maps method parameter gender to the query's :gender placeholder
+            @Param("gender") Gender gender, // Maps method parameter gender to the query's :gender placeholder
+            @Param("imageUrl") String imageUrl
     );
 }
