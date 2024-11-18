@@ -149,20 +149,35 @@ public class EmployeeService {
     }
 
     /**
-     * @param accountId
-     * @param softEmployeeUpdateRequest
-     * @return
+     * Updates the employee's details with the provided data. If files are provided,
+     * the first file is uploaded and its URL is used to update the employee's image.
+     *
+     * @param accountId                 The ID of the account associated with the employee.
+     * @param softEmployeeUpdateRequest The request object containing the employee's updated details.
+     * @param files                     A list of files to be uploaded; used for updating the image.
+     * @return                          The updated employee's details as a response DTO.
      */
-    public EmployeeResponse softUpdateEmployee(Long accountId, SoftEmployeeUpdateRequest softEmployeeUpdateRequest) {
+    public EmployeeResponse softUpdateEmployee(Long accountId, SoftEmployeeUpdateRequest softEmployeeUpdateRequest, List<MultipartFile> files) {
 
+        // Initialize the image URL with the one provided in the update request
+        String imageUrl = softEmployeeUpdateRequest.getImageUrl();
+
+        // Check if files are provided; if so, upload the first file and get its URL
+        if (files != null && !files.isEmpty()) {
+            imageUrl = uploadImageClient.uploadImage(files).get(0);
+        }
+
+        // Update the employee's details in the repository with the new data
         employeeRepository.softUpdateEmployee(
                 accountId,
                 softEmployeeUpdateRequest.getFirstName(),
                 softEmployeeUpdateRequest.getLastName(),
                 softEmployeeUpdateRequest.getPhoneNumber(),
-                softEmployeeUpdateRequest.getGender()
-                );
+                softEmployeeUpdateRequest.getGender(),
+                imageUrl
+        );
 
+        // Retrieve the updated employee record and map it to a response DTO
         return employeeMapper
                 .toDto(employeeRepository
                         .findByAccountId(accountId)

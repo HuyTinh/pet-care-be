@@ -110,17 +110,23 @@ public class EmployeeController {
     }
 
     /**
-     * Endpoint to perform a soft update on an employee's information.
+     * Handles HTTP PUT requests to update an employee's details associated with the specified account ID.
+     * Supports multipart form data for receiving both the employee details and optional image files.
      *
-     * @param accountId The unique identifier of the employee to update.
-     * @param softEmployeeUpdateRequest The request object containing fields for the employee's soft update.
-     * @return APIResponse containing the updated EmployeeResponse data.
+     * @param accountId                 The ID of the account whose employee details need to be updated.
+     * @param softEmployeeUpdateRequest The request object containing the updated employee details.
+     * @param files                     A list of multipart files (optional) for updating the employee's image.
+     * @return                          An API response containing the updated employee details.
      */
-    @PutMapping("/account/{accountId}/soft-update")
-    public APIResponse<EmployeeResponse> softUpdateEmployee(@PathVariable("accountId") Long accountId, @RequestBody SoftEmployeeUpdateRequest softEmployeeUpdateRequest) {
-        // Fetches employee based on the account ID and returns it wrapped in an APIResponse object
+    @PutMapping(value = "/account/{accountId}/soft-update", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public APIResponse<EmployeeResponse> updateCustomer(
+            @PathVariable("accountId") Long accountId, // Extracts the account ID from the request path
+            @ModelAttribute SoftEmployeeUpdateRequest softEmployeeUpdateRequest, // Maps the form data to the request object
+            @RequestPart(value = "files", required = false) List<MultipartFile> files // Maps optional file uploads
+    ) {
+        // Calls the service method to perform the soft update and returns the response
         return APIResponse.<EmployeeResponse>builder()
-                .data(employeeService.softUpdateEmployee(accountId, softEmployeeUpdateRequest))
+                .data(employeeService.softUpdateEmployee(accountId, softEmployeeUpdateRequest, files))
                 .build();
     }
 
