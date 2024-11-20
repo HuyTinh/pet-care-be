@@ -5,16 +5,16 @@ import com.pet_care.upload_service.service.CloudinaryService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.codec.multipart.FilePart;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestPart;
-import org.springframework.web.bind.annotation.RestController;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.net.MalformedURLException;
 import java.util.List;
 
 @RestController // Marks this class as a Spring REST controller to handle HTTP requests
@@ -25,16 +25,38 @@ public class UploadController {
 
     CloudinaryService cloudinaryService; // Service to handle image uploads to Cloudinary
 
-    /**
-     * Handles image uploads to Cloudinary.
-     *
-     * @param files the image files to be uploaded
-     * @return a ResponseEntity containing a Mono of a list of image URLs returned by Cloudinary
-     */
     @PostMapping(value = "upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    // Configures the endpoint for handling multipart form-data requests (file uploads)
-    public ResponseEntity<Mono<List<String>>> uploadImages(@RequestPart("files") Flux<FilePart> files) {
-        // Uploads the files and returns a Mono containing a list of URLs of the uploaded images
+    public ResponseEntity<List<String>> uploadImage(@RequestPart("files") List<MultipartFile> files) {
         return ResponseEntity.ok(cloudinaryService.uploadImages(files));
+    }
+
+    @PostMapping(value = "upload/base64")
+    public ResponseEntity<String> uploadImageFromBase64(@RequestBody String base64) {
+        return ResponseEntity.ok(cloudinaryService.uploadImageFromBase64(base64));
+    }
+    private String UPLOAD_DIRECTORY = this.getClass().getProtectionDomain()
+            .getCodeSource().getLocation().getPath() + "uploads";
+
+    @GetMapping("/{filename}")
+    public ResponseEntity<Resource> getPicture(@PathVariable String filename) {
+        try {
+            // Resolve the path to the file
+            File file = new File(UPLOAD_DIRECTORY + File.separator + filename);
+
+            // Create a Resource object for the file
+            Resource resource = new UrlResource(file.toURI());
+            if (!resource.exists() || !resource.isReadable()) {
+                return ResponseEntity.notFound().build();
+            }
+
+            // Return the image as a ResponseEntity
+            return ResponseEntity.ok()
+                    .contentType(MediaType.IMAGE_JPEG) // Set the appropriate image type (JPEG in this case)
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + resource.getFilename() + "\"")
+                    .body(resource);
+
+        } catch (MalformedURLException e) {
+            return ResponseEntity.badRequest().build();
+        }
     }
 }

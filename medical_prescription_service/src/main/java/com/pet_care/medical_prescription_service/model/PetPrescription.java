@@ -42,4 +42,5 @@ public class PetPrescription {
     @Temporal(TemporalType.TIMESTAMP)
     @UpdateTimestamp
     Date updatedAt;
+
 }
