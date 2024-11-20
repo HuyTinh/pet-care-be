@@ -3,7 +3,6 @@ package com.pet_care.upload_service.config;
 // Import necessary classes for Cloudinary configuration and Spring annotations
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -30,6 +29,8 @@ public class CloudinaryConfig {
         return new Cloudinary(ObjectUtils.asMap( // Creates and returns a Cloudinary instance with the configured properties
                 "cloud_name", cloudName,
                 "api_key", apiKey,
-                "api_secret", apiSecret));
+                "api_secret", apiSecret,
+                "connect_timeout", 60000,
+                "read_timeout", 60000));
     }
 }

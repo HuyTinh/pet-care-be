@@ -90,6 +90,12 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
      */
     List<Appointment> getByAppointmentDateBetweenAndStatus(Date appointmentDate, Date appointmentDate2, AppointmentStatus statues);
 
+
+    Page<Appointment> findByAccountIdAndStatusIn(Long accountId,Set<String> statues, Pageable pageable);
+
+
+    Page<Appointment> findByAppointmentDateBetweenAndAccountIdAndStatusIn(Date appointmentDate, Date appointmentDate2,Long accountId, Set<String> statues, Pageable pageable);
+
     /**
      * Finds appointments by status and account ID, with sorting.
      *
