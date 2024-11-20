@@ -6,6 +6,7 @@ import com.pet_care.appointment_service.dto.request.AppointmentUpdateRequest;
 import com.pet_care.appointment_service.dto.response.APIResponse;
 import com.pet_care.appointment_service.dto.response.AppointmentResponse;
 import com.pet_care.appointment_service.dto.response.PageableResponse;
+import com.pet_care.appointment_service.repository.AppointmentRepository;
 import com.pet_care.appointment_service.service.AppointmentService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -30,6 +31,7 @@ public class AppointmentController {
 
     // The AppointmentService is used to handle the business logic related to appointments
     AppointmentService appointmentService;
+    private final AppointmentRepository appointmentRepository;
 
     /**
      * Retrieves all appointments from the system.
@@ -183,13 +185,25 @@ public class AppointmentController {
     /**
      * Retrieves appointments by status.
      *
-     * @param status The status to filter appointments by.
      * @return A response containing the filtered list of appointments.
      */
-    @GetMapping("/status/{status}")
-    public APIResponse<List<AppointmentResponse>> getByStatus(@PathVariable("status") String status) {
-        return APIResponse.<List<AppointmentResponse>>builder()
-                .data(appointmentService.getByStatus(status))
+    @GetMapping("/status")
+    public APIResponse<PageableResponse<AppointmentResponse>> getAllAppointmentByStatues(
+            @RequestParam(value = "page", required = false, defaultValue = "0") int page,
+            @RequestParam(value = "size", required = false, defaultValue = "50") int size,
+            @RequestParam(value = "startDate", required = false) LocalDate startDate,
+            @RequestParam(value = "endDate", required = false) LocalDate endDate,
+            @RequestParam(value = "userId") Long accountId,
+            @RequestParam(value = "statues", required = false) Set<String> statues){
+
+        PageableResponse<AppointmentResponse> appointmentResponsePageable = appointmentService.getAllAppointmentsByStatues(page, size, accountId,statues);
+
+        if(startDate != null && endDate != null){
+            appointmentResponsePageable = appointmentService.filterAppointmentsByAccountId(page, size, startDate, endDate, statues,accountId);
+        }
+
+        return APIResponse.<PageableResponse<AppointmentResponse>>builder()
+                .data(appointmentService.getAllAppointmentsByStatues(page, size, accountId,statues))
                 .build();
     }
 

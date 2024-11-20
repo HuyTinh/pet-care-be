@@ -32,6 +32,9 @@ public class PetPrescription {
 
     String diagnosis;
 
+
+    String result;
+
     @OneToMany(mappedBy = "petPrescription", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     Set<PrescriptionDetail> medicines = new HashSet<>();
 
