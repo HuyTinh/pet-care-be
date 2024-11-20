@@ -50,7 +50,7 @@ public interface MedicineClient {
      * @param medicineUpdateQtyRequest
      * @return
      */
-    @PutMapping("update-qty")
+    @PutMapping("/medicine/update-qty")
     APIResponse<?> updateQuantity(@RequestBody MedicineUpdateQtyRequest medicineUpdateQtyRequest);
 }
 

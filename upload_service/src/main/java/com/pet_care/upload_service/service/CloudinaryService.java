@@ -6,15 +6,14 @@ import com.cloudinary.utils.ObjectUtils;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.jetbrains.annotations.NotNull;
-import org.springframework.core.io.buffer.DataBufferUtils;
-import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
-import reactor.core.scheduler.Schedulers;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.Base64;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -26,41 +25,61 @@ public class CloudinaryService {
     Cloudinary cloudinary; // Cloudinary instance for uploading files to Cloudinary
 
     /**
-     * Uploads a single image to Cloudinary.
-     *
-     * @param file the image file to upload
-     * @return a Mono containing the URL of the uploaded image
-     */
-    Mono<String> uploadImage(MultipartFile file) {
-        return Mono.fromCallable(() -> {
-            // Uploads the file to Cloudinary via the API
-            Map<?, ?> uploadResult = cloudinary.uploader().upload(file, ObjectUtils.emptyMap());
-            return (String) uploadResult.get("url"); // Returns the URL of the uploaded image
-        }).subscribeOn(Schedulers.boundedElastic()); // Executes the upload on a bounded elastic thread pool
-    }
-
-    /**
      * Uploads multiple images to Cloudinary.
      *
-     * @param fileParts a Flux stream of FilePart objects representing the files to be uploaded
+     * @param file a Flux stream of FilePart objects representing the files to be uploaded
      * @return a Mono containing a List of URLs of the uploaded images
      */
-    public Mono<List<String>> uploadImages(Flux<FilePart> fileParts) {
-        return fileParts
-                .flatMap(filePart -> filePart.content()
-                        .map(dataBuffer -> {
-                            byte[] bytes = new byte[dataBuffer.readableByteCount()]; // Converts the data buffer into a byte array
-                            dataBuffer.read(bytes); // Reads the data buffer content
-                            DataBufferUtils.release(dataBuffer); // Releases the resources of the data buffer
-                            return bytes; // Returns the byte array representing the file content
-                        })
-                        .next() // Takes the first content buffer from the FilePart
-                        .flatMap(bytes -> Mono.fromCallable(() -> {
-                            // Uploads the byte data to Cloudinary
-                            Map<?, ?> uploadResult = cloudinary.uploader().upload(bytes, ObjectUtils.emptyMap());
-                            return (String) uploadResult.get("url"); // Returns the URL of the uploaded image
-                        }))
-                )
-                .collectList(); // Collects all the uploaded image URLs into a List
+    public List<String> uploadImages(List<MultipartFile> file) {
+        try {
+            // Get the byte array of the file
+            byte[] bytes = file.get(0).getBytes();
+
+            // Upload the file to Cloudinary
+            Map<String, Object> uploadResult = cloudinary.uploader().upload(bytes, ObjectUtils.emptyMap());
+
+            // Return the URL of the uploaded image
+            return List.of((String) uploadResult.get("url"));
+        } catch (IOException e) {
+            e.printStackTrace();
+            return Collections.singletonList("Error uploading the image: " + e.getMessage());
+        }
+    }
+
+
+    public String uploadImageFromBase64(String base64) {
+        try {
+            // Get the byte array of the file
+            byte[] bytes = Base64.getDecoder().decode(base64);
+
+            return storeImageLocal(bytes);
+//            // Upload the file to Cloudinary
+//            Map<String, Object> uploadResult = cloudinary.uploader().upload(bytes, ObjectUtils.emptyMap());
+//
+//            // Return the URL of the uploaded image
+//            return (String) uploadResult.get("url");
+        } catch (IOException e) {
+            e.printStackTrace();
+            return ("Error uploading the image: " + e.getMessage());
+        }
+    }
+
+
+    private String UPLOAD_DIRECTORY = this.getClass().getProtectionDomain()
+            .getCodeSource().getLocation().getPath() + "uploads";
+
+    private String storeImageLocal(byte[] data) throws IOException {
+        File dir = new File(UPLOAD_DIRECTORY);
+        if(!dir.exists()) {
+            dir.mkdir();
+        }
+        String fileName = System.currentTimeMillis() + ".jpg";
+        String fileDir = UPLOAD_DIRECTORY+"/" + fileName + ".webp";
+
+        try (FileOutputStream fileOutputStream = new FileOutputStream(fileDir)) {
+            fileOutputStream.write(data);
+        }
+
+        return "http://localhost:8089/api/v1/image/" + fileName;
     }
 }
