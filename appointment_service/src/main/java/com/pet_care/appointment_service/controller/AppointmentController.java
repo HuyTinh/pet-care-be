@@ -203,7 +203,7 @@ public class AppointmentController {
         }
 
         return APIResponse.<PageableResponse<AppointmentResponse>>builder()
-                .data(appointmentService.getAllAppointmentsByStatues(page, size, accountId,statues))
+                .data(appointmentResponsePageable)
                 .build();
     }
 

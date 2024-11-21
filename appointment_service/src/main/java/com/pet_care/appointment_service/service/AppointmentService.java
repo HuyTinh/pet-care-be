@@ -285,13 +285,14 @@ public class AppointmentService {
     @Transactional(readOnly = true)
     public PageableResponse<AppointmentResponse> filterAppointmentsByAccountId(int page, int size,  LocalDate startDate,  LocalDate endDate, @Nullable Set<String> statues, Long accountId) {
 
+
         Date sDate = Date.from(startDate.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant());
 
         Date eDate = Date.from(endDate.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant());
 
         Pageable pageable = PageRequest.of(page, size, Sort.by("appointmentDate").descending());
 
-        CompletableFuture<Page<Appointment>> appointmentsBetweenDateFuture = CompletableFuture.supplyAsync(() -> appointmentRepository.findByAppointmentDateBetweenAndAccountIdAndStatusIn(sDate, eDate, accountId,Objects.requireNonNullElse(statues, new HashSet<>()),pageable));
+        CompletableFuture<Page<Appointment>> appointmentsBetweenDateFuture = CompletableFuture.supplyAsync(() -> appointmentRepository.findAppointmentByAccountIdAndStatusInAndAppointmentDateBetween(accountId, statues, sDate, eDate ,pageable));
 
         Page<AppointmentResponse> appointmentResponses = appointmentsBetweenDateFuture.thenApply(appointments -> appointments.map(this::toAppointmentResponse)).join();
 
