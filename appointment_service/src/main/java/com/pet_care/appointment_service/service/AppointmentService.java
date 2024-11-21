@@ -290,7 +290,7 @@ public class AppointmentService {
 
         Date eDate = Date.from(endDate.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant());
 
-        Pageable pageable = PageRequest.of(page, size, Sort.by("appointmentDate").descending());
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
 
         CompletableFuture<Page<Appointment>> appointmentsBetweenDateFuture = CompletableFuture.supplyAsync(() -> appointmentRepository.findAppointmentByAccountIdAndStatusInAndAppointmentDateBetween(accountId, statues, sDate, eDate ,pageable));
 
@@ -307,7 +307,7 @@ public class AppointmentService {
     @Transactional(readOnly = true)
     public PageableResponse<AppointmentResponse> getAllAppointmentsByStatues(int page, int size, Long accountId,Set<String> statues) {
 
-        Pageable pageable = PageRequest.of(page, size, Sort.by("appointmentDate").descending());
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
 
         CompletableFuture<Page<Appointment>> appointmentsBetweenDateFuture = CompletableFuture.supplyAsync(() -> appointmentRepository.findByAccountIdAndStatusIn(accountId, Objects.requireNonNullElse(statues, new HashSet<>()),pageable));
 
