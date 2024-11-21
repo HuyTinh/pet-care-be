@@ -12,6 +12,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -93,8 +94,7 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
 
     Page<Appointment> findByAccountIdAndStatusIn(Long accountId,Set<String> statues, Pageable pageable);
 
-
-    Page<Appointment> findByAppointmentDateBetweenAndAccountIdAndStatusIn(Date appointmentDate, Date appointmentDate2,Long accountId, Set<String> statues, Pageable pageable);
+    Page<Appointment> findAppointmentByAccountIdAndStatusInAndAppointmentDateBetween(Long accountId, Set<String> status, Date appointmentDate, Date appointmentDate2, Pageable pageable);
 
     /**
      * Finds appointments by status and account ID, with sorting.
