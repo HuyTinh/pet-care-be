@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 @Repository
 public interface PrescriptionRepository extends JpaRepository<Prescription, Long> {
@@ -17,6 +18,9 @@ public interface PrescriptionRepository extends JpaRepository<Prescription, Long
 
     Prescription findByAppointmentId(Long appointmentId);
 
-    Page<Prescription> findByCreatedAtBetween(Date startDate,
-                                              Date endDate, Pageable pageable);
+    Page<Prescription> findByCreatedAtBetween(Date startDate,  Date endDate, Pageable pageable);
+
+    Page<Prescription> findByAppointmentIdInAndStatusInAndCreatedAtBetween(Set<Long> appointmentIds, Set<String> status, Date startDate,  Date endDate,Pageable pageable);
+
+    Page<Prescription> findByAppointmentIdInAndStatusIn(Set<Long> appointmentIds, Set<String> status, Pageable pageable);
 }

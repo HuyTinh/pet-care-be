@@ -196,10 +196,10 @@ public class AppointmentController {
             @RequestParam(value = "userId") Long accountId,
             @RequestParam(value = "statues", required = false) Set<String> statues){
 
-        PageableResponse<AppointmentResponse> appointmentResponsePageable = appointmentService.getAllAppointmentsByStatues(page, size, accountId,statues);
+        PageableResponse<AppointmentResponse> appointmentResponsePageable = appointmentService.getAllAppointmentByAccountIdAndStatues(page, size, accountId,statues);
 
         if(startDate != null && endDate != null){
-            appointmentResponsePageable = appointmentService.filterAppointmentsByAccountId(page, size, startDate, endDate, statues,accountId);
+            appointmentResponsePageable = appointmentService.getAllAppointmentByAccountIdAndStatuesAndBetween(page, size, startDate, endDate, statues,accountId);
         }
 
         return APIResponse.<PageableResponse<AppointmentResponse>>builder()
