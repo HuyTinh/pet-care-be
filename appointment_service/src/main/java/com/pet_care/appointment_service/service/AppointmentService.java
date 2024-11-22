@@ -283,7 +283,7 @@ public class AppointmentService {
     }
 
     @Transactional(readOnly = true)
-    public PageableResponse<AppointmentResponse> filterAppointmentsByAccountId(int page, int size,  LocalDate startDate,  LocalDate endDate, @Nullable Set<String> statues, Long accountId) {
+    public PageableResponse<AppointmentResponse> getAllAppointmentByAccountIdAndStatuesAndBetween(int page, int size,  LocalDate startDate,  LocalDate endDate, @Nullable Set<String> statues, Long accountId) {
 
 
         Date sDate = Date.from(startDate.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant());
@@ -305,7 +305,7 @@ public class AppointmentService {
     }
 
     @Transactional(readOnly = true)
-    public PageableResponse<AppointmentResponse> getAllAppointmentsByStatues(int page, int size, Long accountId,Set<String> statues) {
+    public PageableResponse<AppointmentResponse> getAllAppointmentByAccountIdAndStatues(int page, int size, Long accountId,Set<String> statues) {
 
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
 

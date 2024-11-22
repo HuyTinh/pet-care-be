@@ -79,7 +79,7 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
      * @param pageable The pagination parameters
      * @return A page of appointments that match the date range and statuses
      */
-    Page<Appointment> findByAppointmentDateBetweenAndStatusIn(Date appointmentDate, Date appointmentDate2, Set<String> statues, Pageable pageable);
+    Page<Appointment> findByAppointmentDateBetweenAndStatusIn(Date startDate,  Date endDate, Set<String> statues, Pageable pageable);
 
     /**
      * Finds appointments between two dates and with a specific status.
@@ -89,7 +89,7 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
      * @param statues The status to filter by
      * @return A list of appointments within the date range and with the specified status
      */
-    List<Appointment> getByAppointmentDateBetweenAndStatus(Date appointmentDate, Date appointmentDate2, AppointmentStatus statues);
+    List<Appointment> getByAppointmentDateBetweenAndStatus(Date startDate,  Date endDate, AppointmentStatus statues);
 
 
     Page<Appointment> findByAccountIdAndStatusIn(Long accountId,Set<String> statues, Pageable pageable);
