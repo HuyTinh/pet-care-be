@@ -28,15 +28,10 @@ public class PetPrescription {
     @JoinColumn(name = "prescription_id")
     Prescription prescription;
 
-    String note;
-
     String diagnosis;
 
-
-    String result;
-
     @OneToMany(mappedBy = "petPrescription", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
-    Set<PrescriptionDetail> medicines = new HashSet<>();
+    Set<PetMedicine> petMedicines = new HashSet<>();
 
     @Temporal(TemporalType.TIMESTAMP)
     @CreationTimestamp

@@ -1,10 +1,10 @@
-package com.pet_care.manage_service;
+package com.pet_care.report_service;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class ManageServiceApplicationTests {
+class ReportServiceApplicationTests {
 
     @Test
     void contextLoads() {

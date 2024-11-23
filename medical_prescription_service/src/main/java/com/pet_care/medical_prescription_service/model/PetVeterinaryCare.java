@@ -14,20 +14,17 @@ import java.util.Date;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity(name = "prescription_details")
+@Entity(name = "pet_veterinary_care")
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class PrescriptionDetail {
+public class PetVeterinaryCare {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
-    @JsonProperty("medicine_id")
-    Long medicineId;
+    @JsonProperty("veterinary_care")
+    String veterinaryCare;
 
-    @JsonProperty("calculation_id")
-    Long calculationId;
-
-    Long quantity;
+    String result;
 
     @JsonProperty("total_money")
     Double totalMoney;
@@ -43,4 +40,5 @@ public class PrescriptionDetail {
     @Temporal(TemporalType.TIMESTAMP)
     @UpdateTimestamp
     Date updatedAt;
+
 }

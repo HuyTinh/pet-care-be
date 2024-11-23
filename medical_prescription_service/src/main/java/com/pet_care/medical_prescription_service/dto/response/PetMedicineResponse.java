@@ -10,13 +10,16 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class MedicinePrescriptionResponse {
+public class PetMedicineResponse {
     Long id;
     String name;
     Long quantity;
     @JsonProperty("calculate_unit")
     String calculateUnit;
 
+    String note;
+
     @JsonProperty("total_money")
     Double totalMoney;
+
 }
