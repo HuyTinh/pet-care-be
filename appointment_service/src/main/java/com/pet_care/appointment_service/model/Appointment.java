@@ -57,6 +57,9 @@ public class Appointment {
     @Enumerated(EnumType.STRING) // Specifies that the enum value should be stored as a string in the database
     AppointmentStatus status; // The status of the appointment (e.g., scheduled, completed)
 
+    @OneToMany(mappedBy="appointment")
+    Set<FollowUp> followUps;
+
     @CreationTimestamp // Automatically sets this field to the current timestamp when the entity is created
     @Temporal(TemporalType.TIMESTAMP) // Maps the field to store both date and time in the database
     Date createdAt; // The creation timestamp of the appointment

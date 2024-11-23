@@ -1,7 +1,6 @@
 package com.pet_care.medical_prescription_service.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.pet_care.medical_prescription_service.enums.PrescriptionStatus;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -15,22 +14,29 @@ import java.util.Date;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity(name = "prescriptions")
+@Entity(name = "pet_medicines")
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Prescription {
+public class PetMedicine {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
-    @JsonProperty("appointment_id")
-    Long appointmentId;
+    @JsonProperty("medicine_id")
+    Long medicineId;
 
-    @Builder.Default
-    @Enumerated(EnumType.STRING)
-    PrescriptionStatus status = PrescriptionStatus.PENDING_PAYMENT;
+    @JsonProperty("calculation_id")
+    Long calculationId;
+
+    Long quantity;
 
     @JsonProperty("total_money")
     Double totalMoney;
+
+    String note;
+
+    @ManyToOne
+    @JoinColumn(name = "pet_prescriptions_id")
+    PetPrescription petPrescription;
 
     @Temporal(TemporalType.TIMESTAMP)
     @CreationTimestamp

@@ -20,12 +20,4 @@ public interface PrescriptionMapper {
      * @return
      */
     PrescriptionResponse toResponse(Prescription prescription);
-
-    /**
-     * @param prescriptionUpdateRequest
-     * @param prescription
-     * @return
-     */
-    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    Prescription partialUpdate(PrescriptionUpdateRequest prescriptionUpdateRequest, @MappingTarget Prescription prescription);
 }

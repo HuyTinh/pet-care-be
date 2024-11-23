@@ -23,5 +23,5 @@ public class PetPrescriptionUpdateRequest {
 
     String diagnosis;
 
-    Set<PrescriptionDetailUpdateRequest> medicines;
+    Set<PetMedicineUpdateRequest> petMedicines;
 }

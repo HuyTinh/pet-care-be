@@ -1,5 +1,6 @@
 package com.pet_care.medical_prescription_service.dto.request;
 
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
@@ -13,8 +14,7 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class PrescriptionDetailUpdateRequest {
-    Long id;
+public class PetMedicineCreateRequest {
 
     @JsonProperty("medicine_id")
     Long medicineId;
@@ -26,4 +26,7 @@ public class PrescriptionDetailUpdateRequest {
 
     @JsonProperty("total_money")
     Double totalMoney;
+
+    String note;
 }
+

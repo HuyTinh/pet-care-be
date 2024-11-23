@@ -14,7 +14,7 @@ import java.util.Set;
 public class PetPrescriptionResponse {
     Long id;
     PetResponse pet;
-    String note;
     String diagnosis;
-    Set<MedicinePrescriptionResponse> medicines;
+    Set<PetMedicineResponse> medicines;
+    Set<PetVeterinaryCareResponse> veterinaryCares;
 }
