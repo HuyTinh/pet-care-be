@@ -48,7 +48,7 @@ public class AppointmentService {
 
      AppointmentMapper appointmentMapper;
 
-     MessageService messageService;
+     MessageBrokerService messageBrokerService;
 
      Queue<String> queue;
 
@@ -297,7 +297,7 @@ public class AppointmentService {
         AppointmentResponse appointmentResponse = appointmentMapper.toDto(appointment);
 
         if (createAppointmentStatus.equals("CHECKED_IN")) {
-            messageService.sendMessage("doctor-appointment-queue", objectMapper.writeValueAsString(appointmentResponse));
+            messageBrokerService.sendEvent("doctor-appointment-queue", objectMapper.writeValueAsString(appointmentResponse));
         } else {
             if(appointmentResponse.getAppointmentDate().equals(new Date())) {
                 try {
@@ -318,7 +318,7 @@ public class AppointmentService {
                     .build();
 
 
-            messageService.sendMessage("appointment-success-notification-queue", emailBookingSuccessful.getContent());
+            messageBrokerService.sendEvent("appointment-success-notification-queue", emailBookingSuccessful.getContent());
         }
 
         appointmentResponse.setPets(pets.stream().map(petMapper::toDto).collect(toSet()));

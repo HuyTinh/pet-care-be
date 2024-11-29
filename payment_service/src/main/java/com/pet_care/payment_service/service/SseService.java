@@ -17,6 +17,8 @@ public class SseService {
 
     BillClient billClient;
 
+    MessageBrokerService messageBrokerService;
+
     public final Map<Long, SseEmitter> emitters;
 
     public void sendEventToClient(Long orderId, boolean event) {
@@ -25,11 +27,12 @@ public class SseService {
             try {
                 emitter.send(SseEmitter.event().name(String.valueOf(orderId)).data(event));
             } catch (IOException e) {
+                emitter.onError((var) -> messageBrokerService.sendEvent("cancelled-bill-queue", orderId.toString()));
                 emitter.completeWithError(e);
                 emitters.remove(orderId);
             }
             emitter.complete();
-            emitter.onCompletion(() -> billClient.approveInvoice(orderId));
+            emitter.onCompletion(() -> messageBrokerService.sendEvent("approved-bill-queue", orderId.toString()));
         }
     }
 }
