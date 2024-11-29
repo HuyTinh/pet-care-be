@@ -5,7 +5,6 @@ import com.pet_care.appointment_service.config.WebSocketHandler;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.jms.annotation.JmsListener;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -16,7 +15,7 @@ import java.util.Queue;
 @Service // Marks this class as a service component
 @RequiredArgsConstructor // Lombok annotation to generate the constructor with required fields
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true) // Lombok annotation to set fields to private and final
-public class MessageService {
+public class MessageBrokerService {
 
     // Dependencies injected into the service
     Queue<String> petQueue; // A queue to hold incoming messages
@@ -45,7 +44,7 @@ public class MessageService {
      * @param destination The destination queue to send the message to.
      * @param appointment The message to send.
      */
-    public void sendMessage(String destination, String appointment) {
+    public void sendEvent(String destination, String appointment) {
         // Send the appointment message to the specified queue using JMS template
         jmsTemplate.convertAndSend(destination, appointment);
     }

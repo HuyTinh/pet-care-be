@@ -3,7 +3,7 @@ package com.pet_care.appointment_service.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pet_care.appointment_service.enums.AppointmentStatus;
 import com.pet_care.appointment_service.service.AppointmentService;
-import com.pet_care.appointment_service.service.MessageService;
+import com.pet_care.appointment_service.service.MessageBrokerService;
 import com.pet_care.appointment_service.service.WebSocketService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -37,7 +37,7 @@ public class WebsocketController {
     AppointmentService appointmentService;
 
     // Service for handling message sending
-    MessageService messageService;
+    MessageBrokerService messageBrokerService;
 
     /**
      * Handles incoming WebSocket messages to update the status of appointments.
@@ -47,7 +47,7 @@ public class WebsocketController {
      * @throws Exception If an error occurs during processing.
      */
     @Transactional
-    @MessageMapping("/sendMessage")
+    @MessageMapping("/sendEvent")
     public void sendMessage(@Payload Map<String, String> message) throws Exception {
         // Extracts necessary information from the message
         long appointmentId = Long.parseLong(message.get("appointmentId"));
@@ -63,7 +63,7 @@ public class WebsocketController {
                     // Triggers the export of the appointment details to a PDF
                     webSocketService.sendToExportPDFAppointment(sessionId, Long.toString(appointmentId));
                     // Sends the appointment data to a messaging queue for the doctor appointment system
-                    messageService.sendMessage("doctor-appointment-queue", objectMapper.writeValueAsString(appointmentService.getAppointmentById(appointmentId)));
+                    messageBrokerService.sendEvent("doctor-appointment-queue", objectMapper.writeValueAsString(appointmentService.getAppointmentById(appointmentId)));
                 }
                 break;
             case CANCELLED:

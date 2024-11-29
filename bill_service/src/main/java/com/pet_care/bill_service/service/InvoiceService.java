@@ -19,6 +19,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.jms.annotation.JmsListener;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,13 +32,14 @@ import java.util.Set;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class InvoiceService {
+
     InvoiceRepository invoiceRepository;
 
     InvoiceMapper invoiceMapper;
 
     PaymentClient paymentClient;
 
-    private final PrescriptionClient prescriptionClient;
+    PrescriptionClient prescriptionClient;
 
     /**
      * @return

@@ -1,11 +1,16 @@
 spring:
   application:
     name: payment_service
+  activemq:
+    broker-url: tcp://localhost:61616  # URL of the ActiveMQ broker for messaging
+    user: admin  # ActiveMQ user
+    password: admin  # ActiveMQ password
 
 server:
   port: 8089
   servlet:
     context-path: /api/v1/payment-service
+
 
 
 PAYOS_CLIENT_ID: a958d849-7e46-4e8d-858e-4be20af0c605
