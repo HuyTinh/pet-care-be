@@ -18,9 +18,9 @@ public class MessageBrokerService {
     ObjectMapper objectMapper; // Jackson ObjectMapper for serializing/deserializing objects
     InvoiceService invoiceService;
 
-    @JmsListener(destination = "approved-bill-queue", containerFactory = "queueFactory") // JMS listener for receiving messages
-    public void receiveMessageApprovedBill(String orderId) {
-        invoiceService.approvedInvoice(Long.parseLong(orderId));
+    @JmsListener(destination = "cancelled-bill-queue") // JMS listener for receiving messages
+    public void receiveMessageCancelledBill(String orderId) {
+        invoiceService.canceledInvoice(Long.parseLong(orderId));
         try {
             Thread.sleep(1000); // Simulate a delay for processing the message (this can be optimized)
         } catch (Exception e) {
@@ -28,9 +28,9 @@ public class MessageBrokerService {
         }
     }
 
-    @JmsListener(destination = "cancelled-bill-queue") // JMS listener for receiving messages
-    public void receiveMessageCancelledBill(String orderId) {
-        invoiceService.canceledInvoice(Long.parseLong(orderId));
+    @JmsListener(destination = "approved-bill-queue") // JMS listener for receiving messages
+    public void receiveMessageApprovedBill(String orderId) {
+        invoiceService.approvedInvoice(Long.parseLong(orderId));
         try {
             Thread.sleep(1000); // Simulate a delay for processing the message (this can be optimized)
         } catch (Exception e) {

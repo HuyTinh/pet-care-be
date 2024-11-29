@@ -1,4 +1,4 @@
-package com.pet_care.bill_service.model;
+package com.pet_care.bill_service.entity;
 
 import com.pet_care.bill_service.enums.InvoiceStatus;
 import com.pet_care.bill_service.enums.PaymentMethod;
