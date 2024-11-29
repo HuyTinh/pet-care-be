@@ -13,13 +13,12 @@ import com.pet_care.bill_service.enums.PaymentMethod;
 import com.pet_care.bill_service.exception.APIException;
 import com.pet_care.bill_service.exception.ErrorCode;
 import com.pet_care.bill_service.mapper.InvoiceMapper;
-import com.pet_care.bill_service.model.Invoice;
+import com.pet_care.bill_service.entity.Invoice;
 import com.pet_care.bill_service.repository.InvoiceRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.jms.annotation.JmsListener;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

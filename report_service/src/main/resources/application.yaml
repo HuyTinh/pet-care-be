@@ -1,0 +1,13 @@
+spring:
+  application:
+    name: report_service
+
+  datasource:
+    url: "jdbc:mysql://localhost:3317/report_service"
+    password: root
+    username: root
+
+  jpa:
+    show-sql: false
+    hibernate:
+      ddl-auto: update

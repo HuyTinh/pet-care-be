@@ -1,7 +1,7 @@
 package com.pet_care.bill_service.repository;
 
 import com.pet_care.bill_service.enums.InvoiceStatus;
-import com.pet_care.bill_service.model.Invoice;
+import com.pet_care.bill_service.entity.Invoice;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
