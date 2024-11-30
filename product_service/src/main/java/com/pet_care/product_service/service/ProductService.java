@@ -15,7 +15,6 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -71,6 +70,15 @@ public class ProductService
         return productResponse;
     }
 
+    @Transactional
+    public Product getProductByIdToMakeInvoice(Long id)
+    {
+        Product product = productRepository.findById(id)
+            .orElseThrow(() -> new APIException(ErrorCode.PRODUCT_NOT_FOUND));
+
+        return product;
+    }
+
     @Transactional(readOnly = true)
     public List<ProductResponse> getProductByCategoryId(Long categoryId)
     {
@@ -83,10 +91,10 @@ public class ProductService
 
     @Transactional
     public ProductResponse createProduct(ProductRequest productRequest, MultipartFile image) throws IOException {
-
+        System.out.println("name: " +productRequest.getName());
         Product savedProduct = productMapper.mapperToProduct(productRequest);
 
-        checkAndUploadImageMedicine(image, savedProduct);
+        checkAndUploadImageProduct(image, savedProduct);
 
         checkAndConfigCategory(productRequest.getCategory(), savedProduct);
 
@@ -103,7 +111,7 @@ public class ProductService
 
         Product savedProduct = productMapper.mapperToProduct(productRequest);
 
-        checkAndUploadImageMedicine(image, savedProduct);
+        checkAndUploadImageProduct(image, savedProduct);
 
         checkAndConfigCategory(productRequest.getCategory(), savedProduct);
 
@@ -112,6 +120,13 @@ public class ProductService
 
         return response;
     }
+
+    @Transactional
+    public Product updateProductQuantity(Product product)
+    {
+        return productRepository.save(product);
+    }
+
 
     @Transactional
     public void deleteProduct(Long productId)
@@ -136,7 +151,7 @@ public class ProductService
         product.setCategories(category);
     }
 
-    private void checkAndUploadImageMedicine(MultipartFile imageFile, Product product) throws IOException {
+    private void checkAndUploadImageProduct(MultipartFile imageFile, Product product) throws IOException {
         // Checks if the image file is not null and is not empty
         if (imageFile != null && !imageFile.isEmpty()) {
             // Uploads the image file and retrieves the image URL

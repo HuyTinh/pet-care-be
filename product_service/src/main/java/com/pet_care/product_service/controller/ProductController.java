@@ -56,7 +56,7 @@ public class ProductController
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public APIResponse<ProductResponse> createCategory(
-            @RequestBody ProductRequest _productRequest,
+            @ModelAttribute ProductRequest _productRequest,
             @RequestPart(value = "image_url", required = false) MultipartFile imageFile
     ) throws IOException {
         ProductResponse productResponse = productService.createProduct(_productRequest, imageFile);
@@ -68,7 +68,7 @@ public class ProductController
 
     @PutMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public APIResponse<ProductResponse> uppdateCategory(
-            @RequestBody ProductRequest _productRequest,
+            @ModelAttribute ProductRequest _productRequest,
             @RequestPart(value = "image_url", required = false) MultipartFile imageFile) throws IOException {
         ProductResponse categoryResponse = productService.updateProduct(_productRequest, imageFile);
 

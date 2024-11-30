@@ -15,7 +15,8 @@ public enum ErrorCode {
 
     // Enum values for different error scenarios in the application
     PRODUCT_NOT_FOUND(1001, "Product not found", HttpStatus.NOT_FOUND), // Error when a medicine is not found
-    CATEGORY_EXIST(1002, "Product name is exist", HttpStatus.BAD_REQUEST),
+    CATEGORY_EXIST(1002, "Product name is exist", HttpStatus.BAD_REQUEST), // Error when a medicine is not found
+    INVALID_QUANTITY(1003, "Product quantity is failed", HttpStatus.BAD_REQUEST),
     CATEGORY_NOT_FOUND(1001, "Category unit not found", HttpStatus.NOT_FOUND), // Error when a calculation unit is not found
     ;
 

@@ -24,9 +24,9 @@ public class Product
     String description;
 
     @Column(name = "price", nullable = false)
-    Long price;
+    Double price;
 
-    @Column(name = "image", nullable = false)
+    @Column(name = "image", nullable = true)
     String image;
 
     @Column(name = "quantity", nullable = false)

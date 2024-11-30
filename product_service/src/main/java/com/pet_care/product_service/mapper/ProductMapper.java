@@ -1,5 +1,6 @@
 package com.pet_care.product_service.mapper;
 
+import com.pet_care.product_service.dto.request.InvoiceRequest;
 import com.pet_care.product_service.dto.request.ProductRequest;
 import com.pet_care.product_service.dto.response.ProductResponse;
 import com.pet_care.product_service.model.Product;
@@ -31,6 +32,5 @@ public interface ProductMapper
     @Mapping(target = "category", source = "categories.name")
     ProductResponse mapperToProductResponse(Product product);
     List<ProductResponse> mapperToProductResponses(List<Product> product);
-
 
 }
