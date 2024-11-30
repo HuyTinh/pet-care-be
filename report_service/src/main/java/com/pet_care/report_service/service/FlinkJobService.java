@@ -1,6 +1,9 @@
 package com.pet_care.report_service.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pet_care.report_service.common.shared.ActiveMQSource;
+import com.pet_care.report_service.dto.request.ReportCreateRequest;
+import com.pet_care.report_service.enums.ReportOf;
 import com.pet_care.report_service.service.sink.PrescriptionSaleReportsSink;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
@@ -9,11 +12,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.apache.flink.connector.jdbc.JdbcConnectionOptions;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.apache.flink.streaming.api.datastream.DataStream;
 
-import java.sql.Connection;
 
 @Service
 @RequiredArgsConstructor
@@ -24,19 +25,22 @@ public class FlinkJobService {
 
     JdbcConnectionOptions jdbcOptions;
 
-    Connection connection;
+    ObjectMapper objectMapper;
 
     @PostConstruct
     public void startFlinkJob() throws Exception {
-        DataStream<String> messageStream = env.addSource(
-                new ActiveMQSource("tcp://localhost:61616", "sale-report-queue")
-        ).map(value -> {
-            // Xử lý dữ liệu tại đây
-            System.out.println(value);
-            return "Processed: " + value;
-        });
+        DataStream<ReportCreateRequest> messageStream = env.addSource(
+                new ActiveMQSource("tcp://localhost:61616", "report-service-queue")
+        ).map(value -> objectMapper.readValue(value, ReportCreateRequest.class));
 
-        messageStream.addSink(new PrescriptionSaleReportsSink());
+        DataStream<String> prescriptionStream = messageStream.filter(request ->
+                ReportOf.valueOf(request.getOf()) == ReportOf.PRESCRIPTION).map(ReportCreateRequest::getData);
+
+        DataStream<String> appointmentStream = messageStream.filter(request ->
+                ReportOf.valueOf(request.getOf()) == ReportOf.APPOINTMENT).map(ReportCreateRequest::getData);
+
+        prescriptionStream.addSink(new PrescriptionSaleReportsSink());
+//        appointmentStream.addSink(new PrescriptionSaleReportsSink());
         // Thực thi job
         env.execute("Flink with ActiveMQ and MySQL");
     }
