@@ -1,6 +1,6 @@
 package com.pet_care.customer_service.repository;
 
-import com.pet_care.customer_service.model.Customer;
+import com.pet_care.customer_service.entity.Customer;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

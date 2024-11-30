@@ -2,7 +2,7 @@ package com.pet_care.medical_prescription_service.mapper;
 
 import com.pet_care.medical_prescription_service.dto.request.PetMedicineCreateRequest;
 import com.pet_care.medical_prescription_service.dto.request.PetMedicineUpdateRequest;
-import com.pet_care.medical_prescription_service.model.PetMedicine;
+import com.pet_care.medical_prescription_service.entity.PetMedicine;
 import org.mapstruct.*;
 
 @Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE, componentModel = MappingConstants.ComponentModel.SPRING)

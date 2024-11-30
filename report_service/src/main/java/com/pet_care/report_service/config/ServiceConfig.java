@@ -1,5 +1,7 @@
 package com.pet_care.report_service.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.module.afterburner.AfterburnerModule;
 import org.apache.flink.connector.jdbc.JdbcConnectionOptions;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.springframework.context.annotation.Bean;
@@ -11,6 +13,11 @@ import java.sql.SQLException;
 
 @Configuration
 public class ServiceConfig {
+    @Bean
+    public ObjectMapper objectMapper() {
+        return new ObjectMapper().registerModule(new AfterburnerModule());
+    }
+
     @Bean
     public StreamExecutionEnvironment streamExecutionEnvironment() {
         return StreamExecutionEnvironment.createLocalEnvironment();

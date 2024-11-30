@@ -1,7 +1,7 @@
 package com.pet_care.appointment_service.controller;
 
 import com.pet_care.appointment_service.dto.response.APIResponse;
-import com.pet_care.appointment_service.model.Specie;
+import com.pet_care.appointment_service.entity.Specie;
 import com.pet_care.appointment_service.service.SpecieService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;

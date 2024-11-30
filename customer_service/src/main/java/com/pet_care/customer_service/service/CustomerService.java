@@ -11,7 +11,7 @@ import com.pet_care.customer_service.dto.response.CustomerResponse;
 import com.pet_care.customer_service.exception.APIException;
 import com.pet_care.customer_service.exception.ErrorCode;
 import com.pet_care.customer_service.mapper.CustomerMapper;
-import com.pet_care.customer_service.model.Customer;
+import com.pet_care.customer_service.entity.Customer;
 import com.pet_care.customer_service.repository.CustomerRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;

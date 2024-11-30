@@ -5,12 +5,11 @@ import com.pet_care.appointment_service.dto.response.HospitalServiceResponse;
 import com.pet_care.appointment_service.exception.APIException;
 import com.pet_care.appointment_service.exception.ErrorCode;
 import com.pet_care.appointment_service.mapper.HospitalServiceMapper;
-import com.pet_care.appointment_service.model.HospitalServiceEntity;
+import com.pet_care.appointment_service.entity.HospitalServiceEntity;
 import com.pet_care.appointment_service.repository.HospitalServiceRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

@@ -3,7 +3,7 @@ package com.pet_care.medicine_service.repository;
 // Import necessary Spring Data JPA and other dependencies
 import com.pet_care.medicine_service.enums.MedicineStatus;
 import com.pet_care.medicine_service.enums.MedicineTypes;
-import com.pet_care.medicine_service.model.Medicine;
+import com.pet_care.medicine_service.entity.Medicine;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

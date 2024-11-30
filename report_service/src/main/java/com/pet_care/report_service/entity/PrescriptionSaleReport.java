@@ -1,12 +1,11 @@
 package com.pet_care.report_service.entity;
 
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
+import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.util.Date;
 
@@ -19,8 +18,11 @@ import java.util.Date;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class PrescriptionSaleReport {
     @Id
-    String name;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    Long id;
 
     @Temporal(TemporalType.DATE)
-    Date createdAt;
+    Date date;
+
+    Double sale;
 }

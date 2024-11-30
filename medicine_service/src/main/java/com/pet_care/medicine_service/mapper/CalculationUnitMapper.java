@@ -2,7 +2,7 @@ package com.pet_care.medicine_service.mapper;
 
 // Importing necessary libraries for mapping
 import com.pet_care.medicine_service.dto.response.CalculationUnitResponse;
-import com.pet_care.medicine_service.model.CalculationUnit;
+import com.pet_care.medicine_service.entity.CalculationUnit;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingConstants;
 import org.mapstruct.ReportingPolicy;

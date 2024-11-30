@@ -11,10 +11,10 @@ import com.pet_care.medicine_service.enums.MedicineTypes;
 import com.pet_care.medicine_service.exception.APIException;
 import com.pet_care.medicine_service.exception.ErrorCode;
 import com.pet_care.medicine_service.mapper.MedicineMapper;
-import com.pet_care.medicine_service.model.CalculationUnit;
-import com.pet_care.medicine_service.model.Location;
-import com.pet_care.medicine_service.model.Manufacture;
-import com.pet_care.medicine_service.model.Medicine;
+import com.pet_care.medicine_service.entity.CalculationUnit;
+import com.pet_care.medicine_service.entity.Location;
+import com.pet_care.medicine_service.entity.Manufacture;
+import com.pet_care.medicine_service.entity.Medicine;
 import com.pet_care.medicine_service.repository.CalculationUnitRepository;
 import com.pet_care.medicine_service.repository.LocationRepository;
 import com.pet_care.medicine_service.repository.ManufactureRepository;
@@ -37,7 +37,6 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service

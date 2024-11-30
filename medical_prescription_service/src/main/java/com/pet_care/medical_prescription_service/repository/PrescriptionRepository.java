@@ -1,6 +1,6 @@
 package com.pet_care.medical_prescription_service.repository;
 
-import com.pet_care.medical_prescription_service.model.Prescription;
+import com.pet_care.medical_prescription_service.entity.Prescription;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

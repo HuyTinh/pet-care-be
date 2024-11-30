@@ -2,7 +2,7 @@ package com.pet_care.appointment_service.mapper;
 
 import com.pet_care.appointment_service.dto.request.PetCreateRequest;
 import com.pet_care.appointment_service.dto.response.PetResponse;
-import com.pet_care.appointment_service.model.Pet;
+import com.pet_care.appointment_service.entity.Pet;
 import org.mapstruct.*;
 
 @Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE, componentModel = MappingConstants.ComponentModel.SPRING)
