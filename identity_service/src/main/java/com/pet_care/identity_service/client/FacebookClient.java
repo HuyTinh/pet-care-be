@@ -1,6 +1,6 @@
 package com.pet_care.identity_service.client;
 
-import com.pet_care.identity_service.model.FacebookUserInfo;
+import com.pet_care.identity_service.entity.FacebookUserInfo;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;

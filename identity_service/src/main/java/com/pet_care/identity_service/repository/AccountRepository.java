@@ -1,6 +1,6 @@
 package com.pet_care.identity_service.repository;
 
-import com.pet_care.identity_service.model.Account;
+import com.pet_care.identity_service.entity.Account;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

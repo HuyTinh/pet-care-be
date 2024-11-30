@@ -1,6 +1,6 @@
 package com.pet_care.appointment_service.service;
 
-import com.pet_care.appointment_service.model.FollowUp;
+import com.pet_care.appointment_service.entity.FollowUp;
 import com.pet_care.appointment_service.repository.FollowUpRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;

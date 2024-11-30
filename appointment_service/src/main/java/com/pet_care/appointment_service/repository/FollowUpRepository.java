@@ -1,13 +1,8 @@
 package com.pet_care.appointment_service.repository;
 
-import com.pet_care.appointment_service.model.FollowUp;
-import org.springframework.data.domain.Page;
+import com.pet_care.appointment_service.entity.FollowUp;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-
-import java.awt.print.Pageable;
-import java.util.Date;
-import java.util.Set;
 
 @Repository
 public interface FollowUpRepository extends JpaRepository<FollowUp, Long> {

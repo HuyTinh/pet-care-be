@@ -2,7 +2,7 @@ package com.pet_care.employee_service.repository;
 
 // Import necessary classes for JPA repository functionality, annotations, and optional handling
 import com.pet_care.employee_service.enums.Gender;
-import com.pet_care.employee_service.model.Employee;
+import com.pet_care.employee_service.entity.Employee;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;

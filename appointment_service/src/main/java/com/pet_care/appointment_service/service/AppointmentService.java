@@ -11,7 +11,7 @@ import com.pet_care.appointment_service.exception.APIException;
 import com.pet_care.appointment_service.exception.ErrorCode;
 import com.pet_care.appointment_service.mapper.AppointmentMapper;
 import com.pet_care.appointment_service.mapper.PetMapper;
-import com.pet_care.appointment_service.model.*;
+import com.pet_care.appointment_service.entity.*;
 import com.pet_care.appointment_service.repository.AppointmentRepository;
 import com.pet_care.appointment_service.repository.HospitalServiceRepository;
 import com.pet_care.appointment_service.repository.PetRepository;

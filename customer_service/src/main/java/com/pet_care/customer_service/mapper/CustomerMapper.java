@@ -4,7 +4,7 @@ import com.pet_care.customer_service.dto.request.AppointmentCreateRequest;
 import com.pet_care.customer_service.dto.request.CustomerCreateRequest;
 import com.pet_care.customer_service.dto.request.CustomerUpdateRequest;
 import com.pet_care.customer_service.dto.response.CustomerResponse;
-import com.pet_care.customer_service.model.Customer;
+import com.pet_care.customer_service.entity.Customer;
 import org.mapstruct.*;
 
 /**

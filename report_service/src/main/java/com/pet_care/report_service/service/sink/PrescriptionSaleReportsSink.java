@@ -1,6 +1,7 @@
 package com.pet_care.report_service.service.sink;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.module.afterburner.AfterburnerModule;
 import com.pet_care.report_service.dto.request.PrescriptionSaleReportRequest;
 import org.apache.flink.streaming.api.functions.sink.RichSinkFunction;
 
@@ -12,11 +13,9 @@ public class PrescriptionSaleReportsSink extends RichSinkFunction<String> {
     private transient Connection connection;
     private transient PreparedStatement preparedStatement;
 
-
     @Override
     public void invoke(String value, Context context) throws Exception {
-        ObjectMapper objectMapper = new ObjectMapper();
-
+        ObjectMapper objectMapper = new ObjectMapper().registerModule(new AfterburnerModule());
 
         if(connection==null){
             connection = DriverManager.getConnection("jdbc:mysql://localhost:3317/report_service", "root", "root");

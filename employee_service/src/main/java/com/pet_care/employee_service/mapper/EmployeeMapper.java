@@ -3,7 +3,7 @@ package com.pet_care.employee_service.mapper;
 import com.pet_care.employee_service.dto.request.EmployeeCreateRequest;
 import com.pet_care.employee_service.dto.request.EmployeeUpdateRequest;
 import com.pet_care.employee_service.dto.response.EmployeeResponse;
-import com.pet_care.employee_service.model.Employee;
+import com.pet_care.employee_service.entity.Employee;
 import org.mapstruct.*;
 
 /**

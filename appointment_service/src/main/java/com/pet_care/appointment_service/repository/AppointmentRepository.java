@@ -1,7 +1,7 @@
 package com.pet_care.appointment_service.repository;
 
 import com.pet_care.appointment_service.enums.AppointmentStatus;
-import com.pet_care.appointment_service.model.Appointment;
+import com.pet_care.appointment_service.entity.Appointment;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -12,7 +12,6 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;

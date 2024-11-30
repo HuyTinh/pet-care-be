@@ -4,7 +4,7 @@ import com.pet_care.identity_service.dto.request.AccountCreateRequest;
 import com.pet_care.identity_service.dto.request.AccountUpdateRequest;
 import com.pet_care.identity_service.dto.request.CustomerCreateRequest;
 import com.pet_care.identity_service.dto.response.AccountResponse;
-import com.pet_care.identity_service.model.Account;
+import com.pet_care.identity_service.entity.Account;
 import org.mapstruct.*;
 
 @Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE, componentModel = MappingConstants.ComponentModel.SPRING)

@@ -5,13 +5,12 @@ import com.pet_care.identity_service.dto.response.PermissionResponse;
 import com.pet_care.identity_service.exception.APIException;
 import com.pet_care.identity_service.exception.ErrorCode;
 import com.pet_care.identity_service.mapper.PermissionMapper;
-import com.pet_care.identity_service.model.Permission;
+import com.pet_care.identity_service.entity.Permission;
 import com.pet_care.identity_service.repository.PermissionRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

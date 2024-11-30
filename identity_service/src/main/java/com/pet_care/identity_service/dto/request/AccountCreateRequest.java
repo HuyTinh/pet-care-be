@@ -2,7 +2,7 @@ package com.pet_care.identity_service.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.pet_care.identity_service.enums.Provide;
-import com.pet_care.identity_service.model.Account;
+import com.pet_care.identity_service.entity.Account;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.Pattern;
