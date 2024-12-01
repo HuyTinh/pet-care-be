@@ -2,12 +2,16 @@ package com.pet_care.notification_service.service;
 
 // Import necessary annotations and classes for JSON processing, JMS, and HTTP client
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.pet_care.notification_service.dto.response.AppointmentResponse;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.jms.annotation.JmsListener;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
+
+import java.util.Queue;
 
 @Service // Marks this class as a Spring service component
 @RequiredArgsConstructor // Generates a constructor with required fields (final fields)
@@ -16,6 +20,9 @@ public class BrevoService { // Service to handle notifications through the Brevo
 
     RestClient restClient; // RestClient instance to send HTTP requests to the Brevo API
 
+    ObjectMapper objectMapper;
+
+    Queue<AppointmentResponse> upcomingAppointmentQueue;
     /**
      * Listens for messages from the "appointment-success-notification-queue" queue and sends a successful appointment email.
      *
@@ -27,5 +34,10 @@ public class BrevoService { // Service to handle notifications through the Brevo
         restClient.post() // Initiates a POST request
                 .body(message) // Sets the message as the request body
                 .retrieve(); // Executes the request and retrieves the response
+    }
+
+    @JmsListener(destination = "upcoming-appointment-queue") // Configures this method as a listener for the specified queue
+    public void sendNotificationAppointmentUpcomingEmail(String message) throws JsonProcessingException {
+        upcomingAppointmentQueue.add(objectMapper.readValue(message, AppointmentResponse.class));
     }
 }
