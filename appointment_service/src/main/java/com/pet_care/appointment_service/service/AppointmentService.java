@@ -280,9 +280,9 @@ public class AppointmentService {
     public AppointmentResponse createAppointment( AppointmentCreateRequest appointmentCreateRequest, Boolean notification) throws JsonProcessingException {
         Appointment appointment = appointmentMapper.toEntity(appointmentCreateRequest);
 
-        if (appointmentCreateRequest.getStatus() == null) {
-            appointment.setStatus(AppointmentStatus.PENDING);
-        }
+//        if (appointmentCreateRequest.getStatus() == null) {
+//            appointment.setStatus(AppointmentStatus.PENDING);
+//        }
 
         Appointment createSuccess = appointmentRepository.save(appointment);
 

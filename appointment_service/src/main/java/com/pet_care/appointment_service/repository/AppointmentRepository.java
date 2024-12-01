@@ -106,20 +106,13 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
     @Query("SELECT ap from appointments ap WHERE ap.status = :status AND ap.accountId = :accountId")
     List<Appointment> findAppointmentByStatusAndAccountId(@Param("status") AppointmentStatus status, @Param("accountId") Long accountId, Sort sort);
 
-    /**
-     * Checks if an appointment with the given id exists and has the status 'CHECKED_IN'.
-     *
-     * @param id The id of the appointment
-     * @return 1 if the appointment is 'CHECKED_IN', otherwise 0
-     */
-    @Query(value = "SELECT EXISTS (SELECT TRUE FROM appointments WHERE status = 'CHECKED_IN' And id = ?1)")
-    int checkInAppointmentIsExist(Long id);
+    @Modifying
+    @Transactional
+    @Query(value = "UPDATE appointments set status = 'NO_SHOW' Where appointmentDate < CURDATE() and status = 'SCHEDULED'")
+    int updateNoShowStatusAppointment();
 
-    /**
-     * Finds all appointments by account ID.
-     *
-     * @param accountId The account ID associated with the appointments
-     * @return A list of all appointments associated with the specified account ID
-     */
-    List<Appointment> findAllByAccountId(Long accountId);
+
+    @Query("SELECT ap FROM appointments ap WHERE appointmentDate BETWEEN CURDATE() - INTERVAL 3 DAY AND CURDATE()")
+    List<Appointment> getAppointmentsUpcoming();
+
 }
