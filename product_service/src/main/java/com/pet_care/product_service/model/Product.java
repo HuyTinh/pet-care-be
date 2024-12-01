@@ -1,8 +1,13 @@
 package com.pet_care.product_service.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+
+import java.util.List;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -35,5 +40,9 @@ public class Product
     @ManyToOne()
     @JoinColumn(name = "category_id")
     Category categories;
+
+    @OneToMany(mappedBy = "product", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    List<InvoiceDetail> invoiceDetails;
 
 }

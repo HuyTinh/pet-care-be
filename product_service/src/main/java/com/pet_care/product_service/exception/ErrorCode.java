@@ -14,10 +14,13 @@ import org.springframework.http.HttpStatus;
 public enum ErrorCode {
 
     // Enum values for different error scenarios in the application
-    PRODUCT_NOT_FOUND(1001, "Product not found", HttpStatus.NOT_FOUND), // Error when a medicine is not found
-    CATEGORY_EXIST(1002, "Product name is exist", HttpStatus.BAD_REQUEST), // Error when a medicine is not found
-    INVALID_QUANTITY(1003, "Product quantity is failed", HttpStatus.BAD_REQUEST),
-    CATEGORY_NOT_FOUND(1001, "Category unit not found", HttpStatus.NOT_FOUND), // Error when a calculation unit is not found
+    PRODUCT_NOT_FOUND(1001, "Product not found", HttpStatus.NOT_FOUND),
+    CATEGORY_NOT_FOUND(1001, "Category unit not found", HttpStatus.NOT_FOUND),
+    INVOICE_NOT_FOUND(1001, "Invoice id not found", HttpStatus.NOT_FOUND),
+    CATEGORY_EXIST(1002, "Product name is exist", HttpStatus.BAD_REQUEST),
+    INVALID_QUANTITY(1002, "Product quantity is failed", HttpStatus.BAD_REQUEST),
+    INVALID_DELETE_INVOICE(1002, "Product update failed", HttpStatus.BAD_REQUEST),
+    INVALID_STATUS_ACCEPT(1002, "Cannot delete because status accept is success or pending or deleted", HttpStatus.BAD_REQUEST),
     ;
 
     // Fields for error code, message, and HTTP status

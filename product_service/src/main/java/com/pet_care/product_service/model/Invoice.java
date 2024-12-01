@@ -1,6 +1,7 @@
 package com.pet_care.product_service.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.pet_care.product_service.enums.StatusAccept;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -26,7 +27,12 @@ public class Invoice
 
     String note;
 
+    @Column(name = "total_price", nullable = false)
     Double totalPrice;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status_accept", nullable = false)
+    StatusAccept statusAccept;
 
     @Temporal(TemporalType.TIMESTAMP)
     @CreationTimestamp
@@ -34,7 +40,7 @@ public class Invoice
     @Column(name = "create_at")
     Date createdAt;
 
-    @OneToMany(mappedBy = "invoice", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
-    Set<InvoiceDetail> invoiceDetails;
+    @OneToMany(mappedBy = "invoice", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    List<InvoiceDetail> invoiceDetails;
 
 }

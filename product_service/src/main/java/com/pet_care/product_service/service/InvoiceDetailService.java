@@ -20,8 +20,6 @@ import java.util.Set;
 public class InvoiceDetailService
 {
 
-    InvoiceDetailRepository invoiceDetailRepository;
-
     public InvoiceDetail setDataInvoiceDetail(int quantity, Product product, Invoice savedInvoice)
     {
 
@@ -29,17 +27,10 @@ public class InvoiceDetailService
                 .totalPrice(quantity * product.getPrice())
                 .quantity(quantity)
                 .product(product)
-//                .invoice(savedInvoice)
+                .invoice(savedInvoice)
                 .createdAt(new Date())
                 .build();
         return detail;
-//        return invoiceDetailRepository.save(detail);
-    }
-
-    public InvoiceDetail createInvoiceDetail(InvoiceDetail invoiceDetail, Invoice savedInvoice)
-    {
-        invoiceDetail.setInvoice(savedInvoice);
-        return invoiceDetailRepository.save(invoiceDetail);
     }
 
 }

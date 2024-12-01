@@ -1,5 +1,7 @@
 package com.pet_care.product_service.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -24,6 +26,7 @@ public class Category
     Boolean status = false;
 
     @OneToMany(fetch = FetchType.LAZY)
+    @JsonIgnore
     List<Product> product;
 
 }
