@@ -1,5 +1,6 @@
 package com.pet_care.medical_prescription_service.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -16,5 +17,6 @@ public class PetPrescriptionResponse {
     PetResponse pet;
     String diagnosis;
     Set<PetMedicineResponse> medicines;
+    @JsonProperty("veterinary_cares")
     Set<PetVeterinaryCareResponse> veterinaryCares;
 }

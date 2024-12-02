@@ -13,7 +13,6 @@ import com.pet_care.appointment_service.mapper.AppointmentMapper;
 import com.pet_care.appointment_service.mapper.PetMapper;
 import com.pet_care.appointment_service.entity.*;
 import com.pet_care.appointment_service.repository.AppointmentRepository;
-import com.pet_care.appointment_service.repository.HospitalServiceRepository;
 import com.pet_care.appointment_service.repository.PetRepository;
 import com.pet_care.appointment_service.utils.DateUtil;
 import lombok.AccessLevel;
@@ -43,8 +42,6 @@ import static java.util.stream.Collectors.toSet;
 public class AppointmentService {
 
      AppointmentRepository appointmentRepository;
-
-     HospitalServiceRepository hospitalServiceRepository;
 
      AppointmentMapper appointmentMapper;
 
@@ -280,10 +277,6 @@ public class AppointmentService {
     public AppointmentResponse createAppointment( AppointmentCreateRequest appointmentCreateRequest, Boolean notification) throws JsonProcessingException {
         Appointment appointment = appointmentMapper.toEntity(appointmentCreateRequest);
 
-//        if (appointmentCreateRequest.getStatus() == null) {
-//            appointment.setStatus(AppointmentStatus.PENDING);
-//        }
-
         Appointment createSuccess = appointmentRepository.save(appointment);
 
         Set<Pet> pets = appointmentCreateRequest.getPets().stream()
@@ -308,17 +301,7 @@ public class AppointmentService {
             }
         }
         if (notification) {
-            EmailBookingSuccessful emailBookingSuccessful = EmailBookingSuccessful.builder()
-                    .appointmentId(appointmentResponse.getId())
-                    .appointmentDate(DateUtil.getDateOnly(appointmentResponse.getAppointmentDate()))
-                    .appointmentTime(DateUtil.getTimeOnly(appointmentResponse.getAppointmentTime()))
-                    .toEmail(appointmentResponse.getEmail())
-                    .firstName(appointmentResponse.getFirstName())
-                    .lastName(appointmentResponse.getLastName())
-                    .build();
-
-
-            messageBrokerService.sendEvent("appointment-success-notification-queue", emailBookingSuccessful.getContent());
+            messageBrokerService.sendEvent("appointment-success-notification-queue", objectMapper.writeValueAsString(appointmentResponse));
         }
 
         appointmentResponse.setPets(pets.stream().map(petMapper::toDto).collect(toSet()));
@@ -339,17 +322,11 @@ public class AppointmentService {
     public AppointmentResponse updateAppointmentServices(Long appointmentId, Set<String> services) {
         Appointment appointment = appointmentRepository.findById(appointmentId).orElseThrow(() -> new APIException(ErrorCode.APPOINTMENT_NOT_FOUND));
 
-        CompletableFuture<List<HospitalServiceEntity>> hospitalServiceEntityCompletableFuture = CompletableFuture.supplyAsync(() -> hospitalServiceRepository.findAllById(services));
+        AppointmentResponse appointmentResponse = appointmentMapper.toDto(appointmentRepository.save(appointment));
 
+        appointmentResponse.setPets(petRepository.findByAppointment_Id(appointmentId).stream().map(petMapper::toDto).collect(toSet()));
 
-        return hospitalServiceEntityCompletableFuture.thenApply(hospitalServiceEntities -> {
-
-            AppointmentResponse appointmentResponse = appointmentMapper.toDto(appointmentRepository.save(appointment));
-
-            appointmentResponse.setPets(petRepository.findByAppointment_Id(appointmentId).stream().map(petMapper::toDto).collect(toSet()));
-
-            return appointmentResponse;
-        }).join();
+        return appointmentResponse;
     }
 
     @Transactional(readOnly = true)

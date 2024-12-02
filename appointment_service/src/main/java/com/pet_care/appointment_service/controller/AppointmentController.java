@@ -31,7 +31,6 @@ public class AppointmentController {
 
     // The AppointmentService is used to handle the business logic related to appointments
     AppointmentService appointmentService;
-    private final AppointmentRepository appointmentRepository;
 
     /**
      * Retrieves all appointments from the system.

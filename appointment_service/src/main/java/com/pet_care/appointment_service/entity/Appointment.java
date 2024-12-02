@@ -50,9 +50,6 @@ public class Appointment {
     @Temporal(TemporalType.TIME) // Maps the field to store only the time part (not date) in the database
     Date appointmentTime; // The time of the appointment
 
-    @ManyToMany(fetch = FetchType.EAGER) // Defines a many-to-many relationship with the HospitalServiceEntity
-    Set<HospitalServiceEntity> services; // Set of services associated with the appointment
-
     @Enumerated(EnumType.STRING) // Specifies that the enum value should be stored as a string in the database
     AppointmentStatus status; // The status of the appointment (e.g., scheduled, completed)
 

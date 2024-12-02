@@ -15,7 +15,6 @@ public interface PetPrescriptionMapper {
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(target = "petMedicines", ignore = true)
-    @Mapping(target = "petVeterinaryCares", ignore = true)
     @Mapping(target = "prescription", ignore = true)
     PetPrescription partialUpdate(PetPrescriptionUpdateRequest petPrescriptionUpdateRequest, @MappingTarget PetPrescription petPrescription);
 

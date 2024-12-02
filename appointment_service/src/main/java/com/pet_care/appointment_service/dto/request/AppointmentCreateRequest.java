@@ -60,7 +60,4 @@ public class AppointmentCreateRequest {
 
     // Set of pets associated with the appointment
     Set<PetCreateRequest> pets;
-
-    // Set of services requested for the appointment
-    Set<String> services;
 }

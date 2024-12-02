@@ -60,9 +60,6 @@ public class AppointmentUpdateRequest {
     // Set of pets associated with the appointment
     Set<Pet> pets;
 
-    // Set of services requested for the appointment
-    Set<String> services;
-
     // Status of the appointment (e.g., pending, confirmed, etc.)
     @Enumerated(EnumType.STRING)
     AppointmentStatus status;

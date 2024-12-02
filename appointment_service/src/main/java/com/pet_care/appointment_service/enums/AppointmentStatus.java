@@ -14,6 +14,8 @@ public enum AppointmentStatus {
     // The appointment has been canceled and will not occur.
     CANCELLED,
 
+    APPROVED,
+
     // The appointment has been completed successfully.
     COMPLETED,
 

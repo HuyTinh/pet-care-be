@@ -63,9 +63,6 @@ public class AppointmentResponse {
     // Status of the appointment (e.g., booked, checked-in, cancelled)
     AppointmentStatus status;
 
-    // Services associated with this appointment (e.g., check-up, vaccination)
-    Set<HospitalServiceResponse> services;
-
     // Pets associated with this appointment
     Set<PetResponse> pets;
 }
