@@ -19,7 +19,10 @@ public class PetPrescriptionCreateRequest {
 
     String diagnosis;
 
+    @JsonProperty("pet_medicines")
     Set<PetMedicineCreateRequest> petMedicines;
 
+
+    @JsonProperty("pet_veterinary_cares")
     Set<PetVeterinaryCareCreateRequest> petVeterinaryCares;
 }

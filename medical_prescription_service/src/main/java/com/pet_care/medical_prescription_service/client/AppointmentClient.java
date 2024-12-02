@@ -42,4 +42,5 @@ public interface AppointmentClient {
      */
     @PostMapping("/appointment/approved/{appointmentId}")
     APIResponse<Integer> approvedAppointment(@PathVariable Long appointmentId);
+
 }

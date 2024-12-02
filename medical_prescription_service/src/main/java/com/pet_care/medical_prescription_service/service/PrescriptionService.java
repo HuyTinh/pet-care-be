@@ -6,18 +6,23 @@ import com.pet_care.medical_prescription_service.dto.request.MedicineUpdateQtyRe
 import com.pet_care.medical_prescription_service.dto.request.PrescriptionCreateRequest;
 import com.pet_care.medical_prescription_service.dto.request.PrescriptionUpdateRequest;
 import com.pet_care.medical_prescription_service.dto.response.*;
+import com.pet_care.medical_prescription_service.entity.PetVeterinaryCare;
 import com.pet_care.medical_prescription_service.enums.PrescriptionStatus;
 import com.pet_care.medical_prescription_service.exception.APIException;
 import com.pet_care.medical_prescription_service.exception.ErrorCode;
 import com.pet_care.medical_prescription_service.mapper.PetPrescriptionMapper;
 import com.pet_care.medical_prescription_service.mapper.PetMedicineMapper;
+import com.pet_care.medical_prescription_service.mapper.PetVeterinaryCareMapper;
 import com.pet_care.medical_prescription_service.mapper.PrescriptionMapper;
 import com.pet_care.medical_prescription_service.entity.PetMedicine;
 import com.pet_care.medical_prescription_service.entity.PetPrescription;
 import com.pet_care.medical_prescription_service.entity.Prescription;
 import com.pet_care.medical_prescription_service.repository.PetPrescriptionRepository;
 import com.pet_care.medical_prescription_service.repository.PetMedicineRepository;
+import com.pet_care.medical_prescription_service.repository.PetVeterinaryCareRepository;
 import com.pet_care.medical_prescription_service.repository.PrescriptionRepository;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -44,35 +49,31 @@ import static java.util.stream.Collectors.toSet;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class PrescriptionService {
 
-    PetPrescriptionMapper petPrescriptionMapper;
-
-
-    PetMedicineMapper petMedicineMapper;
-
-
     PrescriptionRepository PrescriptionRepository;
-
-
-    PrescriptionMapper prescriptionMapper;
-
-
-    AppointmentClient appointmentClient;
-
 
     PrescriptionRepository prescriptionRepository;
 
-
-    MedicineClient medicineClient;
-
-
     PetPrescriptionRepository petPrescriptionRepository;
 
-
     PetMedicineRepository petMedicineRepository;
+
+    PetVeterinaryCareRepository petVeterinaryCareRepository;
 
     CacheService cacheService;
 
     RedisTemplate<String, Object> redisTemplate;
+
+    PetPrescriptionMapper petPrescriptionMapper;
+
+    PetMedicineMapper petMedicineMapper;
+
+    PetVeterinaryCareMapper petVeterinaryCareMapper;
+
+    PrescriptionMapper prescriptionMapper;
+
+    AppointmentClient appointmentClient;
+
+    MedicineClient medicineClient;
 
     /**
      * @return
@@ -112,7 +113,8 @@ public class PrescriptionService {
             int size,
             LocalDate startDate,
             LocalDate endDate,
-            PrescriptionStatus prescriptionStatus
+            PrescriptionStatus prescriptionStatus,
+            Long accountId
     ) {
         Date sDate = Date.from(startDate.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant());
 
@@ -124,13 +126,19 @@ public class PrescriptionService {
 
         prescriptionRepository.findByCreatedAtBetween(sDate, eDate, pageable);
 
-        Page<PrescriptionResponse> prescriptionResponsePage = prescriptionRepository.findByCreatedAtBetween(sDate, eDate, pageable).map(this::toPrescriptionResponse);
-
-//        Page<PrescriptionResponse> prescriptionPage = PaginationUtil
-//                .convertListToPage(prescriptionResponseList, pageable);
+        Page<PrescriptionResponse> prescriptionResponsePage = prescriptionRepository.findByCreatedAtBetween(sDate, eDate, pageable)
+                .map(this::toPrescriptionResponse);
 
         return PageableResponse.<PrescriptionResponse>builder()
-                .content(prescriptionResponsePage.getContent())
+                .content(prescriptionResponsePage.getContent().stream().filter(
+                        prescriptionResponse -> {
+                            if(accountId != null) {
+                                return prescriptionResponse.getAppointmentResponse().getAccountId().equals(accountId);
+                            } else {
+                                return true;
+                            }
+                        }
+                ).toList())
                 .pageNumber(prescriptionResponsePage.getPageable().getPageNumber())
                 .pageSize(prescriptionResponsePage.getPageable().getPageSize())
                 .totalPages(prescriptionResponsePage.getTotalPages())
@@ -185,13 +193,23 @@ public class PrescriptionService {
 
         Prescription savePrescription = prescriptionRepository.save(newPrescription);
 
-        appointmentClient.approvedAppointment(prescriptionCreateRequest.getAppointmentId());
+//        appointmentClient.approvedAppointment(prescriptionCreateRequest.getAppointmentId());
 
         List<PetPrescription> newPetPrescriptionList = prescriptionCreateRequest.getDetails().parallelStream().map(petPrescriptionCreateRequest ->
                 {
                     PetPrescription petPrescription = petPrescriptionMapper.toEntity(petPrescriptionCreateRequest);
 
-                    petPrescription.setPetMedicines(petPrescriptionCreateRequest.getPetMedicines().stream().map(petMedicineMapper::toEntity).collect(toSet()));
+                    petPrescriptionCreateRequest.getPetMedicines().forEach(petMedicineCreateRequest -> {
+                        PetMedicine petMedicine = petMedicineMapper.toEntity(petMedicineCreateRequest);
+                        petMedicine.setPetPrescription(petPrescription); // Thiết lập quan hệ ngược
+                        petPrescription.getPetMedicines().add(petMedicine); // Thêm vào danh sách của PetPrescription
+                    });
+
+                    petPrescriptionCreateRequest.getPetVeterinaryCares().forEach(petVeterinaryCareCreateRequest -> {
+                        PetVeterinaryCare petVeterinaryCare = petVeterinaryCareMapper.toEntity(petVeterinaryCareCreateRequest);
+                        petVeterinaryCare.setPetPrescription(petPrescription); // Thiết lập quan hệ ngược
+                        petPrescription.getPetVeterinaryCares().add(petVeterinaryCare); // Thêm vào danh sách của PetPrescription
+                    });
 
                     petPrescription.setPrescription(savePrescription);
 
@@ -199,7 +217,7 @@ public class PrescriptionService {
                 })
                 .peek(petPrescription -> {
                     List<PetMedicine> petMedicines = petMedicineRepository.saveAll(petPrescription.getPetMedicines());
-                    petMedicines.forEach(prescriptionDetail -> {
+                    petPrescription.getPetMedicines().forEach(prescriptionDetail -> {
                         MedicineUpdateQtyRequest medicineUpdateQtyRequest = MedicineUpdateQtyRequest.builder()
                                 .medicineId(prescriptionDetail.getMedicineId())
                                 .qty(prescriptionDetail.getQuantity())
@@ -211,28 +229,26 @@ public class PrescriptionService {
 
         List<PetMedicine> allMedicinesToSave = new ArrayList<>();
 
-        newPetPrescriptionList.forEach(val -> {
-            val.getPetMedicines().forEach(medicine -> {
-                medicine.setPetPrescription(val);
-                allMedicinesToSave.add(medicine);
-            });
-        });
-
-        if (!allMedicinesToSave.isEmpty()) {
-            petMedicineRepository.saveAll(allMedicinesToSave);
-        }
+//        newPetPrescriptionList.forEach(val -> {
+//            val.getPetMedicines().forEach(medicine -> {
+//                medicine.setPetPrescription(val);
+//                allMedicinesToSave.add(medicine);
+//            });
+//        });
+//
+//        if (!allMedicinesToSave.isEmpty()) {
+//            petMedicineRepository.saveAll(allMedicinesToSave);
+//        }
 
         PrescriptionResponse prescriptionResponse = toPrescriptionResponse(newPrescription);
-
-        prescriptionResponse.setAppointmentResponse(appointmentClient
-                .updateAppointmentService(prescriptionCreateRequest.getAppointmentId(), prescriptionCreateRequest.getServices()).getData());
 
 //        if (objectList != null) {
 //            objectList.add(prescriptionResponse);
 //            cacheService.saveCache("prescriptions", objectList);
 //        }
 
-        return prescriptionResponse;
+//        return prescriptionResponse;
+        return PrescriptionResponse.builder().build();
     }
 
     /**
@@ -245,8 +261,6 @@ public class PrescriptionService {
                         (prescriptionUpdateRequest.getId())
                 .orElseThrow(() -> new APIException(ErrorCode.PRESCRIPTION_NOT_FOUND));
 
-        appointmentClient.updateAppointmentService
-                (prescriptionUpdateRequest.getId(), prescriptionUpdateRequest.getServices());
 
         CompletableFuture<Void> prescriptionFuture = CompletableFuture.runAsync(() -> {
             petPrescriptionRepository.saveAll(prescriptionUpdateRequest.getDetails()

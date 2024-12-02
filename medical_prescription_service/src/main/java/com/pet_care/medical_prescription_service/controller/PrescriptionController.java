@@ -47,7 +47,8 @@ public class PrescriptionController {
 
     // Repository layer responsible for interacting with the database for prescriptions
     PrescriptionRepository prescriptionRepository;
-    private final UploadImageClient uploadImageClient;
+
+    UploadImageClient uploadImageClient;
 
     /**
      * Endpoint to retrieve all prescriptions.
@@ -78,7 +79,8 @@ public class PrescriptionController {
             @RequestParam(value = "size", required = false, defaultValue = "50") int size,
             @RequestParam(value = "startDate", required = false) LocalDate startDate,
             @RequestParam(value = "endDate", required = false) LocalDate endDate,
-            @RequestParam(value = "statues", required = false, defaultValue = "APPROVED") String prescriptionStatus
+            @RequestParam(value = "statues", required = false, defaultValue = "APPROVED") String prescriptionStatus,
+            @RequestParam(value = "accountId", required = false) Long accountId
     ) throws JsonProcessingException {
         return APIResponse.<PageableResponse<PrescriptionResponse>>builder()
                 .data(prescriptionService
@@ -87,7 +89,8 @@ public class PrescriptionController {
                                 size,
                                 Objects.requireNonNullElse(startDate, LocalDate.now()),
                                 Objects.requireNonNullElse(endDate, LocalDate.now()),
-                                PrescriptionStatus.valueOf(prescriptionStatus)
+                                PrescriptionStatus.valueOf(prescriptionStatus),
+                                accountId
                         )
                 )
                 .build();
@@ -166,8 +169,6 @@ public class PrescriptionController {
         String base64 = doc.select("img").attr("src").split(",")[1];
         // Convert Base64 string to byte array
 //        byte[] data = Base64.getDecoder().decode(base64);
-
-        System.out.println(uploadImageClient.uploadImageFromBase64(base64));
 
 ////        System.out.println(base64);
 //        try {
