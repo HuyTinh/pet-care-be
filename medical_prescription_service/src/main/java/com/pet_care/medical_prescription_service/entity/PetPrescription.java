@@ -31,7 +31,13 @@ public class PetPrescription {
     String diagnosis;
 
     @OneToMany(mappedBy = "petPrescription", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
     Set<PetMedicine> petMedicines = new HashSet<>();
+
+    @OneToMany(mappedBy = "petPrescription", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    Set<PetVeterinaryCare> petVeterinaryCares = new HashSet<>();
+
 
     @Temporal(TemporalType.TIMESTAMP)
     @CreationTimestamp

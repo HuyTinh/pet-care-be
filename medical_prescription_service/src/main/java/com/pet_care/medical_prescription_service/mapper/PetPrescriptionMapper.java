@@ -11,6 +11,9 @@ public interface PetPrescriptionMapper {
      * @param petPrescriptionCreateRequest
      * @return
      */
+
+    @Mapping(target = "petMedicines", ignore = true)
+    @Mapping(target = "petVeterinaryCares", ignore = true)
     PetPrescription toEntity(PetPrescriptionCreateRequest petPrescriptionCreateRequest);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)

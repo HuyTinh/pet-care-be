@@ -3,7 +3,7 @@ spring:
     name: notification_service
 
 brevo:
-  key: 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
+  key: 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
   url: https://api.brevo.com/v3/smtp/email
 
 server:

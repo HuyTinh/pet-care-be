@@ -112,7 +112,6 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
     int updateNoShowStatusAppointment();
 
 
-    @Query("SELECT ap FROM appointments ap WHERE appointmentDate BETWEEN CURDATE() - INTERVAL 3 DAY AND CURDATE()")
+    @Query(value = "SELECT ap FROM appointments ap WHERE appointmentDate BETWEEN CURDATE() - INTERVAL 3 DAY AND CURDATE()", nativeQuery = true)
     List<Appointment> getAppointmentsUpcoming();
-
 }

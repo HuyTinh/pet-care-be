@@ -60,6 +60,12 @@ spring:
             predicates:
               - Path=/api/v1/bill-service/**
 
+          # Notify Service route
+          - id: notification_service
+            uri: http://localhost:8087
+            predicates:
+              - Path=/api/v1/notification-service/**
+
 server:
   port: 8888 # Cổng của API Gateway
 

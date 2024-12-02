@@ -16,8 +16,6 @@ import java.util.Set;
 public class PrescriptionUpdateRequest {
     Long id;
 
-    Set<String> services;
-
     Set<PetPrescriptionUpdateRequest> details;
 
     @JsonProperty("total_money")

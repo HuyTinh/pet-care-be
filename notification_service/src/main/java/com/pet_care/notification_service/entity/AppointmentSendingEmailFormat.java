@@ -27,7 +27,7 @@ public class AppointmentSendingEmailFormat extends SendTo {
     @JsonProperty("appointment_time") // Specifies the name of this field when serialized to/from JSON
     String appointmentTime; // The time of the appointment, formatted as a String
 
-    String templateId;
+    int templateId;
 
     // Method to generate the content of the email dynamically based on the properties
     public String getContent() {
