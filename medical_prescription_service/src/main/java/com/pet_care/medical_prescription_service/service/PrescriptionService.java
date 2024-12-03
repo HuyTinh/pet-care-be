@@ -7,7 +7,6 @@ import com.pet_care.medical_prescription_service.dto.request.PrescriptionCreateR
 import com.pet_care.medical_prescription_service.dto.request.PrescriptionUpdateRequest;
 import com.pet_care.medical_prescription_service.dto.response.*;
 import com.pet_care.medical_prescription_service.entity.PetVeterinaryCare;
-import com.pet_care.medical_prescription_service.enums.PrescriptionStatus;
 import com.pet_care.medical_prescription_service.exception.APIException;
 import com.pet_care.medical_prescription_service.exception.ErrorCode;
 import com.pet_care.medical_prescription_service.mapper.PetPrescriptionMapper;
@@ -53,8 +52,6 @@ public class PrescriptionService {
     PetMedicineRepository petMedicineRepository;
 
     PetVeterinaryCareRepository petVeterinaryCareRepository;
-
-    CacheService cacheService;
 
     RedisNativeService redisNativeService;
 
@@ -117,22 +114,19 @@ public class PrescriptionService {
 
         List<PrescriptionResponse> cachePrescriptionResponses = redisNativeService.getRedisList("prescription-response-list", PrescriptionResponse.class);
 
+        Date sDate = Date.from(startDate.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant());
+
+        Date eDate = Date.from(endDate.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant());
+
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
 
         if(!cachePrescriptionResponses.isEmpty()) {
             prescriptionResponsePage = convertListToPage(cachePrescriptionResponses.stream()
-                            .filter(prescription -> !prescription.getCreatedAt().toInstant()            // Chuyển đổi Date thành Instant
-                                    .atZone(ZoneId.systemDefault())  // Áp dụng múi giờ hệ thống
-                                    .toLocalDate().isBefore(startDate) && !prescription.getCreatedAt().toInstant()            // Chuyển đổi Date thành Instant
-                                    .atZone(ZoneId.systemDefault())  // Áp dụng múi giờ hệ thống
-                                    .toLocalDate().isAfter(endDate))
+                            .filter(prescription -> !prescription.getCreatedAt().before(sDate) && !prescription.getCreatedAt().after(eDate))
                             .collect(Collectors.toList())
                     ,pageable);
         } else {
             cachePrescription();
-            Date sDate = Date.from(startDate.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant());
-
-            Date eDate = Date.from(endDate.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant());
 
             prescriptionResponsePage = prescriptionRepository.findByCreatedAtBetween(sDate, eDate, pageable)
                     .map(this::toPrescriptionResponse);

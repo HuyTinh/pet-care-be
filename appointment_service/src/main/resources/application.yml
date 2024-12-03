@@ -2,6 +2,11 @@ spring:
   application:
     name: appointment_service  # Name of the application
 
+  data:
+    redis:
+      host: localhost
+      port: 6380
+
   datasource:
     url: "jdbc:mysql://localhost:3308/appointment_service"  # JDBC URL for the MySQL database
     password: root  # Database password for MySQL

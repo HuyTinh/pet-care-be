@@ -54,7 +54,6 @@ public class AppointmentController {
      * @param endDate The end date for the appointment filter.
      * @param statues The set of appointment statuses to filter by.
      * @return A paginated response of filtered appointments.
-     * @throws JsonProcessingException If there is an error processing the data into JSON format.
      */
     @GetMapping("/filter")
     public APIResponse<PageableResponse<AppointmentResponse>> getAllAppointmentByStartDateAndEndDate(
@@ -62,10 +61,11 @@ public class AppointmentController {
             @RequestParam(value = "size", required = false, defaultValue = "50") int size,
             @RequestParam(value = "startDate", required = false) LocalDate startDate,
             @RequestParam(value = "endDate", required = false) LocalDate endDate,
-            @RequestParam(value = "statues", required = false) Set<String> statues) throws JsonProcessingException {
+            @RequestParam(value = "statues", required = false) Set<String> statues,
+            @RequestParam(value = "accountId", required = false) Long accountId) {
 
         return APIResponse.<PageableResponse<AppointmentResponse>>builder()
-                .data(appointmentService.filterAppointments(page, size, Objects.requireNonNullElse(startDate, LocalDate.now()), Objects.requireNonNullElse(endDate, LocalDate.now()), statues))
+                .data(appointmentService.filterAppointments(page, size, Objects.requireNonNullElse(startDate, LocalDate.now()), Objects.requireNonNullElse(endDate, LocalDate.now()), statues, accountId))
                 .build();
     }
 
@@ -80,20 +80,6 @@ public class AppointmentController {
     public APIResponse<AppointmentResponse> getAppointmentById(@PathVariable("appointmentId") Long appointmentId) throws JsonProcessingException {
         return APIResponse.<AppointmentResponse>builder()
                 .data(appointmentService.getAppointmentById(appointmentId))
-                .build();
-    }
-
-    /**
-     * Retrieves appointments scheduled for the current day.
-     *
-     * @return A response containing the list of appointments for today.
-     * @throws JsonProcessingException If there is an error processing the data into JSON format.
-     * @throws ParseException If there is an error parsing the date.
-     */
-    @GetMapping("present")
-    public APIResponse<List<AppointmentResponse>> getAllAppointmentPresent() throws JsonProcessingException, ParseException {
-        return APIResponse.<List<AppointmentResponse>>builder()
-                .data(appointmentService.getAllAppointmentByAppointmentDate(new Date()))
                 .build();
     }
 
@@ -203,34 +189,6 @@ public class AppointmentController {
 
         return APIResponse.<PageableResponse<AppointmentResponse>>builder()
                 .data(appointmentResponsePageable)
-                .build();
-    }
-
-    /**
-     * Updates the services associated with an appointment.
-     *
-     * @param appointmentId The ID of the appointment to update.
-     * @param services The set of services to associate with the appointment.
-     * @return A response containing the updated appointment details.
-     * @throws JsonProcessingException If there is an error processing the data into JSON format.
-     */
-    @PutMapping("/{appointmentId}/service")
-    public APIResponse<AppointmentResponse> updateAppointmentService(@PathVariable("appointmentId") Long appointmentId, @RequestBody Set<String> services) throws JsonProcessingException {
-        return APIResponse.<AppointmentResponse>builder()
-                .data(appointmentService.updateAppointmentServices(appointmentId, services))
-                .build();
-    }
-
-    /**
-     * Checks whether an appointment is checked in.
-     *
-     * @param appointmentId The ID of the appointment to check.
-     * @return A response indicating whether the appointment is checked in.
-     */
-    @GetMapping("/isCheckin/{appointmentId}")
-    public APIResponse<?> getAppointment(@PathVariable("appointmentId") Long appointmentId) {
-        return APIResponse.builder()
-                .data(Map.of("isCheckIn:", appointmentService.checkInAppointment(appointmentId) == 1))
                 .build();
     }
 
