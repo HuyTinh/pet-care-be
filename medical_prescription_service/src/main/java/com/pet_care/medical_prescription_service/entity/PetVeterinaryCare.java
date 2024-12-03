@@ -24,6 +24,7 @@ public class PetVeterinaryCare {
     @JsonProperty("veterinary_care")
     String veterinaryCare;
 
+    @Lob
     String result;
 
     @JsonProperty("total_money")

@@ -110,7 +110,7 @@ public class PrescriptionService {
             int size,
             LocalDate startDate,
             LocalDate endDate,
-            PrescriptionStatus prescriptionStatus,
+            Set<String> prescriptionStatuses,
             Long accountId
     ) {
         Page<PrescriptionResponse> prescriptionResponsePage;
@@ -140,7 +140,8 @@ public class PrescriptionService {
 
 
         return PageableResponse.<PrescriptionResponse>builder()
-                .content(prescriptionResponsePage.getContent().stream().filter(
+                .content(prescriptionResponsePage.getContent().stream()
+                        .filter(
                         prescriptionResponse -> {
                             if(accountId != null) {
                                 return prescriptionResponse.getAppointmentResponse().getAccountId().equals(accountId);
@@ -148,7 +149,13 @@ public class PrescriptionService {
                                 return true;
                             }
                         }
-                ).toList())
+                ).filter( prescriptionResponse -> {
+                            if(prescriptionStatuses != null) {
+                                return prescriptionStatuses.stream().anyMatch(s -> s.equals(prescriptionResponse.getStatus().name()));
+                            } else {
+                                return true;
+                            }
+                        }).toList())
                 .pageNumber(prescriptionResponsePage.getPageable().getPageNumber())
                 .pageSize(prescriptionResponsePage.getPageable().getPageSize())
                 .totalPages(prescriptionResponsePage.getTotalPages())
@@ -191,40 +198,38 @@ public class PrescriptionService {
 
         Prescription savePrescription = prescriptionRepository.save(newPrescription);
 
-        CompletableFuture<Void> newPetPrescriptionListFuture = CompletableFuture.runAsync(() -> {
-            prescriptionCreateRequest.getDetails().parallelStream().map(petPrescriptionCreateRequest ->
-                    {
-                        PetPrescription petPrescription = petPrescriptionMapper.toEntity(petPrescriptionCreateRequest);
+        List<PetPrescription> newPetPrescriptionList = prescriptionCreateRequest.getDetails().parallelStream().map(petPrescriptionCreateRequest ->
+                {
+                    PetPrescription petPrescription = petPrescriptionMapper.toEntity(petPrescriptionCreateRequest);
 
-                        petPrescriptionCreateRequest.getPetMedicines().forEach(petMedicineCreateRequest -> {
-                            PetMedicine petMedicine = petMedicineMapper.toEntity(petMedicineCreateRequest);
-                            petMedicine.setPetPrescription(petPrescription); // Thiết lập quan hệ ngược
-                            petPrescription.getPetMedicines().add(petMedicine); // Thêm vào danh sách của PetPrescription
-                        });
-
-                        petPrescriptionCreateRequest.getPetVeterinaryCares().forEach(petVeterinaryCareCreateRequest -> {
-                            PetVeterinaryCare petVeterinaryCare = petVeterinaryCareMapper.toEntity(petVeterinaryCareCreateRequest);
-                            petVeterinaryCare.setPetPrescription(petPrescription); // Thiết lập quan hệ ngược
-                            petPrescription.getPetVeterinaryCares().add(petVeterinaryCare); // Thêm vào danh sách của PetPrescription
-                        });
-
-                        petPrescription.setPrescription(savePrescription);
-
-                        return petPrescriptionRepository.save(petPrescription);
-                    })
-                    .peek(petPrescription -> {
-                        petPrescription.getPetMedicines().forEach(prescriptionDetail -> {
-                            MedicineUpdateQtyRequest medicineUpdateQtyRequest = MedicineUpdateQtyRequest.builder()
-                                    .medicineId(prescriptionDetail.getMedicineId())
-                                    .qty(prescriptionDetail.getQuantity())
-                                    .build();
-                            medicineClient.updateQuantity(medicineUpdateQtyRequest);
-                        });
+                    petPrescriptionCreateRequest.getPetMedicines().forEach(petMedicineCreateRequest -> {
+                        PetMedicine petMedicine = petMedicineMapper.toEntity(petMedicineCreateRequest);
+                        petMedicine.setPetPrescription(petPrescription); // Thiết lập quan hệ ngược
+                        petPrescription.getPetMedicines().add(petMedicine); // Thêm vào danh sách của PetPrescription
                     });
-        });
+
+                    petPrescriptionCreateRequest.getPetVeterinaryCares().forEach(petVeterinaryCareCreateRequest -> {
+                        PetVeterinaryCare petVeterinaryCare = petVeterinaryCareMapper.toEntity(petVeterinaryCareCreateRequest);
+                        petVeterinaryCare.setPetPrescription(petPrescription); // Thiết lập quan hệ ngược
+                        petPrescription.getPetVeterinaryCares().add(petVeterinaryCare); // Thêm vào danh sách của PetPrescription
+                    });
+
+                    petPrescription.setPrescription(savePrescription);
+
+                    return petPrescriptionRepository.save(petPrescription);
+                })
+                .peek(petPrescription -> {
+                    petPrescription.getPetMedicines().forEach(prescriptionDetail -> {
+                        MedicineUpdateQtyRequest medicineUpdateQtyRequest = MedicineUpdateQtyRequest.builder()
+                                .medicineId(prescriptionDetail.getMedicineId())
+                                .qty(prescriptionDetail.getQuantity())
+                                .build();
+                        medicineClient.updateQuantity(medicineUpdateQtyRequest);
+                    });
+                }).toList();
         cachePrescription();
 
-        return newPetPrescriptionListFuture.thenApply(v -> toPrescriptionResponse(savePrescription)).join();
+        return toPrescriptionResponse(savePrescription);
     }
 
     /**
