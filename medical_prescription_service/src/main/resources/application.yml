@@ -26,5 +26,3 @@ server:
   port: 8086
   servlet:
     context-path: /api/v1/medical-prescription-service
-
-CACHE_ENV: false

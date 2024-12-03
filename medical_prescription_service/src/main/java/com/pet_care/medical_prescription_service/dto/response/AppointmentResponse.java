@@ -48,9 +48,7 @@ public class AppointmentResponse {
 
     @JsonIgnore
     AppointmentStatus status;
-
-    Set<HospitalServiceResponse> services;
-
+    
     Set<PetResponse> pets;
 }
 
