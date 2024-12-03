@@ -142,10 +142,10 @@ public class PrescriptionController {
      * @param prescriptionUpdateRequest Request object containing updated prescription details.
      * @return APIResponse containing the updated prescription.
      */
-    @PutMapping
-    public APIResponse<PrescriptionResponse> updatePrescription(@RequestBody PrescriptionUpdateRequest prescriptionUpdateRequest) {
+    @PutMapping("{prescriptionId}")
+    public APIResponse<PrescriptionResponse> updatePrescription(@PathVariable("prescriptionId") Long prescriptionId,@RequestBody PrescriptionUpdateRequest prescriptionUpdateRequest) {
         return APIResponse.<PrescriptionResponse>builder()
-                .data(prescriptionService.updatePrescription(prescriptionUpdateRequest))
+                .data(prescriptionService.updatePrescription(prescriptionId, prescriptionUpdateRequest))
                 .build();
     }
 

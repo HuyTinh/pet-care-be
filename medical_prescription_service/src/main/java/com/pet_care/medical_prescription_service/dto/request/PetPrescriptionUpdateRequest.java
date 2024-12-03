@@ -23,5 +23,9 @@ public class PetPrescriptionUpdateRequest {
 
     String diagnosis;
 
+    @JsonProperty("pet_medicines")
     Set<PetMedicineUpdateRequest> petMedicines;
+
+    @JsonProperty("pet_veterinary_cares")
+    Set<PetVeterinaryCareCreateRequest> petVeterinaryCares;
 }
