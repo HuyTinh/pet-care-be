@@ -31,10 +31,7 @@ import java.net.MalformedURLException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
-import java.util.Arrays;
-import java.util.Base64;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @RestController
 @RequestMapping("prescription")
@@ -79,7 +76,7 @@ public class PrescriptionController {
             @RequestParam(value = "size", required = false, defaultValue = "50") int size,
             @RequestParam(value = "startDate", required = false) LocalDate startDate,
             @RequestParam(value = "endDate", required = false) LocalDate endDate,
-            @RequestParam(value = "statues", required = false, defaultValue = "APPROVED") String prescriptionStatus,
+            @RequestParam(value = "statues", required = false) Set<String> prescriptionStatus,
             @RequestParam(value = "accountId", required = false) Long accountId
     ) throws JsonProcessingException {
         return APIResponse.<PageableResponse<PrescriptionResponse>>builder()
@@ -89,7 +86,7 @@ public class PrescriptionController {
                                 size,
                                 Objects.requireNonNullElse(startDate, LocalDate.now()),
                                 Objects.requireNonNullElse(endDate, LocalDate.now()),
-                                PrescriptionStatus.valueOf(prescriptionStatus),
+                                prescriptionStatus,
                                 accountId
                         )
                 )
