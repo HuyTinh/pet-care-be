@@ -34,6 +34,7 @@ import java.time.ZoneId;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toSet;
 
@@ -107,49 +108,69 @@ public class PrescriptionService {
             int size,
             LocalDate startDate,
             LocalDate endDate,
-            Set<String> prescriptionStatuses,
+            Set<String> statues,
             Long accountId
     ) {
-        Page<PrescriptionResponse> prescriptionResponsePage;
 
-        List<PrescriptionResponse> cachePrescriptionResponses = redisNativeService.getRedisList("prescription-response-list", PrescriptionResponse.class);
+        Date sDate;
 
-        Date sDate = Date.from(startDate.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant());
+        Date eDate;
 
-        Date eDate = Date.from(endDate.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant());
+        List<PrescriptionResponse> prescriptionResponses = redisNativeService.getRedisList("prescription-response-list", PrescriptionResponse.class);
+
+        if(startDate != null && endDate != null) {
+            sDate = Date.from(startDate.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant());
+            eDate = Date.from(endDate.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant());
+        } else {
+            sDate = null;
+            eDate = null;
+        }
 
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
 
-        if(!cachePrescriptionResponses.isEmpty()) {
-            prescriptionResponsePage = convertListToPage(cachePrescriptionResponses.stream()
-                            .filter(prescription -> !prescription.getCreatedAt().before(sDate) && !prescription.getCreatedAt().after(eDate))
-                            .collect(Collectors.toList())
-                    ,pageable);
+        if(!prescriptionResponses.isEmpty()) {
+            var convertList = prescriptionResponses;
+
+            if(startDate != null && endDate != null) {
+                convertList = convertList.stream()
+                        .filter(prescription ->
+                                !prescription.getCreatedAt().before(sDate) &&
+                                        !prescription.getCreatedAt().after(eDate))
+                        .toList();
+            }
+
+            prescriptionResponses = convertList;
+
         } else {
             cachePrescription();
 
-            prescriptionResponsePage = prescriptionRepository.findByCreatedAtBetween(sDate, eDate, pageable)
-                    .map(this::toPrescriptionResponse);
+            var pageResponse = prescriptionRepository.findAll();
+
+            if(startDate != null && endDate != null) {
+                pageResponse = prescriptionRepository.findByCreatedAtBetween(sDate, eDate);
+            }
+
+            prescriptionResponses = pageResponse.stream().map(this::toPrescriptionResponse).toList();
         }
 
+        if(accountId != null) {
+            prescriptionResponses = prescriptionResponses.stream().filter(
+                    prescriptionResponse -> {
+                        return prescriptionResponse.getAppointmentResponse().getAccountId().equals(accountId);
+                    }
+            ).toList();
+        }
+
+        if(statues != null) {
+            prescriptionResponses = prescriptionResponses.stream().filter( prescriptionResponse -> {
+                return statues.stream().anyMatch(s -> s.equals(prescriptionResponse.getStatus().name()));
+            }).toList();
+        }
+
+        Page<PrescriptionResponse> prescriptionResponsePage = convertListToPage(prescriptionResponses, pageable);
 
         return PageableResponse.<PrescriptionResponse>builder()
-                .content(prescriptionResponsePage.getContent().stream()
-                        .filter(
-                        prescriptionResponse -> {
-                            if(accountId != null) {
-                                return prescriptionResponse.getAppointmentResponse().getAccountId().equals(accountId);
-                            } else {
-                                return true;
-                            }
-                        }
-                ).filter( prescriptionResponse -> {
-                            if(prescriptionStatuses != null) {
-                                return prescriptionStatuses.stream().anyMatch(s -> s.equals(prescriptionResponse.getStatus().name()));
-                            } else {
-                                return true;
-                            }
-                        }).toList())
+                .content(prescriptionResponsePage.getContent())
                 .pageNumber(prescriptionResponsePage.getPageable().getPageNumber())
                 .pageSize(prescriptionResponsePage.getPageable().getPageSize())
                 .totalPages(prescriptionResponsePage.getTotalPages())
@@ -164,6 +185,7 @@ public class PrescriptionService {
 
     @Transactional(readOnly = true)
     public PrescriptionResponse getPrescriptionById(Long prescriptionId) {
+
         List<PrescriptionResponse> cachePrescriptionResponses = redisNativeService.getRedisList("prescription-response-list", PrescriptionResponse.class);
 
         if(!cachePrescriptionResponses.isEmpty()) {
@@ -316,13 +338,14 @@ public class PrescriptionService {
      * @return
      */
     private PrescriptionResponse toPrescriptionResponse(Prescription prescription) {
+        var petPrescriptionResponse = petPrescriptionRepository.findAllByPrescriptionId(prescription.getId());
+
         CompletableFuture<AppointmentResponse> appointmentFuture =
                 CompletableFuture.supplyAsync(() -> appointmentClient.getAppointmentById(prescription.getAppointmentId()).getData());
 
         CompletableFuture<Set<PetPrescriptionResponse>> petPrescriptionResponsesFuture =
-                CompletableFuture.supplyAsync(() -> petPrescriptionRepository.findAllByPrescriptionId(prescription.getId()).parallelStream()
-                        .map(petPrescription -> {
-
+                CompletableFuture.supplyAsync(() -> petPrescriptionResponse
+                        .stream().map(petPrescription -> {
                             CompletableFuture<List<PetMedicine>> prescriptionDetailsFuture =
                                     CompletableFuture.supplyAsync(() -> new ArrayList<>(petPrescription.getPetMedicines()));
 
@@ -357,6 +380,7 @@ public class PrescriptionService {
                                                         .id(prescriptionDetail.getMedicineId())
                                                         .name(medicineName)
                                                         .calculateUnit(calculateName)
+                                                        .note(prescriptionDetail.getNote())
                                                         .quantity(prescriptionDetail.getQuantity())
                                                         .totalMoney(prescriptionDetail.getTotalMoney())
                                                         .build();
@@ -364,7 +388,8 @@ public class PrescriptionService {
                                     )
                             );
 
-                           return CompletableFuture.allOf(petFuture,medicinePrescriptionResponsesFuture).thenApply(v -> PetPrescriptionResponse.builder()
+
+                           return CompletableFuture.allOf(petFuture).thenApply(v -> PetPrescriptionResponse.builder()
                                     .id(petPrescription.getId())
                                     .pet(petFuture.join())
                                     .diagnosis(petPrescription.getDiagnosis())
@@ -373,7 +398,9 @@ public class PrescriptionService {
                                     .build()).join();
                         }).collect(toSet()));
 
-        return CompletableFuture.allOf(appointmentFuture,petPrescriptionResponsesFuture).thenApply(v -> {
+
+        return CompletableFuture.allOf(petPrescriptionResponsesFuture).thenApply(petPrescriptionResponses ->
+        {
             PrescriptionResponse prescriptionResponse = prescriptionMapper.toResponse(prescription);
             prescriptionResponse.setAppointmentResponse(appointmentFuture.join());
             prescriptionResponse.setDetails(petPrescriptionResponsesFuture.join());

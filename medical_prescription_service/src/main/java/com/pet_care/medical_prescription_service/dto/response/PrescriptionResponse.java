@@ -1,6 +1,5 @@
 package com.pet_care.medical_prescription_service.dto.response;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.pet_care.medical_prescription_service.enums.PrescriptionStatus;
 import jakarta.persistence.EnumType;
@@ -16,8 +15,8 @@ import java.util.Set;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@ToString
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@JsonIgnoreProperties(ignoreUnknown = true)
 public class PrescriptionResponse {
     Long id;
 

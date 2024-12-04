@@ -76,7 +76,7 @@ public class PrescriptionController {
             @RequestParam(value = "size", required = false, defaultValue = "50") int size,
             @RequestParam(value = "startDate", required = false) LocalDate startDate,
             @RequestParam(value = "endDate", required = false) LocalDate endDate,
-            @RequestParam(value = "statues", required = false) Set<String> prescriptionStatus,
+            @RequestParam(value = "statues", required = false) Set<String> statues,
             @RequestParam(value = "accountId", required = false) Long accountId
     ) throws JsonProcessingException {
         return APIResponse.<PageableResponse<PrescriptionResponse>>builder()
@@ -84,9 +84,9 @@ public class PrescriptionController {
                         .filteredPrescription(
                                 page,
                                 size,
-                                Objects.requireNonNullElse(startDate, LocalDate.now()),
-                                Objects.requireNonNullElse(endDate, LocalDate.now()),
-                                prescriptionStatus,
+                                startDate,
+                                endDate,
+                                statues,
                                 accountId
                         )
                 )

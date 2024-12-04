@@ -29,7 +29,7 @@ public class Employee {
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY) // Auto-generated ID for each employee
-            Long id;
+    Long id;
 
     /**
      * The first name of the employee.
@@ -96,7 +96,7 @@ public class Employee {
      */
     @Temporal(TemporalType.TIMESTAMP)
     @CreationTimestamp // Automatically generated creation timestamp
-            Date createdAt;
+    Date createdAt;
 
     /**
      * Timestamp of the last time the employee record was updated.
@@ -104,5 +104,5 @@ public class Employee {
      */
     @Temporal(TemporalType.TIMESTAMP)
     @UpdateTimestamp // Automatically generated update timestamp
-            Date updatedAt;
+    Date updatedAt;
 }
