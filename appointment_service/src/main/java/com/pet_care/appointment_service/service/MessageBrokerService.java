@@ -55,6 +55,8 @@ public class MessageBrokerService {
      */
     @Scheduled(fixedRate = 1000) // This method is scheduled to run every 1000 ms (1 second)
     public void reportCurrentTime() {
+        System.out.println(12);
+
         // If there are messages in the queue, send the next one
         if (!petQueue.isEmpty()) {
             try {

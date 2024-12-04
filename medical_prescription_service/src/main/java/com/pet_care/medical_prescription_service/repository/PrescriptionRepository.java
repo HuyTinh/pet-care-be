@@ -18,7 +18,7 @@ public interface PrescriptionRepository extends JpaRepository<Prescription, Long
 
     Prescription findByAppointmentId(Long appointmentId);
 
-    Page<Prescription> findByCreatedAtBetween(Date startDate,  Date endDate, Pageable pageable);
+    List<Prescription> findByCreatedAtBetween(Date startDate,  Date endDate);
 
     Page<Prescription> findByAppointmentIdInAndStatusInAndCreatedAtBetween(Set<Long> appointmentIds, Set<String> status, Date startDate,  Date endDate,Pageable pageable);
 

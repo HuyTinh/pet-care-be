@@ -30,6 +30,7 @@ import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
+import static com.pet_care.appointment_service.utils.DateUtil.getDateOnly;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 
@@ -208,36 +209,56 @@ public class AppointmentService {
 
     @Transactional(readOnly = true)
     public PageableResponse<AppointmentResponse> filterAppointments(int page, int size,  LocalDate startDate,  LocalDate endDate, Set<String> statues, Long accountId) {
-         Page<AppointmentResponse> appointmentResponses;
 
-        List<AppointmentResponse> cacheAppointmentResponses = redisNativeService.getRedisList("appointment-response-list", AppointmentResponse.class);
+        Date sDate;
 
-        Date sDate = Date.from(startDate.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant());
+        Date eDate;
 
-        Date eDate = Date.from(endDate.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant());
+        List<AppointmentResponse> appointmentCache = redisNativeService.getRedisList("appointment-response-list", AppointmentResponse.class);
+
+        if(startDate != null && endDate != null) {
+            sDate = Date.from(startDate.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant());
+            eDate = Date.from(endDate.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant());
+        } else {
+            sDate = null;
+            eDate = null;
+        }
 
         Pageable pageable = PageRequest.of(page, size, Sort.by("appointmentDate").descending());
 
-        if(!cacheAppointmentResponses.isEmpty()) {
-            appointmentResponses = convertListToPage(
-                    cacheAppointmentResponses.stream()
-                            .filter(appointment -> !appointment.getAppointmentDate().before(sDate) && !appointment.getAppointmentDate().after(eDate)).collect(Collectors.toList()), pageable);
+        if(!appointmentCache.isEmpty()) {
+            var contentList = appointmentCache;
+
+            if(startDate != null && endDate != null) {
+                contentList = contentList.stream()
+                        .filter(appointment -> !appointment.getAppointmentDate().before(sDate) && !appointment.getAppointmentDate().after(eDate)).toList();
+            }
+
+            appointmentCache = contentList;
         } else {
             cacheAppointment();
 
-            CompletableFuture<Page<Appointment>> appointmentsBetweenDateFuture = CompletableFuture.supplyAsync(() -> appointmentRepository.findByAppointmentDateBetweenAndStatusIn(sDate, eDate, Objects.requireNonNullElse(statues, new HashSet<>()),pageable));
+            CompletableFuture<List<Appointment>> appointmentsBetweenDateFuture = CompletableFuture.supplyAsync(() -> appointmentRepository.findByAppointmentDateBetween(sDate, eDate));
 
-            appointmentResponses = appointmentsBetweenDateFuture.thenApply(appointments -> appointments.map(this::toAppointmentResponse)).join();
+            appointmentCache = appointmentsBetweenDateFuture.thenApply(appointments -> appointments.stream().map(this::toAppointmentResponse).toList()).join();
         }
 
+        if(accountId != null) {
+            appointmentCache = appointmentCache.stream().filter(appointmentResponse -> {
+                return Objects.equals(accountId, appointmentResponse.getAccountId());
+            }).collect(toList());
+        }
+
+        if(statues != null) {
+            appointmentCache = appointmentCache.stream().filter(appointmentResponse -> {
+                return statues.stream().anyMatch(s -> s.equals(appointmentResponse.getStatus().name()));
+            }).collect(toList());
+        }
+
+        Page<AppointmentResponse> appointmentResponses = convertListToPage(appointmentCache, pageable);
+
         return PageableResponse.<AppointmentResponse>builder()
-                .content(appointmentResponses.getContent().stream().filter(appointmentResponse -> {
-                    if(accountId != null) {
-                        return Objects.equals(accountId, appointmentResponse.getAccountId());
-                    } else {
-                        return true;
-                    }
-                }).collect(toList()))
+                .content(appointmentResponses.getContent())
                 .pageNumber(appointmentResponses.getPageable().getPageNumber())
                 .pageSize(appointmentResponses.getPageable().getPageSize())
                 .totalPages(appointmentResponses.getTotalPages())
@@ -320,12 +341,12 @@ public class AppointmentService {
         petRepository.saveAll(pets);
 
         String createAppointmentStatus = createSuccess.getStatus().name();
-        AppointmentResponse appointmentResponse = appointmentMapper.toDto(appointment);
+        AppointmentResponse appointmentResponse = toAppointmentResponse(createSuccess);
 
         if (createAppointmentStatus.equals("CHECKED_IN")) {
             messageBrokerService.sendEvent("doctor-appointment-queue", objectMapper.writeValueAsString(appointmentResponse));
         } else {
-            if(appointmentResponse.getAppointmentDate().equals(new Date())) {
+            if(getDateOnly(appointmentResponse.getAppointmentDate()).equals(getDateOnly(new Date()))) {
                 try {
                     queue.add(objectMapper.writeValueAsString(appointmentResponse));
                 } catch (Exception e) {
@@ -370,12 +391,10 @@ public class AppointmentService {
     }
 
     private void cacheAppointment() {
-        CompletableFuture.runAsync(() -> {
-            redisNativeService.deleteRedisList("appointment-response-list");
-            redisNativeService.saveToRedisList("appointment-response-list", appointmentRepository.findAll().stream()
-                    .map(this::toAppointmentResponse)
-                    .collect(Collectors.toList()),3600);
-        });
+        redisNativeService.deleteRedisList("appointment-response-list");
+        redisNativeService.saveToRedisList("appointment-response-list", appointmentRepository.findAll().stream()
+                .map(this::toAppointmentResponse)
+                .collect(Collectors.toList()),3600);
     }
 
     private Page<AppointmentResponse> convertListToPage(List<AppointmentResponse> prescriptionResponseList, Pageable pageable) {

@@ -65,7 +65,14 @@ public class AppointmentController {
             @RequestParam(value = "accountId", required = false) Long accountId) {
 
         return APIResponse.<PageableResponse<AppointmentResponse>>builder()
-                .data(appointmentService.filterAppointments(page, size, Objects.requireNonNullElse(startDate, LocalDate.now()), Objects.requireNonNullElse(endDate, LocalDate.now()), statues, accountId))
+                .data(appointmentService.filterAppointments(
+                        page,
+                        size,
+                        startDate,
+                        endDate,
+                        statues,
+                        accountId)
+                )
                 .build();
     }
 
