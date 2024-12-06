@@ -23,6 +23,7 @@ public class MessageBrokerService {
     ObjectMapper objectMapper; // Jackson ObjectMapper for serializing/deserializing objects
     WebSocketHandler webSocketHandler; // Handler for managing WebSocket connections
     WebSocketService webSocketService; // Service to send messages over WebSocket
+    AppointmentService appointmentService;
 
     /**
      * Receives a message from the "receptionist-appointment-queue" JMS queue.
@@ -33,7 +34,17 @@ public class MessageBrokerService {
     public void receiveMessage(String message) {
         petQueue.add(message); // Add the message to the queue for later processing
         try {
-            Thread.sleep(1000); // Simulate a delay for processing the message (this can be optimized)
+            Thread.sleep(100); // Simulate a delay for processing the message (this can be optimized)
+        } catch (Exception e) {
+            throw new RuntimeException(e); // Handle interruption or errors during sleep
+        }
+    }
+
+    @JmsListener(destination = "approved-appointment-queue", containerFactory = "queueFactory")
+    public void approveAppointmentMessage(String appointmentId) {
+        appointmentService.approvedAppointment(Long.parseLong(appointmentId));
+        try {
+            Thread.sleep(100); // Simulate a delay for processing the message (this can be optimized)
         } catch (Exception e) {
             throw new RuntimeException(e); // Handle interruption or errors during sleep
         }
@@ -55,8 +66,6 @@ public class MessageBrokerService {
      */
     @Scheduled(fixedRate = 1000) // This method is scheduled to run every 1000 ms (1 second)
     public void reportCurrentTime() {
-        System.out.println(12);
-
         // If there are messages in the queue, send the next one
         if (!petQueue.isEmpty()) {
             try {
