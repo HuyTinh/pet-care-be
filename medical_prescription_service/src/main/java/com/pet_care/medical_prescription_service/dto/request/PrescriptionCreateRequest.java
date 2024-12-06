@@ -16,7 +16,12 @@ import java.util.Set;
 public class PrescriptionCreateRequest {
     @JsonProperty("appointment_id")
     Long appointmentId;
+
     Set<PetPrescriptionCreateRequest> details;
+
     @JsonProperty("total_money")
     Double totalMoney;
+
+    @JsonProperty("follow_up")
+    FollowUpCreateRequest followUp;
 }

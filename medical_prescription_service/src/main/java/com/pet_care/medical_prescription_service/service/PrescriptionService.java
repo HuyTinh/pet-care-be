@@ -1,5 +1,7 @@
 package com.pet_care.medical_prescription_service.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pet_care.medical_prescription_service.client.AppointmentClient;
 import com.pet_care.medical_prescription_service.client.MedicineClient;
 import com.pet_care.medical_prescription_service.dto.request.MedicineUpdateQtyRequest;
@@ -34,7 +36,6 @@ import java.time.ZoneId;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toSet;
 
@@ -56,6 +57,8 @@ public class PrescriptionService {
 
     RedisNativeService redisNativeService;
 
+    MessageBrokerService messageBrokerService;
+
     RedisTemplate<String, Object> redisTemplate;
 
     PetPrescriptionMapper petPrescriptionMapper;
@@ -66,9 +69,12 @@ public class PrescriptionService {
 
     PrescriptionMapper prescriptionMapper;
 
+    ObjectMapper objectMapper;
+
     AppointmentClient appointmentClient;
 
     MedicineClient medicineClient;
+
 
     /**
      * @return
@@ -213,6 +219,21 @@ public class PrescriptionService {
                 .toEntity(prescriptionCreateRequest);
 
         Prescription savePrescription = prescriptionRepository.save(newPrescription);
+
+        CompletableFuture.runAsync(() -> {
+            if(prescriptionCreateRequest.getFollowUp() != null) {
+                try {
+                    messageBrokerService.sendEvent("create-followUp-queue", objectMapper.writeValueAsString(prescriptionCreateRequest.getFollowUp()));
+                } catch (JsonProcessingException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        });
+
+
+        CompletableFuture.runAsync(() ->
+                messageBrokerService.sendEvent("approved-appointment-queue", String.valueOf(newPrescription.getAppointmentId()))
+        );
 
         List<PetPrescription> newPetPrescriptionList = prescriptionCreateRequest.getDetails().parallelStream().map(petPrescriptionCreateRequest ->
                 {
@@ -364,42 +385,41 @@ public class PrescriptionService {
                             CompletableFuture<Set<PetMedicineResponse>> medicinePrescriptionResponsesFuture = prescriptionDetailsFuture.thenCompose(prescriptionDetails ->
                                     CompletableFuture.allOf(medicinesFuture, calculateFuture).thenApply(v ->
                                             prescriptionDetails.parallelStream().map(prescriptionDetail -> {
-                                                String medicineName = medicinesFuture.join().stream()
+                                                CompletableFuture<String> medicineNameFuture =  CompletableFuture.supplyAsync(() -> medicinesFuture.join().stream()
                                                         .filter(medicineResponse -> Objects.equals(medicineResponse.getId(), prescriptionDetail.getMedicineId()))
                                                         .findFirst()
                                                         .map(MedicineResponse::getName)
-                                                        .orElse("Unknown Medicine"); // Handle default case
+                                                        .orElse("Unknown Medicine")); // Handle default case
 
-                                                String calculateName = calculateFuture.join().stream()
+                                                CompletableFuture<String> calculateNameFuture = CompletableFuture.supplyAsync(() -> calculateFuture.join().stream()
                                                         .filter(calculationUnitResponse -> Objects.equals(calculationUnitResponse.getId(), prescriptionDetail.getCalculationId()))
                                                         .findFirst()
                                                         .map(CalculationUnitResponse::getName)
-                                                        .orElse("Unknown Unit"); // Handle default case
+                                                        .orElse("Unknown Unit")); // Handle default case
 
-                                                return PetMedicineResponse.builder()
+                                                return CompletableFuture.allOf(medicinesFuture, calculateNameFuture).thenApply(v1 -> PetMedicineResponse.builder()
                                                         .id(prescriptionDetail.getMedicineId())
-                                                        .name(medicineName)
-                                                        .calculateUnit(calculateName)
+                                                        .name(medicineNameFuture.join())
+                                                        .calculateUnit(calculateNameFuture.join())
                                                         .note(prescriptionDetail.getNote())
                                                         .quantity(prescriptionDetail.getQuantity())
                                                         .totalMoney(prescriptionDetail.getTotalMoney())
-                                                        .build();
+                                                        .build()).join();
                                             }).collect(toSet())
                                     )
                             );
 
-
-                           return CompletableFuture.allOf(petFuture).thenApply(v -> PetPrescriptionResponse.builder()
+                           return CompletableFuture.allOf(petFuture, medicinePrescriptionResponsesFuture).thenApply(v -> PetPrescriptionResponse.builder()
                                     .id(petPrescription.getId())
                                     .pet(petFuture.join())
                                     .diagnosis(petPrescription.getDiagnosis())
-                                    .veterinaryCares(petPrescription.getPetVeterinaryCares().stream().map(petVeterinaryCareMapper::toDto).collect(toSet()))
+                                    .veterinaryCares(petPrescription.getPetVeterinaryCares().parallelStream().map(petVeterinaryCareMapper::toDto).collect(toSet()))
                                     .medicines(medicinePrescriptionResponsesFuture.join())
                                     .build()).join();
                         }).collect(toSet()));
 
 
-        return CompletableFuture.allOf(petPrescriptionResponsesFuture).thenApply(petPrescriptionResponses ->
+        return CompletableFuture.allOf(petPrescriptionResponsesFuture, appointmentFuture).thenApply(petPrescriptionResponses ->
         {
             PrescriptionResponse prescriptionResponse = prescriptionMapper.toResponse(prescription);
             prescriptionResponse.setAppointmentResponse(appointmentFuture.join());
@@ -409,9 +429,10 @@ public class PrescriptionService {
     }
 
     private void cachePrescription() {
+        redisNativeService.deleteRedisList("prescription-response-list");
         CompletableFuture.runAsync(() -> {
-            redisNativeService.deleteRedisList("prescription-response-list");
-            redisNativeService.saveToRedisList("prescription-response-list",prescriptionRepository.findAll().stream()
+            redisNativeService.saveToRedisList("prescription-response-list",
+                    prescriptionRepository.findAll().parallelStream()
                     .map(this::toPrescriptionResponse)
                     .toList(),3600);
         });

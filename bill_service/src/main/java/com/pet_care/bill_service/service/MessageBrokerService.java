@@ -22,7 +22,7 @@ public class MessageBrokerService {
     public void receiveMessageCancelledBill(String orderId) {
         invoiceService.canceledInvoice(Long.parseLong(orderId));
         try {
-            Thread.sleep(1000); // Simulate a delay for processing the message (this can be optimized)
+            Thread.sleep(100); // Simulate a delay for processing the message (this can be optimized)
         } catch (Exception e) {
             throw new RuntimeException(e); // Handle interruption or errors during sleep
         }
@@ -32,7 +32,7 @@ public class MessageBrokerService {
     public void receiveMessageApprovedBill(String orderId) {
         invoiceService.approvedInvoice(Long.parseLong(orderId));
         try {
-            Thread.sleep(1000); // Simulate a delay for processing the message (this can be optimized)
+            Thread.sleep(100); // Simulate a delay for processing the message (this can be optimized)
         } catch (Exception e) {
             throw new RuntimeException(e); // Handle interruption or errors during sleep
         }
