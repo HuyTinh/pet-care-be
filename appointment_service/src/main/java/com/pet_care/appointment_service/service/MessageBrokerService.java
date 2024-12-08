@@ -2,6 +2,7 @@ package com.pet_care.appointment_service.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pet_care.appointment_service.config.WebSocketHandler;
+import com.pet_care.appointment_service.repository.AppointmentRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -23,7 +24,7 @@ public class MessageBrokerService {
     ObjectMapper objectMapper; // Jackson ObjectMapper for serializing/deserializing objects
     WebSocketHandler webSocketHandler; // Handler for managing WebSocket connections
     WebSocketService webSocketService; // Service to send messages over WebSocket
-    AppointmentService appointmentService;
+    AppointmentRepository appointmentRepository;
 
     /**
      * Receives a message from the "receptionist-appointment-queue" JMS queue.
@@ -42,7 +43,7 @@ public class MessageBrokerService {
 
     @JmsListener(destination = "approved-appointment-queue", containerFactory = "queueFactory")
     public void approveAppointmentMessage(String appointmentId) {
-        appointmentService.approvedAppointment(Long.parseLong(appointmentId));
+        appointmentRepository.approvedAppointment(Long.parseLong(appointmentId));
         try {
             Thread.sleep(100); // Simulate a delay for processing the message (this can be optimized)
         } catch (Exception e) {
