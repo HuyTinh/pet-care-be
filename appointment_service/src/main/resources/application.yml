@@ -1,6 +1,6 @@
 spring:
   application:
-    name: appointment_service  # Name of the application
+    name: APPOINTMENT-SERVICE  # Name of the application
 
   data:
     redis:
@@ -33,6 +33,15 @@ server:
   servlet:
     context-path: /api/v1/appointment-service  # Base path for all API endpoints
   port: 8082  # Port on which the Spring Boot application will run
+
+eureka:
+  client:
+    service-url:
+      defaultZone : http://localhost:8761/eureka/
+    register-with-eureka: true
+    fetch-registry: true
+  instance:
+    hostname: localhost
 
 springdoc:
   api-docs:

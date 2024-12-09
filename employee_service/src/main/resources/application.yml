@@ -1,7 +1,16 @@
+eureka:
+  client:
+    service-url:
+      defaultZone : http://localhost:8761/eureka/
+    register-with-eureka: true
+    fetch-registry: true
+  instance:
+    hostname: localhost
+
 spring:
   # Name of the application for identification purposes
   application:
-    name: employee_service
+    name: EMPLOYEE-SERVICE
   servlet:
     multipart:
       enabled: true

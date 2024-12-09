@@ -1,6 +1,15 @@
+eureka:
+  client:
+    service-url:
+      defaultZone : http://localhost:8761/eureka/
+    register-with-eureka: true
+    fetch-registry: true
+  instance:
+    hostname: localhost
+
 spring:
   application:
-    name: customer_service  # The name of the application (customer service)
+    name: CUSTOMER-SERVICE  # The name of the application (customer service)
 
   jpa:
     show-sql: false  # Whether to log SQL queries
