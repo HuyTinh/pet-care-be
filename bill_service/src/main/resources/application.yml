@@ -1,6 +1,15 @@
+eureka:
+  client:
+    service-url:
+      defaultZone : http://localhost:8761/eureka/
+    register-with-eureka: true
+    fetch-registry: true
+  instance:
+    hostname: localhost
+
 spring:
   application:
-    name: bill_service
+    name: BILL-SERVICE
 
   datasource:
     url: "jdbc:mysql://localhost:3313/bill_service"

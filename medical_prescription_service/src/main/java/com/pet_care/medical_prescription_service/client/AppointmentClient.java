@@ -11,28 +11,28 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Set;
 
 @Service
-@FeignClient(name = "appointmentClient", url = "http://localhost:8082/api/v1/appointment-service")
+@FeignClient(name = "APPOINTMENT-SERVICE")
 public interface AppointmentClient {
     /**
      * @param appointmentId
      * @return
      */
-    @GetMapping("/appointment/{appointmentId}")
-    APIResponse<AppointmentResponse> getAppointmentById(@PathVariable("appointmentId") Long appointmentId);
+    @GetMapping("api/v1/appointment-service/appointment/{appointmentId}")
+    APIResponse<AppointmentResponse>getAppointmentById (@PathVariable("appointmentId") Long appointmentId);
 
     /**
      * @param appointmentId
      * @param services
      * @return
      */
-    @PutMapping("/appointment/{appointmentId}/service")
+    @PutMapping("api/v1/appointment-service/appointment/{appointmentId}/service")
     APIResponse<AppointmentResponse> updateAppointmentService(@PathVariable("appointmentId") Long appointmentId, @RequestBody Set<String> services);
 
     /**
      * @param petId
      * @return
      */
-    @GetMapping("/pet/{petId}")
+    @GetMapping("api/v1/appointment-service/pet/{petId}")
     APIResponse<PetResponse> getPetById(@PathVariable("petId") Long petId);
 
 
@@ -40,7 +40,7 @@ public interface AppointmentClient {
      * @param appointmentId
      * @return
      */
-    @PostMapping("/appointment/approved/{appointmentId}")
+    @PostMapping("api/v1/appointment-service/appointment/approved/{appointmentId}")
     APIResponse<Integer> approvedAppointment(@PathVariable Long appointmentId);
 
 }
