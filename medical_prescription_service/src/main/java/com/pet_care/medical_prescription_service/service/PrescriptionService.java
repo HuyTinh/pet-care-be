@@ -117,7 +117,6 @@ public class PrescriptionService {
             Set<String> statues,
             Long accountId
     ) {
-
         Date sDate;
 
         Date eDate;
@@ -430,12 +429,10 @@ public class PrescriptionService {
 
     private void cachePrescription() {
         redisNativeService.deleteRedisList("prescription-response-list");
-        CompletableFuture.runAsync(() -> {
-            redisNativeService.saveToRedisList("prescription-response-list",
-                    prescriptionRepository.findAll().parallelStream()
-                    .map(this::toPrescriptionResponse)
-                    .toList(),3600);
-        });
+        redisNativeService.saveToRedisList("prescription-response-list",
+                prescriptionRepository.findAll().parallelStream()
+                        .map(this::toPrescriptionResponse)
+                        .toList(),3600);
     }
 
     private Page<PrescriptionResponse> convertListToPage(List<PrescriptionResponse> prescriptionResponseList, Pageable pageable) {

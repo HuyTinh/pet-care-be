@@ -392,10 +392,9 @@ public class AppointmentService {
 
     private void cacheAppointment() {
         redisNativeService.deleteRedisList("appointment-response-list");
-        CompletableFuture.runAsync(() -> redisNativeService.saveToRedisList("appointment-response-list", appointmentRepository.findAll().stream()
+        redisNativeService.saveToRedisList("appointment-response-list", appointmentRepository.findAll().stream()
                 .map(this::toAppointmentResponse)
-                .collect(Collectors.toList()),3600)
-        );
+                .collect(Collectors.toList()),3600);
     }
 
     private Page<AppointmentResponse> convertListToPage(List<AppointmentResponse> prescriptionResponseList, Pageable pageable) {
