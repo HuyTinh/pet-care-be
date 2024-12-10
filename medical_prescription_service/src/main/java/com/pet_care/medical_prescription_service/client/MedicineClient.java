@@ -15,20 +15,20 @@ import java.util.List;
 import java.util.Set;
 
 @Service
-@FeignClient(name = "medicineClient", url = "http://localhost:8085/api/v1/medicine-service")
+@FeignClient(name = "MEDICINE-SERVICE")
 public interface MedicineClient {
     /**
      * @param medicineId
      * @return
      */
-    @GetMapping("/medicine/{medicineId}")
+    @GetMapping("/api/v1/medicine-service/medicine/{medicineId}")
     APIResponse<MedicineResponse> getMedicineById(@PathVariable("medicineId") Long medicineId);
 
     /**
      * @param medicineIds
      * @return
      */
-    @GetMapping("/medicine/in/{medicineIds}")
+    @GetMapping("/api/v1/medicine-service/medicine/in/{medicineIds}")
     APIResponse<List<MedicineResponse>> getMedicineInIds(@PathVariable("medicineIds") Set<Long> medicineIds);
 
 
@@ -36,21 +36,21 @@ public interface MedicineClient {
      * @param calculationUnitId
      * @return
      */
-    @GetMapping("/calculation-unit/{calculationUnitId}")
+    @GetMapping("/api/v1/medicine-service/calculation-unit/{calculationUnitId}")
     APIResponse<CalculationUnitResponse> getCalculationUnitById(@PathVariable("calculationUnitId") Long calculationUnitId);
 
     /**
      * @param calculationUnitIds
      * @return
      */
-    @GetMapping("/calculation-unit/in/{calculationUnitIds}")
+    @GetMapping("/api/v1/medicine-service/calculation-unit/in/{calculationUnitIds}")
     APIResponse<List<CalculationUnitResponse>> getCalculationUnitByIds(@PathVariable("calculationUnitIds") Set<Long> calculationUnitIds);
 
     /**
      * @param medicineUpdateQtyRequest
      * @return
      */
-    @PutMapping("/medicine/update-qty")
+    @PutMapping("/api/v1/medicine-service/medicine/update-qty")
     APIResponse<?> updateQuantity(@RequestBody MedicineUpdateQtyRequest medicineUpdateQtyRequest);
 }
 

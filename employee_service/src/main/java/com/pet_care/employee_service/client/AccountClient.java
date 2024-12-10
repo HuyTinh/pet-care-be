@@ -8,12 +8,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PostMapping;
 
 @Service
-@FeignClient(name = "identityClient", url = "http://localhost:8091/api/v1/identity-service")
+@FeignClient(name = "IDENTITY-SERVICE")
 public interface AccountClient {
     /**
      * @param request
      * @return
      */
-    @PostMapping("/account")
+    @PostMapping("/api/v1/identity-service/account")
     APIResponse<AccountResponse> createAccount(EmployeeCreateRequest request);
 }

@@ -17,7 +17,7 @@ public interface AppointmentClient {
      * @param appointmentId
      * @return
      */
-    @GetMapping("api/v1/appointment-service/appointment/{appointmentId}")
+    @GetMapping("/api/v1/appointment-service/appointment/{appointmentId}")
     APIResponse<AppointmentResponse>getAppointmentById (@PathVariable("appointmentId") Long appointmentId);
 
     /**
@@ -25,14 +25,14 @@ public interface AppointmentClient {
      * @param services
      * @return
      */
-    @PutMapping("api/v1/appointment-service/appointment/{appointmentId}/service")
+    @PutMapping("/api/v1/appointment-service/appointment/{appointmentId}/service")
     APIResponse<AppointmentResponse> updateAppointmentService(@PathVariable("appointmentId") Long appointmentId, @RequestBody Set<String> services);
 
     /**
      * @param petId
      * @return
      */
-    @GetMapping("api/v1/appointment-service/pet/{petId}")
+    @GetMapping("/api/v1/appointment-service/pet/{petId}")
     APIResponse<PetResponse> getPetById(@PathVariable("petId") Long petId);
 
 
@@ -40,7 +40,7 @@ public interface AppointmentClient {
      * @param appointmentId
      * @return
      */
-    @PostMapping("api/v1/appointment-service/appointment/approved/{appointmentId}")
+    @PostMapping("/api/v1/appointment-service/appointment/approved/{appointmentId}")
     APIResponse<Integer> approvedAppointment(@PathVariable Long appointmentId);
 
 }

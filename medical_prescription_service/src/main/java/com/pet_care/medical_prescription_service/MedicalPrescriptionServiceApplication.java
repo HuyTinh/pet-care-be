@@ -9,9 +9,7 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 @EnableFeignClients
 @EnableDiscoveryClient
 public class MedicalPrescriptionServiceApplication {
-
     public static void main(String[] args) {
         SpringApplication.run(MedicalPrescriptionServiceApplication.class, args);
     }
-
 }

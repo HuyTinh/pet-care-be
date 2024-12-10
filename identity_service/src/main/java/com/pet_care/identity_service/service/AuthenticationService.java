@@ -116,7 +116,7 @@ public class AuthenticationService {
      * @param account
      * @return
      */
-    private String generateToken( Account account) {
+    private String generateToken(Account account) {
         JWSHeader jwsHeader = new JWSHeader(JWSAlgorithm.HS512);
         JWTClaimsSet jwtClaimsSet = new JWTClaimsSet.Builder()
                 .subject(account.getEmail())
