@@ -8,9 +8,6 @@ eureka:
     hostname: localhost
 
 spring:
-  application:
-    name: MEDICINE-SERVICE  # Name of the Spring application
-
   datasource:
     url: "jdbc:mysql://localhost:3311/medicine_service"  # MySQL database connection URL
     username: root  # Database username

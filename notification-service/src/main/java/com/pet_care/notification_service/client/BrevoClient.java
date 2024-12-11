@@ -1,7 +1,6 @@
 package com.pet_care.notification_service.client;
 
 // Import necessary annotations and classes for configuring the client and handling dependencies
-import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

@@ -1,6 +1,6 @@
 package com.pet_care.notification_service.service.task;
 
-import com.pet_care.notification_service.common.utils.DateUtil;
+import com.pet_care.notification_service.shared.utils.DateUtil;
 import com.pet_care.notification_service.dto.response.AppointmentResponse;
 import com.pet_care.notification_service.entity.AppointmentSendingEmailFormat;
 import lombok.AccessLevel;

@@ -1,4 +1,4 @@
-package com.pet_care.notification_service.common.utils;
+package com.pet_care.notification_service.shared.utils;
 
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;

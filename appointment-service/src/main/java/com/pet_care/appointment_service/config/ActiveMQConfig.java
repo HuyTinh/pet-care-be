@@ -26,18 +26,6 @@ public class ActiveMQConfig {
         return new ArrayDeque<>();
     }
 
-//    /**
-//     * Bean to configure the ActiveMQ connection factory with connection details.
-//     *
-//     * @return A configured ActiveMQConnectionFactory.
-//     */
-//    @Bean
-//    public ConnectionFactory connectionFactory() {
-//        ActiveMQConnectionFactory factory = new ActiveMQConnectionFactory("tcp://localhost:61616");
-//        factory.setUserName("admin");
-//        factory.setPassword("admin");
-//        return factory;
-//    }
 
     /**
      * Bean to configure the JMS listener container factory for topics.

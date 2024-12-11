@@ -5,20 +5,18 @@ import com.pet_care.payment_service.dto.response.APIResponse;
 import com.pet_care.payment_service.dto.response.InvoiceResponse;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.*;
 
 @Service
-@FeignClient(name = "billClient", url = "http://localhost:8088/api/v1/bill-service/invoice")
+@FeignClient(name = "bill-service")
+@RequestMapping("/api/v1/bill-service")
 public interface BillClient {
 
     /**
      * @param descriptionCode
      * @return
      */
-    @GetMapping("{descriptionCode}/description")
+    @GetMapping("/invoice/{descriptionCode}/description")
     APIResponse<InvoiceResponse> getInvoiceByDescriptionCode(@PathVariable("descriptionCode") String descriptionCode);
 
 
@@ -26,7 +24,7 @@ public interface BillClient {
      * @param id
      * @return
      */
-    @GetMapping("{id}")
+    @GetMapping("/invoice/{id}")
     APIResponse<InvoiceResponse> getInvoiceById(@PathVariable("id") Long id);
 
 
@@ -34,27 +32,27 @@ public interface BillClient {
      * @param invoiceUpdatePayOSIdRequest
      * @return
      */
-    @PutMapping("payOSId")
+    @PutMapping("/invoice/payOSId")
     APIResponse<InvoiceResponse> updateInvoicePayOSId(@RequestBody InvoiceUpdatePayOSIdRequest invoiceUpdatePayOSIdRequest);
 
     /**
      * @param payOSId
      * @return
      */
-    @GetMapping("{payOSId}/payOSId")
+    @GetMapping("/invoice/{payOSId}/payOSId")
     APIResponse<Long> getInvoiceIdByOSId(@PathVariable("payOSId") String payOSId);
 
     /**
      * @param invoiceId
      * @return
      */
-    @PutMapping("{invoiceId}/approved")
+    @PutMapping("/invoice/{invoiceId}/approved")
     APIResponse<?> approveInvoice(@PathVariable("invoiceId") Long invoiceId);
 
     /**
      * @param invoiceId
      * @return
      */
-    @PutMapping("{invoiceId}/canceled")
+    @PutMapping("/invoice/{invoiceId}/canceled")
     APIResponse<?> cancelInvoice(@PathVariable("invoiceId") Long invoiceId);
 }

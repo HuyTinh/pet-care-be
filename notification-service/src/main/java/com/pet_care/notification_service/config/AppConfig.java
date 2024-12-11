@@ -12,7 +12,7 @@ import java.util.LinkedList;
 import java.util.Queue;
 
 @Configuration // Marks this class as a configuration for Spring beans
-public class ServiceConfig implements WebMvcConfigurer {
+public class AppConfig implements WebMvcConfigurer {
 
     /**
      * Provides a configured ObjectMapper bean for JSON serialization and deserialization.

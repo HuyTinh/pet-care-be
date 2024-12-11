@@ -6,9 +6,11 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 @Service
-@FeignClient(name = "uploadClient", url = "http://localhost:8086/api/v1/medical-prescription-service")
+@FeignClient(name = "medical-prescription-service")
+@RequestMapping("/api/v1/medical-prescription-service")
 public interface PrescriptionClient {
 
     /**

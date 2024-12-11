@@ -3,7 +3,7 @@ package com.pet_care.notification_service.service;
 // Import necessary annotations and classes for JSON processing, JMS, and HTTP client
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.pet_care.notification_service.common.utils.DateUtil;
+import com.pet_care.notification_service.shared.utils.DateUtil;
 import com.pet_care.notification_service.dto.response.AppointmentResponse;
 import com.pet_care.notification_service.entity.AppointmentSendingEmailFormat;
 import lombok.AccessLevel;

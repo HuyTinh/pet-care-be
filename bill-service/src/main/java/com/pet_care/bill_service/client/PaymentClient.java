@@ -7,11 +7,12 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 @Service
-@FeignClient(name = "paymentClient", url = "http://localhost:8089/api/v1/payment-service")
+@FeignClient(name = "payment-service")
+@RequestMapping("/api/v1/payment-service")
 public interface PaymentClient {
-
-    @PostMapping("payment")
+    @PostMapping("/payment")
     APIResponse<CheckoutResponseData> getPaymentLink(@RequestBody PaymentRequest paymentRequest);
 }
