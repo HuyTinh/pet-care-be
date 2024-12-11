@@ -1,6 +1,4 @@
 spring:
-  application:
-    name: APPOINTMENT-SERVICE  # Name of the application
 
   data:
     redis:

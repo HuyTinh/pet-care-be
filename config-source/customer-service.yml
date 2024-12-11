@@ -7,10 +7,6 @@ eureka:
   instance:
     hostname: localhost
 
-spring:
-  application:
-    name: CUSTOMER-SERVICE  # The name of the application (customer service)
-
   jpa:
     show-sql: false  # Whether to log SQL queries
     hibernate:

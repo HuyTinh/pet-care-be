@@ -6,14 +6,16 @@ import com.pet_care.employee_service.dto.response.AccountResponse;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 @Service
-@FeignClient(name = "IDENTITY-SERVICE")
+@FeignClient(name = "identity-service")
+@RequestMapping("/api/v1/identity-service")
 public interface AccountClient {
     /**
      * @param request
      * @return
      */
-    @PostMapping("/api/v1/identity-service/account")
+    @PostMapping("/account")
     APIResponse<AccountResponse> createAccount(EmployeeCreateRequest request);
 }

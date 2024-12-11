@@ -8,9 +8,6 @@ eureka:
     hostname: localhost
 
 spring:
-  # Name of the application for identification purposes
-  application:
-    name: EMPLOYEE-SERVICE
   servlet:
     multipart:
       enabled: true

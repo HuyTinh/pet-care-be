@@ -8,8 +8,10 @@ eureka:
     hostname: localhost
 
 spring:
-  application:
-    name: IDENTITY-SERVICE
+  activemq:
+    broker-url: tcp://localhost:61616  # URL of the ActiveMQ broker for messaging
+    user: admin  # ActiveMQ user
+    password: admin  # ActiveMQ password
 
   datasource:
     url: "jdbc:mysql://localhost:3307/identity_service"

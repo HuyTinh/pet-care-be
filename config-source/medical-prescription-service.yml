@@ -8,8 +8,6 @@ eureka:
     hostname: localhost
 
 spring:
-  application:
-    name: MEDICAL-PRESCRIPTION-SERVICE
   data:
     redis:
       host: localhost
