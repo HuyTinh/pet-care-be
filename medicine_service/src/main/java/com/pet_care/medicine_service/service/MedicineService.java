@@ -45,8 +45,11 @@ import java.util.*;
 public class MedicineService {
     // Repositories for accessing data related to medicines, locations, calculation units, and manufacturers
     MedicineRepository medicineRepository;
+
     LocationRepository locationRepository;
+
     CalculationUnitRepository calculationUnitRepository;
+
     ManufactureRepository manufactureRepository;
 
     // Mapper to convert between Medicine entity and MedicineResponse DTO
