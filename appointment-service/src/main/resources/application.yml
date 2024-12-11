@@ -1,0 +1,50 @@
+spring:
+  application:
+    name: APPOINTMENT-SERVICE  # Name of the application
+
+  data:
+    redis:
+      host: localhost
+      port: 6380
+
+  datasource:
+    url: "jdbc:mysql://localhost:3308/appointment_service"  # JDBC URL for the MySQL database
+    password: root  # Database password for MySQL
+    username: root  # Database username for MySQL
+
+  jpa:
+    show-sql: false  # Disable showing SQL queries in the logs
+    hibernate:
+      ddl-auto: update  # Automatically update the database schema (use 'update' for development)
+
+  activemq:
+    broker-url: tcp://localhost:61616  # URL of the ActiveMQ broker for messaging
+    user: admin  # ActiveMQ user
+    password: admin  # ActiveMQ password
+
+  flyway:
+    enabled: false  # Disable Flyway migrations (set to true if migrations are to be applied)
+    url: jdbc:mysql://localhost:3308/appointment_service  # Database URL for Flyway
+    user: root  # Database user for Flyway
+    password: root  # Database password for Flyway
+    locations: classpath:db/migrations  # Path to Flyway migration files
+
+server:
+  servlet:
+    context-path: /api/v1/appointment-service  # Base path for all API endpoints
+  port: 8082  # Port on which the Spring Boot application will run
+
+eureka:
+  client:
+    service-url:
+      defaultZone : http://localhost:8761/eureka/
+    register-with-eureka: true
+    fetch-registry: true
+  instance:
+    hostname: localhost
+
+springdoc:
+  api-docs:
+    path: /api-docs  # Path where Swagger API docs will be available
+  swagger-ui:
+    path: /swagger-ui.html  # Path for Swagger UI (the frontend for API documentation)

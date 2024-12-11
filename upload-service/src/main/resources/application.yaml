@@ -1,0 +1,16 @@
+spring:
+  application:
+    name: upload_service
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 20MB
+      max-request-size: 20MB
+
+cloudinary:
+  cloud-name: dprkvtle0
+  api-key: 545227972661364
+  api-secret: CF9pY6z7criTROCZtPVPHh7lwbE
+
+server:
+  port: 8089

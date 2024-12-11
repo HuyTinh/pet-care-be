@@ -1,0 +1,39 @@
+eureka:
+  client:
+    service-url:
+      defaultZone : http://localhost:8761/eureka/
+    register-with-eureka: true
+    fetch-registry: true
+  instance:
+    hostname: localhost
+
+spring:
+  application:
+    name: MEDICINE-SERVICE  # Name of the Spring application
+
+  datasource:
+    url: "jdbc:mysql://localhost:3311/medicine_service"  # MySQL database connection URL
+    username: root  # Database username
+    password: root  # Database password
+
+  flyway:
+    enabled: false  # Disable Flyway for database migrations
+    url: jdbc:mysql://localhost:3311/medicine_service  # Flyway database URL
+    user: root  # Flyway database username
+    password: root  # Flyway database password
+    locations: classpath:db/migrations  # Path to the migration scripts
+
+  jpa:
+    show-sql: false  # Disable showing SQL in the logs
+    hibernate:
+      ddl-auto: update  # Automatically update the database schema on startup
+
+server:
+  port: 8085  # Server port for the application
+  servlet:
+    context-path: /api/v1/medicine-service  # Base API path for the service
+
+cloudinary:
+  cloud-name: dxowhxfwj  # Cloudinary cloud name for image uploads
+  api-key: 493466681247413  # Cloudinary API key
+  api-secret: QXjt9-bbjJK_TDjpZsoLJsAQ2Rk  # Cloudinary API secret

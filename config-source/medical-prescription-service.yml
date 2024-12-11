@@ -1,0 +1,41 @@
+eureka:
+  client:
+    service-url:
+      defaultZone : http://localhost:8761/eureka/
+    register-with-eureka: true
+    fetch-registry: true
+  instance:
+    hostname: localhost
+
+spring:
+  application:
+    name: MEDICAL-PRESCRIPTION-SERVICE
+  data:
+    redis:
+      host: localhost
+      port: 6380
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 10MB
+      max-request-size: 10MB
+
+  activemq:
+    broker-url: tcp://localhost:61616  # URL of the ActiveMQ broker for messaging
+    user: admin  # ActiveMQ user
+    password: admin  # ActiveMQ password
+
+  datasource:
+    url: "jdbc:mysql://localhost:3312/medical_prescription_service"
+    username: root
+    password: root
+
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+
+server:
+  port: 8086
+  servlet:
+    context-path: /api/v1/medical-prescription-service
