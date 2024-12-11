@@ -59,8 +59,6 @@ public class PrescriptionService {
 
     MessageBrokerService messageBrokerService;
 
-    RedisTemplate<String, Object> redisTemplate;
-
     PetPrescriptionMapper petPrescriptionMapper;
 
     PetMedicineMapper petMedicineMapper;

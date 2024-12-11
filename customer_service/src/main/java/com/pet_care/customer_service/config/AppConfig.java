@@ -1,5 +1,6 @@
-package com.pet_care.appointment_service.config;
+package com.pet_care.customer_service.config;
 
+// Import necessary libraries for JSON handling and Spring configuration
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -8,16 +9,14 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-/**
- * Configuration class for API-related beans and settings.
- */
+// Marks this class as a configuration class
 @Configuration
-public class ServiceConfig implements WebMvcConfigurer {
+public class AppConfig implements WebMvcConfigurer {
 
     /**
-     * Bean to configure the ObjectMapper used for JSON serialization and deserialization.
+     * Provides a configured ObjectMapper bean for JSON processing.
      *
-     * @return A new instance of ObjectMapper.
+     * @return a new instance of ObjectMapper
      */
     @Bean
     public ObjectMapper objectMapper() {

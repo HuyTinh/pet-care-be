@@ -17,12 +17,14 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.jetbrains.annotations.Nullable;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.jms.annotation.JmsListener;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -41,13 +43,15 @@ public class CustomerService {
     CustomerMapper customerMapper;
 
     // Service to send messages for customer-related tasks
-    MessageService messageService;
+    MessageBrokerService messageBrokerService;
 
     // ObjectMapper to process JSON data
     ObjectMapper objectMapper;
 
     // Client for uploading images
     UploadImageClient uploadImageClient;
+
+    RedisNativeService redisNativeService;
 
     /**
      * Fetches all customers and returns them as a list of CustomerResponse DTOs.
@@ -56,6 +60,14 @@ public class CustomerService {
      */
     @Transactional(readOnly = true)
     public List<CustomerResponse> getAllCustomer() {
+        List<CustomerResponse> customerResponses = redisNativeService.getRedisList("customer-response-list", CustomerResponse.class);
+
+        if(customerResponses != null && !customerResponses.isEmpty()) {
+            return customerResponses;
+        } else {
+            cacheCustomer();
+        }
+
         return customerRepository.findAll().stream().map(customerMapper::toDto).collect(Collectors.toList());
     }
 
@@ -68,6 +80,16 @@ public class CustomerService {
      */
     @Transactional(readOnly = true)
     public CustomerResponse getCustomerById(Long id) {
+        List<CustomerResponse> customerResponses = redisNativeService.getRedisList("customer-response-list", CustomerResponse.class);
+
+        if (customerResponses != null && !customerResponses.isEmpty()) {
+            return customerResponses.stream().filter(customerResponse ->
+                        Objects.equals(customerResponse.getId(), id)
+                    ).findFirst().orElseThrow(() -> new APIException(ErrorCode.CUSTOMER_NOT_FOUND));
+        } else {
+            cacheCustomer();
+        }
+
         return customerRepository.findById(id).map(customerMapper::toDto).orElseThrow(() -> new APIException(ErrorCode.CUSTOMER_NOT_FOUND));
     }
 
@@ -80,6 +102,16 @@ public class CustomerService {
      */
     @Transactional(readOnly = true)
     public CustomerResponse getCustomerByAccountId(Long accountId) {
+        List<CustomerResponse> customerResponses = redisNativeService.getRedisList("customer-response-list", CustomerResponse.class);
+
+        if (customerResponses != null && !customerResponses.isEmpty()) {
+            return customerResponses.stream().filter(customerResponse ->
+                    Objects.equals(customerResponse.getAccountId(), accountId)
+            ).findFirst().orElseThrow(() -> new APIException(ErrorCode.CUSTOMER_NOT_FOUND));
+        } else {
+            cacheCustomer();
+        }
+
         return customerRepository.findByAccountId(accountId).map(customerMapper::toDto).orElseThrow(() -> new APIException(ErrorCode.EMAIL_NOT_FOUND));
     }
 
@@ -107,21 +139,9 @@ public class CustomerService {
             notify = "-with-notification";
         }
 
-        messageService.sendMessageQueue("customer-create-appointment" + notify + "-queue", objectMapper.writeValueAsString(appointment));
+        messageBrokerService.sendEvent("customer-create-appointment" + notify + "-queue", objectMapper.writeValueAsString(appointment));
 
         return customerMapper.toDto(customerRepository.save(customerSave));
-    }
-
-    /**
-     * Processes a message from the queue and adds a new customer to the repository.
-     *
-     * @param customerRequest the customer data received from the queue
-     * @throws JsonProcessingException if there is an error processing JSON data
-     */
-    @JmsListener(destination = "customer-create-queue")
-    @Transactional
-    public void addCustomerFromMessageQueue(String customerRequest) throws JsonProcessingException {
-        customerRepository.save(customerMapper.toEntity(objectMapper.readValue(customerRequest, CustomerCreateRequest.class)));
     }
 
     /**
@@ -144,7 +164,11 @@ public class CustomerService {
             existingCustomer.setImageUrl(uploadImageClient.uploadImage(files).get(0));
         }
 
-        return customerMapper.toDto(customerRepository.save(existingCustomer));
+        CustomerResponse customerResponse = customerMapper.toDto(customerRepository.save(existingCustomer));
+
+        cacheCustomer();
+
+        return customerResponse;
     }
 
     /**
@@ -155,5 +179,12 @@ public class CustomerService {
     @Transactional
     public void deleteCustomer(Long id) {
         customerRepository.deleteById(id);
+    }
+
+    private void cacheCustomer() {
+        redisNativeService.deleteRedisList("customer-response-list");
+        redisNativeService.saveToRedisList("customer-response-list",
+                customerRepository.findAll().parallelStream().map(customerMapper::toDto)
+                        .toList(),3600);
     }
 }
