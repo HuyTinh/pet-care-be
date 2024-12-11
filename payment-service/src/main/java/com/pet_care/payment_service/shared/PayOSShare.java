@@ -1,4 +1,4 @@
-package com.pet_care.payment_service.common;
+package com.pet_care.payment_service.shared;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -11,13 +11,13 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @Component
 public class PayOSShare {
-    @Value("${PAYOS_CLIENT_ID}")
+    @Value("${payos.client-id}")
     String clientId;
 
-    @Value("${PAYOS_API_KEY}")
+    @Value("${payos.api-key}")
     String apiKey;
 
-    @Value("${PAYOS_CHECKSUM_KEY}")
+    @Value("${payos.checksum-key}")
     String checksumKey;
 
     @Bean
