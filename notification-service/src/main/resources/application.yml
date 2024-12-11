@@ -1,0 +1,21 @@
+eureka:
+  client:
+    service-url:
+      defaultZone : http://localhost:8761/eureka/
+    register-with-eureka: true
+    fetch-registry: true
+  instance:
+    hostname: localhost
+
+spring:
+  application:
+    name: NOTIFICATION-SERVICE
+
+brevo:
+  key: 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
+  url: https://api.brevo.com/v3/smtp/email
+
+server:
+  servlet:
+    context-path: /api/v1/notification-service
+  port: 8087

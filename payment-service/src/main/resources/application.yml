@@ -1,0 +1,25 @@
+eureka:
+  client:
+    service-url:
+      defaultZone : http://localhost:8761/eureka/
+    register-with-eureka: true
+    fetch-registry: true
+  instance:
+    hostname: localhost
+
+spring:
+  application:
+    name: payment_service
+  activemq:
+    broker-url: tcp://localhost:61616  # URL of the ActiveMQ broker for messaging
+    user: admin  # ActiveMQ user
+    password: admin  # ActiveMQ password
+
+server:
+  port: 8089
+  servlet:
+    context-path: /api/v1/payment-service
+
+PAYOS_CLIENT_ID: a958d849-7e46-4e8d-858e-4be20af0c605
+PAYOS_API_KEY: ef3949a0-0889-4729-a3e9-4d349a20b389
+PAYOS_CHECKSUM_KEY: e8b9b70c1d32e55e701bb393357b52096b17dabc340e25893d2bea9c3d5c7baa

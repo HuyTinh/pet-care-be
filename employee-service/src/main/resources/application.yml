@@ -1,0 +1,42 @@
+eureka:
+  client:
+    service-url:
+      defaultZone : http://localhost:8761/eureka/
+    register-with-eureka: true
+    fetch-registry: true
+  instance:
+    hostname: localhost
+
+spring:
+  # Name of the application for identification purposes
+  application:
+    name: EMPLOYEE-SERVICE
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 10MB
+      max-request-size: 10MB
+
+  # Datasource configuration for connecting to MySQL database
+  datasource:
+    # URL of the MySQL database
+    url: "jdbc:mysql://localhost:3310/employee_service"
+    # Database username
+    username: root
+    # Database password
+    password: root
+
+  # JPA (Java Persistence API) settings for managing database interaction
+  jpa:
+    # Enable/disable showing SQL queries in the logs
+    show-sql: false
+    hibernate:
+      # Hibernate DDL (Data Definition Language) strategy for database schema management
+      ddl-auto: update
+
+server:
+  # Configures the port the server listens on
+  port: 8084
+  servlet:
+    # Configures the context path for all API endpoints
+    context-path: /api/v1/employee-service

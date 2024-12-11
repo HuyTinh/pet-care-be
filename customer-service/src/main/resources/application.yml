@@ -1,0 +1,38 @@
+eureka:
+  client:
+    service-url:
+      defaultZone : http://localhost:8761/eureka/
+    register-with-eureka: true
+    fetch-registry: true
+  instance:
+    hostname: localhost
+
+spring:
+  application:
+    name: CUSTOMER-SERVICE  # The name of the application (customer service)
+
+  jpa:
+    show-sql: false  # Whether to log SQL queries
+    hibernate:
+      ddl-auto: update  # Automatically update database schema on startup
+
+  activemq:
+    broker-url: tcp://localhost:61616  # URL of the ActiveMQ broker
+    user: admin  # ActiveMQ username
+    password: admin  # ActiveMQ password
+
+  datasource:
+    url: "jdbc:mysql://localhost:3309/customer_service"  # MySQL database connection URL
+    username: root  # MySQL username
+    password: root  # MySQL password
+
+server:
+  servlet:
+    context-path: /api/v1/customer-service  # The context path of the service's REST API
+  port: 8083  # Port number for the application
+
+springdoc:
+  api-docs:
+    path: /api-docs  # Path for the generated API documentation
+  swagger-ui:
+    path: /swagger-ui.html  # Path to access Swagger UI
