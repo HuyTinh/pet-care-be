@@ -11,8 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 @Service
 @FeignClient(name = "payment-service")
-@RequestMapping("/api/v1/payment-service")
 public interface PaymentClient {
-    @PostMapping("/payment")
+    @PostMapping("${service.payment-client.path}/payment")
     APIResponse<CheckoutResponseData> getPaymentLink(@RequestBody PaymentRequest paymentRequest);
 }

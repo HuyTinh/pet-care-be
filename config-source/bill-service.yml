@@ -8,7 +8,7 @@ eureka:
     hostname: localhost
 
   datasource:
-    url: "jdbc:mysql://localhost:3313/bill_service"
+    url: jdbc:mysql://localhost:3313/bill_service
     password: root
     username: root
 
@@ -39,3 +39,9 @@ springdoc:
     path: /api-docs
   swagger-ui:
     path: /swagger-ui.html
+
+service:
+  payment-client:
+    path: /api/v1/payment-service
+  medical-prescription-client:
+    path: /api/v1/medical-prescription-service

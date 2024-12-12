@@ -10,13 +10,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 @Service
 @FeignClient(name = "medical-prescription-service")
-@RequestMapping("/api/v1/medical-prescription-service")
 public interface PrescriptionClient {
 
     /**
      * @param prescriptionId
      * @return
      */
-    @GetMapping("/prescription/{prescriptionId}")
+    @GetMapping("${service.medical-prescription-client.path}/prescription/{prescriptionId}")
     APIResponse<PrescriptionResponse> getPrescriptionById(@PathVariable("prescriptionId") Long prescriptionId);
 }

@@ -12,7 +12,6 @@ import java.util.List;
 
 @Service
 @FeignClient(name = "upload-service")
-@RequestMapping("/api/v1/upload-service")
 public interface UploadImageClient {
 
     /**
@@ -21,6 +20,6 @@ public interface UploadImageClient {
      * @param files The list of image files to upload.
      * @return A list of URLs of the uploaded images.
      */
-    @PostMapping(value = "/image/upload",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(value = "${service.upload-client.path}/image/upload",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     List<String> uploadImage(@RequestPart("files") List<MultipartFile> files);
 }

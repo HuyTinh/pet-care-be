@@ -14,15 +14,14 @@ import java.util.List;
 
 @Service
 @FeignClient(name = "upload-service")
-@RequestMapping("/api/v1/upload-service")
 public interface UploadImageClient {
     /**
      * @param files
      * @return
      */
-    @PostMapping(value = "/image/upload",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(value = "${service.upload-client.path}/image/upload",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     List<String> uploadImage(@RequestPart("files") List<MultipartFile> files);
 
-    @PostMapping("/image/upload/base64")
+    @PostMapping("${service.upload-client.path}/image/upload/base64")
     String uploadImageFromBase64(@RequestBody String base64);
 }
