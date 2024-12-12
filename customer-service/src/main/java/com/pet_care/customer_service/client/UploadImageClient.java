@@ -14,7 +14,6 @@ import java.util.List;
 // Mark this interface as a Spring service
 @Service
 @FeignClient(name = "upload-service")
-@RequestMapping("/api/v1/upload-service")
 public interface UploadImageClient {
 
     /**
@@ -23,6 +22,6 @@ public interface UploadImageClient {
      * @param files List of image files to be uploaded
      * @return List of URLs for the uploaded images
      */
-    @PostMapping(value = "/image/upload",consumes = MediaType.MULTIPART_FORM_DATA_VALUE) // Define POST request with multipart/form-data content type
+    @PostMapping(value = "${service.upload-client.path}/image/upload",consumes = MediaType.MULTIPART_FORM_DATA_VALUE) // Define POST request with multipart/form-data content type
     List<String> uploadImage(@RequestPart("files") List<MultipartFile> files); // Map the "files" parameter to a list of files in the request
 }

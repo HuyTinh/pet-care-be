@@ -9,14 +9,13 @@ import org.springframework.web.bind.annotation.*;
 
 @Service
 @FeignClient(name = "bill-service")
-@RequestMapping("/api/v1/bill-service")
 public interface BillClient {
 
     /**
      * @param descriptionCode
      * @return
      */
-    @GetMapping("/invoice/{descriptionCode}/description")
+    @GetMapping("${service.bill-client.path}/invoice/{descriptionCode}/description")
     APIResponse<InvoiceResponse> getInvoiceByDescriptionCode(@PathVariable("descriptionCode") String descriptionCode);
 
 
@@ -24,7 +23,7 @@ public interface BillClient {
      * @param id
      * @return
      */
-    @GetMapping("/invoice/{id}")
+    @GetMapping("${service.bill-client.path}/invoice/{id}")
     APIResponse<InvoiceResponse> getInvoiceById(@PathVariable("id") Long id);
 
 
@@ -32,27 +31,27 @@ public interface BillClient {
      * @param invoiceUpdatePayOSIdRequest
      * @return
      */
-    @PutMapping("/invoice/payOSId")
+    @PutMapping("${service.bill-client.path}/invoice/payOSId")
     APIResponse<InvoiceResponse> updateInvoicePayOSId(@RequestBody InvoiceUpdatePayOSIdRequest invoiceUpdatePayOSIdRequest);
 
     /**
      * @param payOSId
      * @return
      */
-    @GetMapping("/invoice/{payOSId}/payOSId")
+    @GetMapping("${service.bill-client.path}/invoice/{payOSId}/payOSId")
     APIResponse<Long> getInvoiceIdByOSId(@PathVariable("payOSId") String payOSId);
 
     /**
      * @param invoiceId
      * @return
      */
-    @PutMapping("/invoice/{invoiceId}/approved")
+    @PutMapping("${service.bill-client.path}/invoice/{invoiceId}/approved")
     APIResponse<?> approveInvoice(@PathVariable("invoiceId") Long invoiceId);
 
     /**
      * @param invoiceId
      * @return
      */
-    @PutMapping("/invoice/{invoiceId}/canceled")
+    @PutMapping("${service.bill-client.path}/invoice/{invoiceId}/canceled")
     APIResponse<?> cancelInvoice(@PathVariable("invoiceId") Long invoiceId);
 }

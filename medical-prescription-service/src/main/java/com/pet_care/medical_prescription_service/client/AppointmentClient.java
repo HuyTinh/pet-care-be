@@ -12,13 +12,12 @@ import java.util.Set;
 
 @Service
 @FeignClient(name = "appointment-service")
-@RequestMapping("/api/v1/appointment-service")
 public interface AppointmentClient {
     /**
      * @param appointmentId
      * @return
      */
-    @GetMapping("/appointment/{appointmentId}")
+    @GetMapping("${service.appointment-client.path}/appointment/{appointmentId}")
     APIResponse<AppointmentResponse>getAppointmentById (@PathVariable("appointmentId") Long appointmentId);
 
     /**
@@ -26,14 +25,14 @@ public interface AppointmentClient {
      * @param services
      * @return
      */
-    @PutMapping("/appointment/{appointmentId}/service")
+    @PutMapping("${service.appointment-client.path}/appointment/{appointmentId}/service")
     APIResponse<AppointmentResponse> updateAppointmentService(@PathVariable("appointmentId") Long appointmentId, @RequestBody Set<String> services);
 
     /**
      * @param petId
      * @return
      */
-    @GetMapping("/pet/{petId}")
+    @GetMapping("${service.appointment-client.path}/pet/{petId}")
     APIResponse<PetResponse> getPetById(@PathVariable("petId") Long petId);
 
 
@@ -41,7 +40,7 @@ public interface AppointmentClient {
      * @param appointmentId
      * @return
      */
-    @PostMapping("/appointment/approved/{appointmentId}")
+    @PostMapping("${service.appointment-client.path}/appointment/approved/{appointmentId}")
     APIResponse<Integer> approvedAppointment(@PathVariable Long appointmentId);
 
 }

@@ -14,7 +14,7 @@ spring:
     password: admin  # ActiveMQ password
 
   datasource:
-    url: "jdbc:mysql://localhost:3307/identity_service"
+    url: jdbc:mysql://localhost:3307/identity_service
     username: root
     password: root
 
@@ -43,4 +43,4 @@ springdoc:
     path: /swagger-ui.html
 
 jwt:
-  signerKey: "xyrDapo8+iQ7k9vh/zGyUYIsOgI487NM9mAZbuh4fNJdzjVkWcEMeUR3/v0hEQGt"
+  signerKey: xyrDapo8+iQ7k9vh/zGyUYIsOgI487NM9mAZbuh4fNJdzjVkWcEMeUR3/v0hEQGt

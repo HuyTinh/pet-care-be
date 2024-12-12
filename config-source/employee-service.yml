@@ -17,7 +17,7 @@ spring:
   # Datasource configuration for connecting to MySQL database
   datasource:
     # URL of the MySQL database
-    url: "jdbc:mysql://localhost:3310/employee_service"
+    url: jdbc:mysql://localhost:3310/employee_service
     # Database username
     username: root
     # Database password
@@ -37,3 +37,9 @@ server:
   servlet:
     # Configures the context path for all API endpoints
     context-path: /api/v1/employee-service
+
+service:
+  upload-client:
+    path: /api/v1/upload-service
+  account-client:
+    path: /api/v1/identity-service
