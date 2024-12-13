@@ -22,6 +22,8 @@ public class BrevoClient {
      */
     @Bean // Defines this method as a bean provider for dependency injection
     public RestClient client() {
+        System.out.println("Brevo URL: " + brevoUrl);
+        System.out.println("Brevo Key: " + brevoKey);
         return RestClient.create() // Creates a base RestClient instance
                 .mutate() // Enables customization of the RestClient instance
                 .baseUrl(brevoUrl) // Sets the base URL for Brevo API requests

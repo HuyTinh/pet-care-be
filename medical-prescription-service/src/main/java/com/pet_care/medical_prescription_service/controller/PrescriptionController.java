@@ -182,6 +182,18 @@ public class PrescriptionController {
             .getCodeSource().getLocation().getPath() + "uploads";
 
 
+    @PostMapping("/{prescriptionId}/approved")
+    public void approvedPrescription(@PathVariable("prescriptionId") Long prescriptionId) {
+        prescriptionRepository.approvedPrescription(prescriptionId);
+    }
+
+    @GetMapping("/current")
+    public APIResponse<List<PrescriptionResponse>> getCurrentPrescription() {
+        return APIResponse.<List<PrescriptionResponse>>builder()
+                .data(prescriptionService.findAllCurrentPrescriptionWithPendingStatus())
+                .build();
+    }
+
     @GetMapping("/image/{filename}")
     public ResponseEntity<Resource> getPicture(@PathVariable String filename) {
         try {

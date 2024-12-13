@@ -2,8 +2,9 @@ package com.pet_care.payment_service.dto.request;
 
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.pet_care.payment_service.dto.response.HospitalServiceResponse;
-import com.pet_care.payment_service.dto.response.MedicinePrescriptionResponse;
+import com.pet_care.payment_service.dto.response.PetMedicineResponse;
+import com.pet_care.payment_service.dto.response.PetVeterinaryCareResponse;
+import com.pet_care.payment_service.entity.VeterinaryCare;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -20,9 +21,9 @@ public class PaymentRequest {
     @JsonProperty("order_id")
     Long orderId;
 
-    List<HospitalServiceResponse> services;
+    List<VeterinaryCare> services;
 
-    List<MedicinePrescriptionResponse> medicines;
+    List<PetMedicineResponse> medicines;
 
     @JsonProperty("total_money")
     Double totalMoney;

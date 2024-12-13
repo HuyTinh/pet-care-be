@@ -2,9 +2,12 @@ package com.pet_care.payment_service.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.pet_care.payment_service.enums.PrescriptionStatus;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.util.Date;
 import java.util.Set;
 
 @Getter
@@ -12,6 +15,7 @@ import java.util.Set;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@ToString
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class PrescriptionResponse {
     Long id;
@@ -22,8 +26,12 @@ public class PrescriptionResponse {
     @JsonProperty("details")
     Set<PetPrescriptionResponse> details;
 
+    @Enumerated(EnumType.STRING)
     PrescriptionStatus status;
 
     @JsonProperty("total_money")
     Double totalMoney;
+
+    @JsonProperty("created_at")
+    Date createdAt;
 }

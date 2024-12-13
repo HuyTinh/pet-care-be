@@ -2,6 +2,7 @@ package com.pet_care.bill_service.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.pet_care.bill_service.enums.InvoiceStatus;
 import com.pet_care.bill_service.enums.PaymentMethod;
@@ -19,6 +20,7 @@ import java.util.Date;
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @JsonIgnoreProperties(ignoreUnknown = true)
+@JsonInclude(JsonInclude.Include.NON_NULL) // Excludes fields with null values from the JSON output
 public class InvoiceResponse {
 
     Long id;

@@ -6,6 +6,11 @@ spring:
           '[/**]': # Matches all paths
             allowedOrigins:
               - http://localhost:5173
+              - http://localhost:5174
+              - http://localhost:5175
+              - http://localhost:5176
+              - http://localhost:5177
+              - http://localhost:5178
             allowedMethods:
               - GET
               - POST
@@ -45,6 +50,16 @@ spring:
           uri: lb://MEDICAL-PRESCRIPTION-SERVICE
           predicates:
             - Path=/api/v1/medical-prescription-service/**
+
+        - id: bill-service
+          uri: lb://BILL-SERVICE
+          predicates:
+            - Path=/api/v1/bill-service/**
+
+        - id: payment-service
+          uri: lb://PAYMENT-SERVICE
+          predicates:
+            - Path=/api/v1/payment-service/**
 
 eureka:
   client:
