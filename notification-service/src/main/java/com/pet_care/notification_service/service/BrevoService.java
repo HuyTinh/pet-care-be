@@ -34,7 +34,10 @@ public class BrevoService { // Service to handle notifications through the Brevo
     @JmsListener(destination = "appointment-success-notification-queue") // Configures this method as a listener for the specified queue
     public void sendAppointmentSuccessfulEmail(String message) throws JsonProcessingException {
 
+
         AppointmentResponse appointmentResponse = objectMapper.readValue(message, AppointmentResponse.class);
+
+        System.out.println(appointmentResponse);
 
         AppointmentSendingEmailFormat emailBookingSuccessful = AppointmentSendingEmailFormat.builder()
                 .appointmentId(appointmentResponse.getId())

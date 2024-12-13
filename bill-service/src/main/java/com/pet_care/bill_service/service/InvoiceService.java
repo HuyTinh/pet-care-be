@@ -7,9 +7,11 @@ import com.pet_care.bill_service.dto.request.InvoiceUpdatePayOSIdRequest;
 import com.pet_care.bill_service.dto.request.PaymentRequest;
 import com.pet_care.bill_service.dto.response.CheckoutResponseData;
 import com.pet_care.bill_service.dto.response.InvoiceResponse;
-import com.pet_care.bill_service.dto.response.MedicinePrescriptionResponse;
+import com.pet_care.bill_service.dto.response.PetMedicineResponse;
+import com.pet_care.bill_service.entity.VeterinaryCare;
 import com.pet_care.bill_service.enums.InvoiceStatus;
 import com.pet_care.bill_service.enums.PaymentMethod;
+import com.pet_care.bill_service.enums.PrescriptionStatus;
 import com.pet_care.bill_service.exception.APIException;
 import com.pet_care.bill_service.exception.ErrorCode;
 import com.pet_care.bill_service.mapper.InvoiceMapper;
@@ -25,6 +27,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -39,7 +43,6 @@ public class InvoiceService {
     PaymentClient paymentClient;
 
     PrescriptionClient prescriptionClient;
-
     /**
      * @return
      */
@@ -82,26 +85,54 @@ public class InvoiceService {
 
             PaymentRequest paymentRequest = PaymentRequest.builder()
                     .orderId(invoiceResponse.getId())
-                    .services(invoiceResponse.getPrescription().getAppointmentResponse().getServices())
                     .totalMoney(invoiceCreateRequest.getTotalMoney())
                     .build();
 
-            Set<MedicinePrescriptionResponse> petPrescriptionResponses = new HashSet<>();
+            CompletableFuture<Void> petPrescriptionResponsesFuture = CompletableFuture.runAsync(() -> {
+                Set<PetMedicineResponse> petPrescriptionResponses = new HashSet<>();
 
-            invoiceResponse.getPrescription().getDetails().forEach(
-                    petPrescriptionResponse -> petPrescriptionResponses.addAll(petPrescriptionResponse.getMedicines())
-            );
+                invoiceResponse.getPrescription().getDetails().parallelStream().forEach(
+                        petPrescriptionResponse -> petPrescriptionResponses.addAll(petPrescriptionResponse.getMedicines())
+                );
 
-            paymentRequest.setMedicines(petPrescriptionResponses);
+                paymentRequest.setMedicines(petPrescriptionResponses);
+            });
 
-            CheckoutResponseData checkoutResponse = paymentClient.getPaymentLink(paymentRequest).getData();
+            CompletableFuture<Void> petVeterinaryCareResponsesFuture = CompletableFuture.runAsync(() -> {
+                Set<VeterinaryCare> petVeterinaryCareResponses = new HashSet<>();
 
-            invoiceRepository.updatePaymentPayOSId(
-                    checkoutResponse.getDescription().substring(0,11),
-                    saveInvoice.getId()
-            );
+                invoiceResponse.getPrescription().getDetails().parallelStream().forEach(petPrescriptionResponse -> petVeterinaryCareResponses.addAll(petPrescriptionResponse.getVeterinaryCares().stream().map(petVeterinaryCareResponse -> VeterinaryCare.builder()
+                        .name(petVeterinaryCareResponse.getVeterinaryCare())
+                        .price(petVeterinaryCareResponse.getTotalMoney())
+                        .build()).collect(Collectors.toSet())));
 
-            invoiceResponse.setCheckoutResponse(checkoutResponse);
+                paymentRequest.setServices(petVeterinaryCareResponses);
+            });
+
+            CompletableFuture<CheckoutResponseData> checkoutResponseFuture = CompletableFuture.supplyAsync(()-> paymentClient.getPaymentLink(paymentRequest).getData());
+
+            return CompletableFuture.allOf(checkoutResponseFuture,
+                    petVeterinaryCareResponsesFuture,
+                    petPrescriptionResponsesFuture).thenApply(res -> {
+                CheckoutResponseData checkoutResponseData = checkoutResponseFuture.join();
+
+                invoiceRepository.updatePaymentPayOSId(
+                        checkoutResponseData.getDescription().substring(0,11),
+                        saveInvoice.getId()
+                );
+
+                invoiceResponse.setCheckoutResponse(checkoutResponseData);
+
+                return invoiceResponse;
+            }).join();
+
+        } else if (invoiceCreateRequest.getPaymentMethod().equals(PaymentMethod.CASH)) {
+
+            if(invoiceRepository.changeStatus(saveInvoice.getId(), InvoiceStatus.SUCCESS) > 0 ){
+                invoiceResponse.setStatus(InvoiceStatus.SUCCESS);
+            }
+            invoiceResponse.getPrescription().setStatus(PrescriptionStatus.APPROVED);
+            prescriptionClient.approvedPrescription(invoiceResponse.getPrescription().getId());
         }
 
         return  invoiceResponse;
@@ -133,6 +164,6 @@ public class InvoiceService {
     }
 
     public Integer canceledInvoice(Long invoiceId) {
-        return invoiceRepository.changeStatus(invoiceId, InvoiceStatus.CANCELLED);
+        return invoiceRepository.changeStatus(invoiceId, InvoiceStatus.CANCEL);
     }
 }

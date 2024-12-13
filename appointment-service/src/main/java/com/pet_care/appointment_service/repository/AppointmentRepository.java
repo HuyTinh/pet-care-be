@@ -1,5 +1,6 @@
 package com.pet_care.appointment_service.repository;
 
+import com.pet_care.appointment_service.dto.response.ReportAppointmentByDateToDateResponse;
 import com.pet_care.appointment_service.dto.response.ReportAppointmentByYearResponse;
 import com.pet_care.appointment_service.enums.AppointmentStatus;
 import com.pet_care.appointment_service.entity.Appointment;
@@ -131,4 +132,21 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
             "    DATE_FORMAT(appointment_date, '%m-%Y')\n" +
             "LIMIT 10000000", nativeQuery = true)
     List<ReportAppointmentByYearResponse> getAppointmentsReportByYear(@Param("year") int year);
+
+    @Query(value = "SELECT\n" +
+            "    appointment_date AS date,\n" +
+            "    COUNT(CASE WHEN status = 'SCHEDULED' THEN 1 END) AS numberOfScheduled,\n" +
+            "    COUNT(CASE WHEN status = 'APPROVED' THEN 1 END) AS numberOfApproved,\n" +
+            "    COUNT(CASE WHEN status = 'CANCELLED' THEN 1 END) AS numberOfCancelled,\n" +
+            "    COUNT(CASE WHEN status = 'NO_SHOW' THEN 1 END) AS numberOfNoShow,\n" +
+            "    COUNT(id) AS totalAppointments\n" +
+            "    FROM\n" +
+            "            appointments\n" +
+            "    WHERE\n" +
+            "    appointment_date BETWEEN :startDate AND :endDate \n" +
+            "    GROUP BY\n" +
+            "    appointment_date\n" +
+            "    LIMIT 10000000", nativeQuery = true)
+    List<ReportAppointmentByDateToDateResponse> getAppointmentsReportByDateToDate(@Param("startDate") Date startDate,
+                                                                                           @Param("endDate") Date endDate);
 }

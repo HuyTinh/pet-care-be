@@ -132,7 +132,7 @@ public class InvoiceController {
      * @param invoiceId the ID of the invoice to cancel.
      * @return API response with a message indicating success or failure.
      */
-    @PutMapping("{invoiceId}/canceled")
+    @PutMapping("{invoiceId}/cancelled")
     public APIResponse<?> cancelInvoice(@PathVariable("invoiceId") Long invoiceId) {
         log.info("Canceling invoice with ID: {}", invoiceId);
         String message = "Cancel Invoice Id: " + invoiceId + " fail";
@@ -158,4 +158,5 @@ public class InvoiceController {
                 .message("Send event success")
                 .build();
     }
+
 }

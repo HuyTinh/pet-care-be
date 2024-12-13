@@ -22,12 +22,14 @@ import com.pet_care.medical_prescription_service.repository.PetPrescriptionRepos
 import com.pet_care.medical_prescription_service.repository.PetMedicineRepository;
 import com.pet_care.medical_prescription_service.repository.PetVeterinaryCareRepository;
 import com.pet_care.medical_prescription_service.repository.PrescriptionRepository;
+import jakarta.jms.Message;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.*;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.jms.annotation.JmsListener;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -424,6 +426,13 @@ public class PrescriptionService {
             return prescriptionResponse;
         }).join();
     }
+
+    @Transactional(readOnly = true)
+    public List<PrescriptionResponse> findAllCurrentPrescriptionWithPendingStatus(){
+        return prescriptionRepository.findAllCurrentPrescriptionWithPendingStatus().parallelStream()
+                .map(prescriptionMapper::toResponse).toList();
+    }
+
 
     private void cachePrescription() {
         redisNativeService.deleteRedisList("prescription-response-list");

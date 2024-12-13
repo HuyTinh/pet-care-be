@@ -3,3 +3,7 @@ spring:
     name: notification-service
   config:
     import: configserver:http://localhost:8246
+
+brevo:
+  key: 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
+  url: https://api.brevo.com/v3/smtp/email

@@ -7,6 +7,7 @@ import jakarta.persistence.Enumerated;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.util.Date;
 import java.util.Set;
 
 @Getter
@@ -14,6 +15,7 @@ import java.util.Set;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@ToString
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class PrescriptionResponse {
     Long id;
@@ -29,4 +31,7 @@ public class PrescriptionResponse {
 
     @JsonProperty("total_money")
     Double totalMoney;
+
+    @JsonProperty("created_at")
+    Date createdAt;
 }

@@ -4,20 +4,20 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.util.Set;
-
 @Getter
 @Setter
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
-@ToString
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class PetPrescriptionResponse {
+public class PetVeterinaryCareResponse {
     Long id;
-    PetResponse pet;
-    String diagnosis;
-    Set<PetMedicineResponse> medicines;
-    @JsonProperty("veterinary_cares")
-    Set<PetVeterinaryCareResponse> veterinaryCares;
+
+    @JsonProperty("veterinary_care")
+    String veterinaryCare;
+
+    String result;
+
+    @JsonProperty("total_money")
+    Double totalMoney;
 }

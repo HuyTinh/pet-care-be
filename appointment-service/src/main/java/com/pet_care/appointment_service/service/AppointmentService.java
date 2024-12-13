@@ -6,6 +6,7 @@ import com.pet_care.appointment_service.dto.request.AppointmentCreateRequest;
 import com.pet_care.appointment_service.dto.request.AppointmentUpdateRequest;
 import com.pet_care.appointment_service.dto.response.AppointmentResponse;
 import com.pet_care.appointment_service.dto.response.PageableResponse;
+import com.pet_care.appointment_service.dto.response.ReportAppointmentByDateToDateResponse;
 import com.pet_care.appointment_service.enums.AppointmentStatus;
 import com.pet_care.appointment_service.exception.APIException;
 import com.pet_care.appointment_service.exception.ErrorCode;
@@ -55,6 +56,7 @@ public class AppointmentService {
 
      PetMapper petMapper;
 
+     Map<Long, AppointmentResponse> cachedAppointments = new HashMap<>();
     /**
      * @param appointmentId
      * @param appointmentUpdateRequest
@@ -78,8 +80,6 @@ public class AppointmentService {
 
         log.info("Appointment Service: Update appointment successful");
 
-        cacheAppointment();
-
         return appointmentMapper.toDto(updateAppointment);
     }
 
@@ -89,13 +89,6 @@ public class AppointmentService {
     
     @Transactional(readOnly = true)
     public List<AppointmentResponse> getAllAppointment() {
-        List<AppointmentResponse> cacheAppointmentResponses = redisNativeService.getRedisList("appointment-response-list", AppointmentResponse.class);
-
-        if(!cacheAppointmentResponses.isEmpty()) {
-            return cacheAppointmentResponses;
-        } else {
-            cacheAppointment();
-        }
 
         List<AppointmentResponse> appointmentResponses = appointmentRepository.findAll().stream().map(this::toAppointmentResponse).toList();
 
@@ -112,15 +105,6 @@ public class AppointmentService {
     @Transactional(readOnly = true)
     public AppointmentResponse getAppointmentById( Long appointmentId) {
 
-        List<AppointmentResponse> cacheAppointmentResponses = redisNativeService.getRedisList("appointment-response-list", AppointmentResponse.class);
-
-        if(!cacheAppointmentResponses.isEmpty()) {
-            return cacheAppointmentResponses.stream().filter(appointmentResponse -> Objects.equals(appointmentResponse.getId(), appointmentId)).findFirst()
-                    .orElseThrow(() -> new APIException(ErrorCode.APPOINTMENT_NOT_FOUND));
-        } else {
-            cacheAppointment();
-        }
-
         Appointment existingAppointment = appointmentRepository
                 .findById(appointmentId)
                 .orElseThrow(() -> new APIException(ErrorCode.APPOINTMENT_NOT_FOUND));
@@ -136,10 +120,6 @@ public class AppointmentService {
         int checkIn = appointmentRepository
                 .checkInAppointment(appointmentId);
 
-        if(checkIn > 0) {
-            cacheAppointment();
-        }
-
         log.info("Appointment Service: Check in appointment successful");
 
         return checkIn;
@@ -153,10 +133,6 @@ public class AppointmentService {
         int cancel = appointmentRepository
                 .cancelledAppointment(appointmentId);
 
-        if(cancel > 0) {
-            cacheAppointment();
-        }
-
         log.info("Appointment Service: Cancel appointment successful");
 
         return cancel;
@@ -169,10 +145,6 @@ public class AppointmentService {
     public int approvedAppointment(Long appointmentId) {
         int approved = appointmentRepository
                 .approvedAppointment(appointmentId);
-
-        if(approved > 0) {
-            cacheAppointment();
-        }
 
         log.info("Appointment Service: Approved appointment successful");
 
@@ -214,54 +186,46 @@ public class AppointmentService {
 
         Date eDate;
 
-        List<AppointmentResponse> appointmentCache = redisNativeService.getRedisList("appointment-response-list", AppointmentResponse.class);
+        List<AppointmentResponse> appointmentResponses = new ArrayList<>();
 
         if(startDate != null && endDate != null) {
             sDate = Date.from(startDate.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant());
             eDate = Date.from(endDate.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant());
+
+            appointmentResponses = appointmentRepository
+                    .findByAppointmentDateBetween(sDate, eDate)
+                    .parallelStream().map(this::toAppointmentResponse)
+                    .collect(toList());
         } else {
-            sDate = null;
-            eDate = null;
+            appointmentResponses = appointmentRepository
+                    .findAll().parallelStream()
+                    .map(this::toAppointmentResponse)
+                    .collect(toList());
         }
 
         Pageable pageable = PageRequest.of(page, size, Sort.by("appointmentDate").descending());
 
-        if(!appointmentCache.isEmpty()) {
-            var contentList = appointmentCache;
-
-            if(startDate != null && endDate != null) {
-                contentList = contentList.stream()
-                        .filter(appointment -> !appointment.getAppointmentDate().before(sDate) && !appointment.getAppointmentDate().after(eDate)).toList();
-            }
-
-            appointmentCache = contentList;
-        } else {
-            cacheAppointment();
-
-            CompletableFuture<List<Appointment>> appointmentsBetweenDateFuture = CompletableFuture.supplyAsync(() -> appointmentRepository.findByAppointmentDateBetween(sDate, eDate));
-
-            appointmentCache = appointmentsBetweenDateFuture.thenApply(appointments -> appointments.stream().map(this::toAppointmentResponse).toList()).join();
-        }
-
         if(accountId != null) {
-            appointmentCache = appointmentCache.stream().filter(appointmentResponse -> {
-                return Objects.equals(accountId, appointmentResponse.getAccountId());
-            }).collect(toList());
+            appointmentResponses = appointmentResponses
+                    .parallelStream().filter(appointmentResponse -> {
+                        return Objects.equals(accountId, appointmentResponse.getAccountId());
+                    }).collect(toList());
         }
 
         if(statues != null) {
-            appointmentCache = appointmentCache.stream().filter(appointmentResponse -> {
-                return statues.stream().anyMatch(s -> s.equals(appointmentResponse.getStatus().name()));
-            }).collect(toList());
+            appointmentResponses = appointmentResponses
+                    .parallelStream().filter(appointmentResponse -> {
+                        return statues.stream().anyMatch(s -> s.equals(appointmentResponse.getStatus().name()));
+                    }).collect(toList());
         }
 
-        Page<AppointmentResponse> appointmentResponses = convertListToPage(appointmentCache, pageable);
+        Page<AppointmentResponse> appointmentResponsePage = convertListToPage(appointmentResponses, pageable);
 
         return PageableResponse.<AppointmentResponse>builder()
-                .content(appointmentResponses.getContent())
-                .pageNumber(appointmentResponses.getPageable().getPageNumber())
-                .pageSize(appointmentResponses.getPageable().getPageSize())
-                .totalPages(appointmentResponses.getTotalPages())
+                .content(appointmentResponsePage.getContent())
+                .pageNumber(appointmentResponsePage.getPageable().getPageNumber())
+                .pageSize(appointmentResponsePage.getPageable().getPageSize())
+                .totalPages(appointmentResponsePage.getTotalPages())
                 .build();
     }
 
@@ -364,8 +328,6 @@ public class AppointmentService {
             appointmentResponse.setAccount("GUEST");
         }
 
-        cacheAppointment();
-
         return appointmentResponse;
     }
 
@@ -374,6 +336,7 @@ public class AppointmentService {
         return appointmentRepository
                 .getByAppointmentDateBetweenAndStatus(new Date(), DateUtil.plusDate(new Date(), 3), AppointmentStatus.SCHEDULED).stream().map(appointmentMapper::toDto).collect(toList());
     }
+
 
     /**
      * @param appointment
@@ -397,13 +360,13 @@ public class AppointmentService {
                 .collect(Collectors.toList()),3600);
     }
 
-    private Page<AppointmentResponse> convertListToPage(List<AppointmentResponse> prescriptionResponseList, Pageable pageable) {
+    private Page<AppointmentResponse> convertListToPage(List<AppointmentResponse> appointmentResponseList, Pageable pageable) {
 
         Sort sort = pageable.getSort();
 
         // Nếu có yêu cầu sắp xếp, áp dụng Comparator
         if (sort.isSorted()) {
-            prescriptionResponseList.sort((a, b) -> {
+            appointmentResponseList.sort((a, b) -> {
                 for (Sort.Order order : sort) {
                     String property = order.getProperty();
                     int comparison = compareByProperty(a, b, property);
@@ -418,14 +381,14 @@ public class AppointmentService {
         }
 
         // Tính toán index của phần tử bắt đầu và kết thúc trong trang
-        int start = Math.min((int) pageable.getOffset(), prescriptionResponseList.size());
-        int end = Math.min((start + pageable.getPageSize()), prescriptionResponseList.size());
+        int start = Math.min((int) pageable.getOffset(), appointmentResponseList.size());
+        int end = Math.min((start + pageable.getPageSize()), appointmentResponseList.size());
 
         // Cắt danh sách để chỉ lấy các phần tử trong trang hiện tại
-        List<AppointmentResponse> pageContent = prescriptionResponseList.subList(start, end);
+        List<AppointmentResponse> pageContent = appointmentResponseList.subList(start, end);
 
         // Trả về PageImpl (Page<PrescriptionResponse>)
-        return new PageImpl<>(pageContent, pageable, prescriptionResponseList.size());
+        return new PageImpl<>(pageContent, pageable, appointmentResponseList.size());
     }
 
     private int compareByProperty(AppointmentResponse a, AppointmentResponse b, String property) {

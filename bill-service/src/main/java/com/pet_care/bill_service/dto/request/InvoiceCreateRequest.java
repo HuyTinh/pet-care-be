@@ -23,7 +23,8 @@ public class InvoiceCreateRequest {
     PaymentMethod paymentMethod;
 
     @Enumerated(EnumType.STRING)
-    InvoiceStatus status;
+    @Builder.Default
+    InvoiceStatus status = InvoiceStatus.PENDING;
 
     @JsonProperty("total_money")
     Double totalMoney;

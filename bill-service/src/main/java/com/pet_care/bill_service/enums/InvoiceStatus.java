@@ -1,5 +1,5 @@
 package com.pet_care.bill_service.enums;
 
 public enum InvoiceStatus {
-    PENDING, SUCCESS, CANCELLED
+    PENDING, SUCCESS, CANCEL
 }
