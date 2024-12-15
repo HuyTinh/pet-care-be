@@ -18,8 +18,9 @@ public interface InvoiceDetailMapper
     @Mapping(target = "totalPrice", source = "totalPrice")
     @Mapping(target = "productId", source = "product.id")
     @Mapping(target = "productName", source = "product.name")
+    @Mapping(target = "price", source = "product.price")
     @Mapping(target = "productDescription", source = "product.description")
-    InvoiceDetailResponse mapperToInvoiceDetailResponse(InvoiceDetail invoiceDetail);
+    InvoiceDetailResponse toDto(InvoiceDetail invoiceDetail);
     List<InvoiceDetailResponse> mapperToInvoiceDetailResponses(List<InvoiceDetail> invoiceDetail);
 
 }

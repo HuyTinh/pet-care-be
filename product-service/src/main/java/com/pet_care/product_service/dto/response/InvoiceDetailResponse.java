@@ -14,21 +14,22 @@ import lombok.experimental.FieldDefaults;
 public class InvoiceDetailResponse
 {
 
-//    @JsonProperty("invoice_detail_id")
+    @JsonProperty("invoice_detail_id")
     Long invoiceDetailId;
 
     int quantity;
 
-//    @JsonProperty("total_price")
+    @JsonProperty("total_price")
     Double totalPrice;
 
-//    @JsonProperty("product_id")
+    Double price;
+    @JsonProperty("product_id")
     Long productId;
 
-//    @JsonProperty("product_name")
+    @JsonProperty("product_name")
     String productName;
 
-//    @JsonProperty("product_description")
+    @JsonProperty("product_description")
     String productDescription;
 
 }

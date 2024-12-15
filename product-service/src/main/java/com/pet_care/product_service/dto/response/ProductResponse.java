@@ -23,9 +23,9 @@ public class ProductResponse
 
     Integer quantity;
 
-    @JsonProperty("image_url")
-    String imageUrl;
+    String image;
 
     String category;
 
+    String status;
 }

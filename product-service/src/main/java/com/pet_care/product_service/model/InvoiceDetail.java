@@ -17,7 +17,7 @@ import java.util.Date;
 @NoArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@Entity(name = "invoice-details")
+@Entity(name = "invoice_details")
 public class InvoiceDetail
 {
     @Id
@@ -29,6 +29,10 @@ public class InvoiceDetail
     @JsonProperty("total_price")
     @Column(name = "total_price")
     Double totalPrice;
+
+    @JsonProperty("price")
+    @Column(name = "price")
+    Double price;
 
     @Temporal(TemporalType.TIMESTAMP)
     @CreationTimestamp

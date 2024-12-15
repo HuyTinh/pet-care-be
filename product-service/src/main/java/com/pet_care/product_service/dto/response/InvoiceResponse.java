@@ -19,9 +19,23 @@ public class InvoiceResponse
 
     @JsonProperty("invoice_id")
     Long invoiceId;
+    @JsonProperty("total_price")
+    Double totalPrice;
 
+    String note;
+
+    Long customer_id;
+
+    @JsonProperty("full_name")
+    String fullName;
+    @JsonProperty("phone_number")
+    String phoneNumber;
+
+    String address;
     @JsonProperty("created_at")
     Date createdAt;
+    @JsonProperty("status_accept")
+    String statusAccept;
 
     List<InvoiceDetailResponse> invoiceDetailResponses;
 

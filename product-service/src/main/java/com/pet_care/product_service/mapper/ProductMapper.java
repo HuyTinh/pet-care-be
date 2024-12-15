@@ -15,22 +15,30 @@ import java.util.List;
 public interface ProductMapper
 {
 
-    @Mapping(target = "id", source = "id")
-    @Mapping(target = "name", source = "name")
-    @Mapping(target = "description", source = "description")
-    @Mapping(target = "price", source = "price")
-    @Mapping(target = "quantity", source = "quantity")
-    @Mapping(target = "categories.name", ignore = true)
-    Product mapperToProduct(ProductRequest productRequest);
-
-    @Mapping(target = "id", source = "id")
-    @Mapping(target = "name", source = "name")
-    @Mapping(target = "description", source = "description")
-    @Mapping(target = "price", source = "price")
-    @Mapping(target = "quantity", source = "quantity")
-    @Mapping(target = "imageUrl", source = "image")
-    @Mapping(target = "category", source = "categories.name")
-    ProductResponse mapperToProductResponse(Product product);
-    List<ProductResponse> mapperToProductResponses(List<Product> product);
+//    @Mapping(target = "id", source = "id")
+//    @Mapping(target = "name", source = "name")
+//    @Mapping(target = "description", source = "description")
+//    @Mapping(target = "price", source = "price")
+//    @Mapping(target = "quantity", source = "quantity")
+//    @Mapping(target = "categories.name", ignore = true)
+//    Product mapperToProduct(ProductRequest productRequest);
+//
+//    @Mapping(target = "id", source = "id")
+//    @Mapping(target = "name", source = "name")
+//    @Mapping(target = "description", source = "description")
+//    @Mapping(target = "price", source = "price")
+//    @Mapping(target = "quantity", source = "quantity")
+//    @Mapping(target = "imageUrl", source = "image")
+//    @Mapping(target = "category", source = "categories.name")
+//    ProductResponse mapperToProductResponse(Product product);
+//    List<ProductResponse> mapperToProductResponses(List<Product> product);
+    /**
+     * Converts a Product entity to a ProductResponse DTO.
+     *
+     * @param product the Product entity to be converted
+     * @return a ProductResponse DTO populated with data from the Product entity
+     */
+    @Mapping(source = "image", target = "image")
+    ProductResponse toDto(Product product);
 
 }

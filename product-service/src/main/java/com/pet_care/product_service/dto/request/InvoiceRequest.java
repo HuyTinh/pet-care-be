@@ -1,8 +1,11 @@
 package com.pet_care.product_service.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.pet_care.product_service.enums.StatusAccept;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+
+import java.util.List;
 
 @Getter
 @Setter
@@ -13,11 +16,16 @@ import lombok.experimental.FieldDefaults;
 public class InvoiceRequest
 {
 
-    @JsonProperty("product_id")
-    Long productId;
+     String note;  // Ghi chú của hóa đơn
 
-    int quantity;
+     Long customerId;  // ID của khách hàng
+     Double shippingFee;
+     String fullName;
+     String phoneNumber;
+     String address;
 
-    String note;
+     StatusAccept statusAccept;  // Trạng thái chấp nhận hóa đơn
+
+     List<InvoiceDetailRequest> invoiceDetails;  // Danh sách chi tiết hóa đơn
 
 }

@@ -11,7 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 
 @Service
-@FeignClient(name = "upload-service")
+@FeignClient(name = "upload-service", url = "localhost:8080")
 public interface UploadImageClient {
 
     /**
